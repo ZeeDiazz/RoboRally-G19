@@ -33,7 +33,6 @@ import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class Board extends Subject {
 
@@ -63,7 +62,7 @@ public class Board extends Subject {
         this.height = height;
         spaces = new Space[width][height];
         for (int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
+            for (int y = 0; y < height; y++) {
                 Space space = new Space(this, x, y);
                 spaces[x][y] = space;
             }
@@ -128,6 +127,28 @@ public class Board extends Subject {
         }
     }
 
+    public void nextPlayer(Player currentPlayer) {
+
+
+        while (true) {
+            int i = this.players.indexOf(currentPlayer);
+            if (this.players.get(i) == currentPlayer) {
+                i++;
+                if (i >= this.players.size()) {
+                    i = 0;
+                }
+                setCurrentPlayer(this.players.get(i));
+                break;
+            }
+
+        }
+
+
+    }
+
+
+
+
     public Phase getPhase() {
         return phase;
     }
@@ -175,7 +196,7 @@ public class Board extends Subject {
      * (no walls or obstacles in either of the involved spaces); otherwise,
      * null will be returned.
      *
-     * @param space the space for which the neighbour should be computed
+     * @param space   the space for which the neighbour should be computed
      * @param heading the heading of the neighbour
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
