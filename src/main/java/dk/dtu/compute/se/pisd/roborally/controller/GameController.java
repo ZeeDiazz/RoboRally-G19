@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class GameController {
 
@@ -44,15 +43,17 @@ public class GameController {
      *
      * @param space the space to which the current player should move
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+    public void moveCurrentPlayerToSpace(@NotNull Space space) {
 
-    Player currentPlayer = board.getCurrentPlayer();
-
-    space.setPlayer(currentPlayer);
-    board.nextPlayer(currentPlayer);
+        Player currentPlayer = board.getCurrentPlayer();
 
 
-
+        if (space.getPlayer() != null) {
+            return;
+        } else {
+            space.setPlayer(currentPlayer);
+        }
+        board.nextPlayer(currentPlayer);
 
 
         // TODO Assignment V1: method should be implemented by the students:
@@ -64,8 +65,6 @@ public class GameController {
         //     if the player is moved
 
 
-
-
     }
 
     /**
@@ -75,7 +74,9 @@ public class GameController {
     public void notImplememted() {
         // XXX just for now to indicate that the actual method to be used by a handler
         //     is not yet implemented
-    };
+    }
+
+    ;
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
