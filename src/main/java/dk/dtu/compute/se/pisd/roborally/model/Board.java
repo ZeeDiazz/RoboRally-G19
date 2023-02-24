@@ -127,27 +127,6 @@ public class Board extends Subject {
         }
     }
 
-    public void nextPlayer(Player currentPlayer) {
-
-
-        while (true) {
-            int i = this.players.indexOf(currentPlayer);
-            if (this.players.get(i) == currentPlayer) {
-                i++;
-                if (i >= this.players.size()) {
-                    i = 0;
-                }
-                setCurrentPlayer(this.players.get(i));
-                break;
-            }
-
-        }
-
-
-    }
-
-
-
 
     public Phase getPhase() {
         return phase;

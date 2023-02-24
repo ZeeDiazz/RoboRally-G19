@@ -53,7 +53,7 @@ public class GameController {
         } else {
             space.setPlayer(currentPlayer);
         }
-        board.nextPlayer(currentPlayer);
+        nextPlayer(currentPlayer);
 
 
         // TODO Assignment V1: method should be implemented by the students:
@@ -87,6 +87,18 @@ public class GameController {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void nextPlayer(Player currentPlayer) {
+        int i = this.board.getPlayerNumber(currentPlayer);
+        i++;
+        if (i >= this.board.getPlayersNumber()) {
+            i = 0;
+        }
+        this.board.setCurrentPlayer(this.board.getPlayer(i));
+        while (true) {
+            break;
         }
     }
 
