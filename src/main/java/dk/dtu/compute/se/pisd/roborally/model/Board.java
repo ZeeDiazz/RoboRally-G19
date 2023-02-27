@@ -36,6 +36,8 @@ import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
  */
 public class Board extends Subject {
 
+    private int moveCounter;
+
     public final int width;
 
     public final int height;
@@ -200,6 +202,14 @@ public class Board extends Subject {
         return getSpace(x, y);
     }
 
+    public int getMoveCounter() {
+        return moveCounter;
+    }
+
+    public void increaseMoveCounter() {
+        this.moveCounter++;
+    }
+
     public String getStatusMessage() {
         // This is actually a view aspect, but for making the first task easy for
         // the students, this method gives a string representation of the current
@@ -211,7 +221,7 @@ public class Board extends Subject {
         //      which is counted up every time a player makes a move; the
         //      status line should show the current player and the number
         //      of the current move!
-        return "Player = " + getCurrentPlayer().getName();
+        return "Player = " + getCurrentPlayer().getName() + "\nMove = " + this.getMoveCounter();
     }
 
     // TODO Assignment V1: add a counter along with a getter and a setter, so the

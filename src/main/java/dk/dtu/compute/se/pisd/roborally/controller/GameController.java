@@ -91,6 +91,7 @@ public class GameController {
     }
 
     public void nextPlayer(Player currentPlayer) {
+        this.board.increaseMoveCounter();
         int i = this.board.getPlayerNumber(currentPlayer);
         i++;
         if (i >= this.board.getPlayersNumber()) {
