@@ -198,22 +198,58 @@ public class GameController {
 
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
-
+        move(player, player.getHeading(), 1);
     }
 
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
+        move(player, player.getHeading(), 2);
+    }
 
+    private void move(@NotNull Player player, Heading playerDirection, int amount) {
+        Space currentSpace = player.getSpace();
+        Space newSpace;
+        switch (playerDirection) {
+            case SOUTH -> newSpace = new Space(currentSpace.board, currentSpace.x, currentSpace.y - amount);
+            case NORTH -> newSpace = new Space(currentSpace.board, currentSpace.x, currentSpace.y + amount);
+            case WEST -> newSpace = new Space(currentSpace.board, currentSpace.x - amount, currentSpace.y);
+            case EAST -> newSpace = new Space(currentSpace.board, currentSpace.x + amount, currentSpace.y);
+            default -> newSpace = currentSpace;
+        }
+
+        player.setSpace(newSpace);
     }
 
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
+        Heading playerDirection = player.getHeading();
 
+        Heading newDirection;
+        switch (playerDirection) {
+            case SOUTH -> newDirection = Heading.WEST;
+            case NORTH -> newDirection = Heading.EAST;
+            case WEST -> newDirection = Heading.NORTH;
+            case EAST -> newDirection = Heading.SOUTH;
+            default -> newDirection = playerDirection;
+        }
+
+        player.setHeading(newDirection);
     }
 
     // TODO Assignment V2
     public void turnLeft(@NotNull Player player) {
+        Heading playerDirection = player.getHeading();
 
+        Heading newDirection;
+        switch (playerDirection) {
+            case SOUTH -> newDirection = Heading.EAST;
+            case NORTH -> newDirection = Heading.WEST;
+            case WEST -> newDirection = Heading.SOUTH;
+            case EAST -> newDirection = Heading.NORTH;
+            default -> newDirection = playerDirection;
+        }
+
+        player.setHeading(newDirection);
     }
 
     /**
@@ -223,6 +259,7 @@ public class GameController {
     public void notImplememted() {
         // XXX just for now to indicate that the actual method to be used by a handler
         //     is not yet implemented
+        assert false;
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
