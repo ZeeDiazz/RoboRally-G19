@@ -221,8 +221,14 @@ public class Board extends Subject {
         //      which is counted up every time a player makes a move; the
         //      status line should show the current player and the number
         //      of the current move!
-        return "Player = " + getCurrentPlayer().getName() + "\nMove = " + this.getMoveCounter();
+        // XXX: V2 changed the status so that it shows the phase, the player and the step
+        //MOVE getMoveCounter() in getStep().
+        return "Phase: " + getPhase().name() +
+                ", Player = " + getCurrentPlayer().getName() +
+                ", Step: " + getMoveCounter();
     }
+
+        //return "Player = " + getCurrentPlayer().getName() + "\nMove = " + this.getMoveCounter();
 
     // TODO Assignment V1: add a counter along with a getter and a setter, so the
     //      state the board (game) contains the number of moves, which then can
