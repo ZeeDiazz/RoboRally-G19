@@ -277,8 +277,5 @@ public class GameController {
             i = 0;
         }
         this.board.setCurrentPlayer(this.board.getPlayer(i));
-        while (true) {
-            break;
-        }
     }
 }
