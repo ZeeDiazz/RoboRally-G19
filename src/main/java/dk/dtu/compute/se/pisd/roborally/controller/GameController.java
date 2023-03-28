@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
+ *
  */
 public class GameController {
 
@@ -43,8 +44,7 @@ public class GameController {
      *
      * @param space the space to which the current player should move
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space) {
-
+    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
         Player currentPlayer = board.getCurrentPlayer();
 
 
@@ -252,20 +252,10 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
-    /**
-     * A method called when no corresponding controller operation is implemented yet.
-     * This method should eventually be removed.
-     */
-    public void notImplememted() {
-        // XXX just for now to indicate that the actual method to be used by a handler
-        //     is not yet implemented
-        assert false;
-    }
-
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
-        if (sourceCard != null & targetCard == null) {
+        if (sourceCard != null && targetCard == null) {
             target.setCard(sourceCard);
             source.setCard(null);
             return true;
@@ -274,6 +264,14 @@ public class GameController {
         }
     }
 
+    /**
+     * A method called when no corresponding controller operation is implemented yet. This
+     * should eventually be removed.
+     */
+    public void notImplemented() {
+        // XXX just for now to indicate that the actual method is not yet implemented
+        assert false;
+    }
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
         int i = this.board.getPlayerNumber(currentPlayer);
@@ -286,5 +284,4 @@ public class GameController {
             break;
         }
     }
-
 }
