@@ -208,13 +208,10 @@ public class GameController {
 
     private void move(@NotNull Player player, Heading playerDirection, int amount) {
         Space currentSpace = player.getSpace();
-        Space newSpace;
-        switch (playerDirection) {
-            case SOUTH -> newSpace = new Space(currentSpace.board, currentSpace.x, currentSpace.y - amount);
-            case NORTH -> newSpace = new Space(currentSpace.board, currentSpace.x, currentSpace.y + amount);
-            case WEST -> newSpace = new Space(currentSpace.board, currentSpace.x - amount, currentSpace.y);
-            case EAST -> newSpace = new Space(currentSpace.board, currentSpace.x + amount, currentSpace.y);
-            default -> newSpace = currentSpace;
+        Space newSpace = currentSpace;
+
+        for (int i = 0; i < amount; i++) {
+            newSpace = player.board.getNeighbour(newSpace, playerDirection);
         }
 
         player.setSpace(newSpace);
