@@ -33,6 +33,8 @@ public class GameController {
 
     final public Board board;
 
+    public Command currentInteractiveCard;
+
     public GameController(@NotNull Board board) {
         this.board = board;
     }
@@ -134,7 +136,8 @@ public class GameController {
 
 
     // XXX: V3
-    private void startPlayerInteractionPhase() {
+    private void startPlayerInteractionPhase(Command card) {
+        this.currentInteractiveCard = card;
         this.board.setPhase(Phase.PLAYER_INTERACTION);
 
     }
@@ -163,9 +166,9 @@ public class GameController {
                 if (card != null) {
                     Command command = card.command;
                     if (card.command.isInteractive()) {
+                        startPlayerInteractionPhase(command);
                         return;
                     }
-
                     executeCommand(currentPlayer, command);
                 }
 
@@ -217,6 +220,11 @@ public class GameController {
             }
         }
     }
+
+   public void executeCommandOptionAndContinue (Command option){
+
+   }
+
 
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
@@ -313,7 +321,4 @@ public class GameController {
         }
         this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
     }
-
-
-
 }
