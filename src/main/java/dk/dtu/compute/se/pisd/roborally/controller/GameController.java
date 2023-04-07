@@ -117,10 +117,18 @@ public class GameController {
         }
     }
 
+
+
     // XXX: V2
     public void executePrograms() {
         board.setStepMode(false);
         continuePrograms();
+    }
+
+
+    // XXX: V3
+    private void startPlayerInteractionPhase(){
+    this.board.setPhase(Phase.PLAYER_INTERACTION);
     }
 
     // XXX: V2
@@ -146,6 +154,9 @@ public class GameController {
                 if (card != null) {
                     Command command = card.command;
                     executeCommand(currentPlayer, command);
+                }
+                else if(card.command.isInteractive()){
+                    startPlayerInteractionPhase();
                 }
                 int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
