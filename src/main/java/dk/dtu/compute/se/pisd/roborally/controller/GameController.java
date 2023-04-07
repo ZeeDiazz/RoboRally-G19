@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class GameController {
 
@@ -44,17 +43,26 @@ public class GameController {
      *
      * @param space the space to which the current player should move
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+    public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
 
 
-        if (space.getPlayer() != null) {
+        if (spaceIsOccupied(space)) {
             return;
         } else {
             space.setPlayer(currentPlayer);
         }
         nextPlayer(currentPlayer);
     }
+
+
+    public boolean spaceIsOccupied(Space space) {
+        if (space.getPlayer() != null) {
+            return true;
+        }
+        return false;
+    }
+
 
     // XXX: V2
     public void startProgrammingPhase() {
@@ -118,7 +126,6 @@ public class GameController {
     }
 
 
-
     // XXX: V2
     public void executePrograms() {
         board.setStepMode(false);
@@ -127,8 +134,9 @@ public class GameController {
 
 
     // XXX: V3
-    private void startPlayerInteractionPhase(){
-    this.board.setPhase(Phase.PLAYER_INTERACTION);
+    private void startPlayerInteractionPhase() {
+        this.board.setPhase(Phase.PLAYER_INTERACTION);
+
     }
 
     // XXX: V2
@@ -141,10 +149,11 @@ public class GameController {
     private void continuePrograms() {
         do {
             executeNextStep();
+            nextPlayer(board.getCurrentPlayer());
         } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
     }
 
-    // XXX: V2
+    // XXX: V2/V3
     private void executeNextStep() {
         Player currentPlayer = board.getCurrentPlayer();
         if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
@@ -153,12 +162,14 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
+                    if (card.command.isInteractive()) {
+                        return;
+                    }
+
                     executeCommand(currentPlayer, command);
                 }
-                else if(card.command.isInteractive()){
-                    startPlayerInteractionPhase();
-                }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+
+             /*   int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
@@ -170,7 +181,7 @@ public class GameController {
                     } else {
                         startProgrammingPhase();
                     }
-                }
+                }*/
             } else {
                 // this should not happen
                 assert false;
@@ -223,6 +234,10 @@ public class GameController {
 
         for (int i = 0; i < amount; i++) {
             newSpace = player.board.getNeighbour(newSpace, playerDirection);
+        }
+
+        if (spaceIsOccupied(newSpace)) {
+            return;
         }
 
         player.setSpace(newSpace);
@@ -280,13 +295,25 @@ public class GameController {
         // XXX just for now to indicate that the actual method is not yet implemented
         assert false;
     }
+
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
-        int i = this.board.getPlayerNumber(currentPlayer);
-        i++;
-        if (i >= this.board.getPlayersNumber()) {
-            i = 0;
+        int step = this.board.getStep();
+        int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer);
+        nextPlayerNumber++;
+        if (nextPlayerNumber >= this.board.getPlayersNumber()) {
+            nextPlayerNumber = 0;
+            step++;
+            if (step < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+            } else {
+                startProgrammingPhase();
+            }
         }
-        this.board.setCurrentPlayer(this.board.getPlayer(i));
+        this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
     }
+
+
+
 }
