@@ -36,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class PlayerView extends Tab implements ViewObserver {
 
@@ -198,18 +197,24 @@ public class PlayerView extends Tab implements ViewObserver {
                 }
                 playerInteractionPanel.getChildren().clear();
 
+
                 if (player.board.getCurrentPlayer() == player && this.player.board.getPhase() == Phase.PLAYER_INTERACTION) {
                     // TODO Assignment V3: these buttons should be shown only when there is
                     //      an interactive command card, and the buttons should represent
                     //      the player's choices of the interactive command card. The
                     //      following is just a mockup showing two options
 
+
+                    // Makes buttons for all the different options relating to the interactive card
+
                     for (Command option : this.gameController.currentInteractiveCard.getOptions()) {
                         Button optionButton = new Button(option.displayName);
-                        optionButton.setOnAction(e -> gameController.notImplemented());
+                        optionButton.setOnAction(e -> gameController.executeCommandOptionAndContinue(option)); // The option which is chosen gets handled by this
                         optionButton.setDisable(false);
                         playerInteractionPanel.getChildren().add(optionButton);
                     }
+
+
                     /*Button optionButton = new Button("Option1");
                     optionButton.setOnAction( e -> gameController.notImplemented());
                     optionButton.setDisable(false);

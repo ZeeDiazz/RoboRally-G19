@@ -33,6 +33,10 @@ public class GameController {
 
     final public Board board;
 
+    /***
+     * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
+     * This is also so that the PlayerView class is able to access the interactive card in question
+     */
     public Command currentInteractiveCard;
 
     public GameController(@NotNull Board board) {
@@ -44,6 +48,11 @@ public class GameController {
      * happening on the board. This method should eventually be deleted!
      *
      * @param space the space to which the current player should move
+     */
+
+    /***
+     * This method makes it possible to click on a space, and make the current player's robot move to that space
+     * @param space The space which the player's robot is going to be moved to
      */
     public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
@@ -57,6 +66,11 @@ public class GameController {
         nextPlayer(currentPlayer);
     }
 
+    /***
+     * This method is for checking whether a space is being occupied by a robot
+     * @param space The space which is checked whether it's being occupied by a robot
+     * @return Returns true if there is another robot on the space received as parameter
+     */
 
     public boolean spaceIsOccupied(Space space) {
         if (space.getPlayer() != null) {
@@ -135,11 +149,15 @@ public class GameController {
     }
 
 
-    // XXX: V3
-    private void startPlayerInteractionPhase(Command card) {
-        this.currentInteractiveCard = card;
-        this.board.setPhase(Phase.PLAYER_INTERACTION);
+    /***
+     * This method starts the Player Interaction phase
+     * @param options Refers to the command of the interactive card
+     */
 
+    // XXX: V3
+    private void startPlayerInteractionPhase(Command options) {
+        this.currentInteractiveCard = options;
+        this.board.setPhase(Phase.PLAYER_INTERACTION);
     }
 
     // XXX: V2
@@ -148,13 +166,18 @@ public class GameController {
         continuePrograms();
     }
 
-    // XXX: V2
+
+    // XXX: V2/V3
     private void continuePrograms() {
         do {
             executeNextStep();
-            nextPlayer(board.getCurrentPlayer());
+            if (this.board.getPhase() != Phase.PLAYER_INTERACTION) nextPlayer(board.getCurrentPlayer());
+            else {
+                return;
+            }
         } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
     }
+
 
     // XXX: V2/V3
     private void executeNextStep() {
@@ -221,9 +244,20 @@ public class GameController {
         }
     }
 
-   public void executeCommandOptionAndContinue (Command option){
-
-   }
+    /***
+     * This method is for executing an interactive card, where a player has chosen what command to execute
+     * <p>If all the programs was chosen to be executed before the interactive card,
+     * they will continue to do so after an option has been chosen</p>
+     * @param option The command which the player has chosen to execute
+     */
+    public void executeCommandOptionAndContinue(Command option) {
+        executeCommand(board.getCurrentPlayer(), option);
+        this.board.setPhase(Phase.ACTIVATION);
+        nextPlayer(this.board.getCurrentPlayer());
+        if (!this.board.isStepMode()) {
+            this.executePrograms();
+        }
+    }
 
 
     // TODO Assignment V2
@@ -304,6 +338,12 @@ public class GameController {
         assert false;
     }
 
+    /***
+     * This method relates to all that has to do with passing on the turn to the next player
+     * <p>If the last player has executed his/her last command, the programming phase will start</p>
+     *
+     * @param currentPlayer The current turn's player before the end of a turn
+     */
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
         int step = this.board.getStep();
