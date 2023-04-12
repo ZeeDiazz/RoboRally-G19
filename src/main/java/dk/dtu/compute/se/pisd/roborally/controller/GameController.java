@@ -73,10 +73,7 @@ public class GameController {
      */
 
     public boolean spaceIsOccupied(Space space) {
-        if (space.getPlayer() != null) {
-            return true;
-        }
-        return false;
+        return space.getPlayer() != null;
     }
 
 
@@ -171,8 +168,9 @@ public class GameController {
     private void continuePrograms() {
         do {
             executeNextStep();
-            if (this.board.getPhase() != Phase.PLAYER_INTERACTION) nextPlayer(board.getCurrentPlayer());
-            else {
+            if (this.board.getPhase() != Phase.PLAYER_INTERACTION) {
+                nextPlayer(board.getCurrentPlayer());
+            } else {
                 return;
             }
         } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
