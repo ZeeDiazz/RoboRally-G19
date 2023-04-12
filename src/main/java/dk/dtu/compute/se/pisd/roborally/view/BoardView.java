@@ -36,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * ...
- *
+ * This class is the GUI for the board
+ * It implements ViewObserver to update the current subject
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
@@ -53,6 +54,10 @@ public class BoardView extends VBox implements ViewObserver {
 
     private SpaceEventHandler spaceEventHandler;
 
+    /**
+     * This method is creating the board with spaces and using logic from GameController for handling the spaces events
+     * @param gameController The controller of the game
+     */
     public BoardView(@NotNull GameController gameController) {
         board = gameController.board;
 
@@ -82,6 +87,10 @@ public class BoardView extends VBox implements ViewObserver {
         update(board);
     }
 
+    /**
+     * This method updates the view with the boards current status message
+     * @param subject Subject is the board
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == board) {
