@@ -39,7 +39,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * ...
- *
+ * This class is combination field creation and update as well as logic for card handling
+ * It implements ViewObserver to update the current subject
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
@@ -67,6 +68,12 @@ public class CardFieldView extends GridPane implements ViewObserver {
 
     private GameController gameController;
 
+    /**
+     * This method is creating the parameters of the CardField
+     * and allows the players several interactions with the cards such as drag and drop
+     * @param gameController  Controller of the game
+     * @param field Field for a card to be viewed
+     */
     public CardFieldView(@NotNull GameController gameController, @NotNull CommandCardField field) {
         this.gameController = gameController;
         this.field = field;
@@ -140,6 +147,10 @@ public class CardFieldView extends GridPane implements ViewObserver {
         return null;
     }
 
+    /**
+     * This method updates the view with the cards current name
+      * @param subject Subject is the field
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == field && subject != null) {
@@ -180,6 +191,8 @@ public class CardFieldView extends GridPane implements ViewObserver {
         }
 
     }
+
+
 
     private class OnDragOverHandler implements EventHandler<DragEvent> {
 

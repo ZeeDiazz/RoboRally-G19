@@ -28,7 +28,8 @@ import javafx.scene.control.MenuItem;
 
 /**
  * ...
- *
+ * This is a class for creating menu bars for RoboRally with options for:
+ * new game, save game,load game, stop game and exit
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
@@ -48,6 +49,10 @@ public class RoboRallyMenuBar extends MenuBar {
 
     private MenuItem exitApp;
 
+    /**
+     * This method creates a new menu bar with several options
+     * @param appController Controller of the app
+     */
     public RoboRallyMenuBar(AppController appController) {
         this.appController = appController;
 
@@ -79,6 +84,9 @@ public class RoboRallyMenuBar extends MenuBar {
         update();
     }
 
+    /**
+     * This method updates the view of the menu depending on the stage of the game
+     */
     public void update() {
         if (appController.isGameRunning()) {
             newGame.setVisible(false);

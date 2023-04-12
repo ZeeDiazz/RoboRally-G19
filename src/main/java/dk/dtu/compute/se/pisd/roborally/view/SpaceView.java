@@ -35,7 +35,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * ...
- *
+ * This class creates a black or white space on the game board with a specific height and width
+ * if the space contains a player, a player is displayed as a polygon
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
@@ -46,7 +47,10 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     public final Space space;
 
-
+    /**
+     * This method creates a new singular space
+     * @param space The space that will be viewed
+     */
     public SpaceView(@NotNull Space space) {
         this.space = space;
 
