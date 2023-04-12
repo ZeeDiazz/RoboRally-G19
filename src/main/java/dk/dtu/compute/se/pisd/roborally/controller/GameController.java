@@ -61,11 +61,6 @@ public class GameController {
         nextPlayer(currentPlayer);
     }
 
-    /**
-     * This method is called when a field is clicked and the current player needs to be moved to the clicked space.
-     *
-     * @param space the space that was clicked
-     */
 
     /***
      * This method starts the programming phase.
