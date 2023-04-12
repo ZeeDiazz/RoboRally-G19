@@ -26,14 +26,19 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * ...
- *
+ *This class is responsible for the users interaction with:
+ * game phases, execution of cards, execution of steps, movement, and who's the current player.
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
+
 public class GameController {
 
     final public Board board;
 
+    /**
+     * @param board The board created by the players
+     */
     public GameController(@NotNull Board board) {
         this.board = board;
     }
@@ -57,6 +62,12 @@ public class GameController {
     }
 
     // XXX: V2
+
+    /***
+     * This method starts the programming phase.
+     * it does this by setting the current phase to PROGRAMMING, setting the current player and resets the steps.
+     *
+     */
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
@@ -87,6 +98,12 @@ public class GameController {
     }
 
     // XXX: V2
+
+    /**
+     * This methods finish or ends the programming phase.
+     * It does this by changing the fields(spaces) visibility and setting the current phase to the next(ACTIVATION).
+     * And again resetting the steps.
+     */
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
@@ -117,12 +134,18 @@ public class GameController {
         }
     }
 
+    /**
+     * This method executes the next steps while setting the StepMode to false.
+     */
     // XXX: V2
     public void executePrograms() {
         board.setStepMode(false);
         continuePrograms();
     }
 
+    /**
+     * This method executes the next steps while setting the StepMode to true
+     */
     // XXX: V2
     public void executeStep() {
         board.setStepMode(true);
@@ -196,15 +219,19 @@ public class GameController {
         }
     }
 
+    /**
+     * This method moves a player forward by a certain amount.
+     * @param player refers to the player which is about to move
+     */
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
         move(player, player.getHeading(), 1);
     }
-
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
         move(player, player.getHeading(), 2);
     }
+
 
     private void move(@NotNull Player player, Heading playerDirection, int amount) {
         Space currentSpace = player.getSpace();
@@ -217,6 +244,10 @@ public class GameController {
         player.setSpace(newSpace);
     }
 
+    /**
+     * This method turns the player to the right regardless of the direction the player are currently facing.
+     * @param player is the player that will perform the turn
+     */
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
@@ -233,6 +264,10 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
+    /**
+     * This method turns the player to the left regardless of the direction the player is currently facing.
+     * @param player is the player that will perform the turn
+     */
     // TODO Assignment V2
     public void turnLeft(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
@@ -249,6 +284,12 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
+    /**
+     * This method override the target card with the destination card, effectively moving the card.
+     * @param source is the command card that will be moved
+     * @param target is the empty command card the source card will be moved to
+     * @return True if the cards were moved successfully, else false
+     */
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -269,6 +310,13 @@ public class GameController {
         // XXX just for now to indicate that the actual method is not yet implemented
         assert false;
     }
+
+    /**
+     * This method sets the current player to be the next player.
+     * It does this by increasing the MoveCounter everytime it is the next players turn.
+     * This way it keeps count of the order of which players turn it is.
+     * @param currentPlayer is the current player that will become the next player
+     */
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
         int i = this.board.getPlayerNumber(currentPlayer);
