@@ -198,6 +198,9 @@ public class PlayerView extends Tab implements ViewObserver {
                 playerInteractionPanel.getChildren().clear();
 
 
+
+
+                // Zigalow {
                 if (player.board.getCurrentPlayer() == player && this.player.board.getPhase() == Phase.PLAYER_INTERACTION) {
                     // TODO Assignment V3: these buttons should be shown only when there is
                     //      an interactive command card, and the buttons should represent
@@ -213,6 +216,8 @@ public class PlayerView extends Tab implements ViewObserver {
                         optionButton.setDisable(false);
                         playerInteractionPanel.getChildren().add(optionButton);
                     }
+
+                // Zigalow }
 
 
                     /*Button optionButton = new Button("Option1");
