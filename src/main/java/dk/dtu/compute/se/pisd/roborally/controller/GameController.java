@@ -359,15 +359,15 @@ public class GameController {
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
         // Daniel {
-        int step = this.board.getStep();
+        int currentStep = this.board.getStep();
         int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer);
         nextPlayerNumber++;
         if (nextPlayerNumber >= this.board.getPlayersNumber()) {
             nextPlayerNumber = 0;
-            step++;
-            if (step < Player.NO_REGISTERS) {
-                makeProgramFieldsVisible(step);
-                board.setStep(step);
+            currentStep++;
+            if (currentStep < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(currentStep);
+                board.setStep(currentStep);
             } else {
                 startProgrammingPhase();
             }

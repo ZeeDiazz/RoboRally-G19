@@ -202,12 +202,6 @@ public class PlayerView extends Tab implements ViewObserver {
 
                 // Zigalow {
                 if (player.board.getCurrentPlayer() == player && this.player.board.getPhase() == Phase.PLAYER_INTERACTION) {
-                    // TODO Assignment V3: these buttons should be shown only when there is
-                    //      an interactive command card, and the buttons should represent
-                    //      the player's choices of the interactive command card. The
-                    //      following is just a mockup showing two options
-
-
                     // Makes buttons for all the different options relating to the interactive card
 
                     for (Command option : this.gameController.currentInteractiveCard.getOptions()) {
