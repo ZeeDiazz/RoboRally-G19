@@ -28,11 +28,19 @@ import org.jetbrains.annotations.NotNull;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class GameController {
 
     final public Board board;
+
+    /**
+     * @author Zigalow
+     * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
+     * This is also so that the PlayerView class is able to access the interactive card in question
+     *
+     *
+     */
+    public Command currentInteractiveCard;
 
     public GameController(@NotNull Board board) {
         this.board = board;
@@ -44,17 +52,36 @@ public class GameController {
      *
      * @param space the space to which the current player should move
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+
+    /**
+     * @author Zigalow
+     * This method makes it possible to click on a space, and make the current player's robot move to that space
+     * @param space The space which the player's robot is going to be moved to
+     *
+     */
+    public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
 
 
-        if (space.getPlayer() != null) {
+        if (spaceIsOccupied(space)) {
             return;
         } else {
             space.setPlayer(currentPlayer);
         }
         nextPlayer(currentPlayer);
     }
+
+    /**
+     * @author Zigalow
+     * This method is for checking whether a space is being occupied by a robot
+     * @param space The space which is checked whether it's being occupied by a robot
+     * @return Returns true if there is another robot on the space received as parameter
+     */
+
+    public boolean spaceIsOccupied(Space space) {
+        return space.getPlayer() != null;
+    }
+
 
     // XXX: V2
     public void startProgrammingPhase() {
@@ -117,10 +144,27 @@ public class GameController {
         }
     }
 
+
     // XXX: V2
     public void executePrograms() {
         board.setStepMode(false);
         continuePrograms();
+    }
+
+
+    /**
+     * @author Zigalow
+     * This method starts the Player Interaction phase
+     * @param options Refers to the command of the interactive card
+     */
+
+
+
+
+    // XXX: V3
+    private void startPlayerInteractionPhase(Command options) {
+        this.currentInteractiveCard = options;
+        this.board.setPhase(Phase.PLAYER_INTERACTION);
     }
 
     // XXX: V2
@@ -129,14 +173,21 @@ public class GameController {
         continuePrograms();
     }
 
-    // XXX: V2
+
+    // XXX: V2/V3
     private void continuePrograms() {
         do {
             executeNextStep();
+            if (this.board.getPhase() != Phase.PLAYER_INTERACTION) {
+                nextPlayer(board.getCurrentPlayer());
+            } else {
+                return;
+            }
         } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
     }
 
-    // XXX: V2
+
+    // XXX: V2/V3
     private void executeNextStep() {
         Player currentPlayer = board.getCurrentPlayer();
         if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
@@ -145,9 +196,14 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
+                    if (card.command.isInteractive()) {
+                        startPlayerInteractionPhase(command);
+                        return;
+                    }
                     executeCommand(currentPlayer, command);
                 }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+
+             /*   int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
@@ -159,7 +215,7 @@ public class GameController {
                     } else {
                         startProgrammingPhase();
                     }
-                }
+                }*/
             } else {
                 // this should not happen
                 assert false;
@@ -196,6 +252,23 @@ public class GameController {
         }
     }
 
+    /**
+     * @author Zigalow
+     * This method is for executing an interactive card, where a player has chosen what command to execute
+     * <p>If all the programs was chosen to be executed before the interactive card,
+     * they will continue to do so after an option has been chosen</p>
+     * @param option The command which the player has chosen to execute
+     */
+    public void executeCommandOptionAndContinue(Command option) {
+        executeCommand(board.getCurrentPlayer(), option);
+        this.board.setPhase(Phase.ACTIVATION);
+        nextPlayer(this.board.getCurrentPlayer());
+        if (!this.board.isStepMode()) {
+            this.executePrograms();
+        }
+    }
+
+
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
         move(player, player.getHeading(), 1);
@@ -212,6 +285,10 @@ public class GameController {
 
         for (int i = 0; i < amount; i++) {
             newSpace = player.board.getNeighbour(newSpace, playerDirection);
+        }
+
+        if (spaceIsOccupied(newSpace)) {
+            return;
         }
 
         player.setSpace(newSpace);
@@ -269,13 +346,33 @@ public class GameController {
         // XXX just for now to indicate that the actual method is not yet implemented
         assert false;
     }
+
+    /**
+     * @author Zigalow, Daniel
+     * This method relates to all that has to do with passing on the turn to the next player
+     * <p>If the last player has executed his/her last command, the programming phase will start</p>
+     *
+     * @param currentPlayer The current turn's player before the end of a turn
+     *
+     */
+
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
-        int i = this.board.getPlayerNumber(currentPlayer);
-        i++;
-        if (i >= this.board.getPlayersNumber()) {
-            i = 0;
+        // Daniel {
+        int currentStep = this.board.getStep();
+        int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer);
+        nextPlayerNumber++;
+        if (nextPlayerNumber >= this.board.getPlayersNumber()) {
+            nextPlayerNumber = 0;
+            currentStep++;
+            if (currentStep < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(currentStep);
+                board.setStep(currentStep);
+            } else {
+                startProgrammingPhase();
+            }
+        // Daniel }
         }
-        this.board.setCurrentPlayer(this.board.getPlayer(i));
+        this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
     }
 }
