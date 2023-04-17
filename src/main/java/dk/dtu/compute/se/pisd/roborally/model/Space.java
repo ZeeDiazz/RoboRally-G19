@@ -30,6 +30,7 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
  *
  */
 public class Space extends Subject {
+    public Boolean isCheckPoint;
 
     public final Board board;
 
