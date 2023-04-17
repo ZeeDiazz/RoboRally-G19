@@ -348,10 +348,10 @@ public class GameController {
     }
 
     /**
-     * @author Zigalow, Daniel
+     * @author Zigalow, Daniel, ZeeDiazz (Zaid)
      * This method relates to all that has to do with passing on the turn to the next player
      * <p>If the last player has executed his/her last command, the programming phase will start</p>
-     *
+     * It also checks if a player is on an obstacle, and executes the obstacles action.
      * @param currentPlayer The current turn's player before the end of a turn
      *
      */
@@ -367,6 +367,7 @@ public class GameController {
             currentStep++;
             if (currentStep < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
+                //ZeeDiazz (Zaid){
                 for(int i = 0; i < board.getPlayersNumber(); i++) {
                     if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
                         switch (obstacle.getType()) {
@@ -374,10 +375,18 @@ public class GameController {
                                 move(board.getPlayer(i), obstacle.getDirection(), 2);
                                 break;
                             case GREEN_CONVEYOR_BELT:
+                                move(board.getPlayer(i), obstacle.getDirection(), 1);
+                                break;
+                            case PUSH_PANEL:
+                                break;
+                            case BOARD_LASER:
+                                break;
+                            case GEAR:
                                 break;
                         }
                     }
                 }
+                //ZeeDiazz (Zaid)}
                 board.setStep(currentStep);
             } else {
                 startProgrammingPhase();

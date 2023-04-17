@@ -37,14 +37,12 @@ public class Space extends Subject {
     public final int y;
 
     private Player player;
-    private Obstacle obstacle;
 
     public Space(Board board, int x, int y) {
         this.board = board;
         this.x = x;
         this.y = y;
         player = null;
-        obstacle = null;
     }
 
     public Player getPlayer() {

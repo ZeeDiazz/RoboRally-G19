@@ -31,6 +31,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,10 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     public final Space space;
 
-
+    /**
+     * @author ZeeDiazz (Zaid)
+     * @param space
+     */
     public SpaceView(@NotNull Space space) {
         this.space = space;
 
@@ -60,9 +64,24 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setPrefHeight(SPACE_HEIGHT);
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
-        if(space instanceof Obstacle) {
-                this.setStyle("-fx-background-color: blue;");
-        } else {
+        //ZeeDiaz (Zaid){
+        if(space instanceof Obstacle obstacle) {
+            switch (obstacle.getType()){
+                case BLUE_CONVEYOR_BELT :
+                    this.setStyle("-fx-background-color: blue;");
+                    break;
+                case GREEN_CONVEYOR_BELT:
+                    this.setStyle("-fx-background-color: green;");
+                    break;
+                case PUSH_PANEL:
+                    break;
+                case BOARD_LASER:
+                    break;
+                case GEAR:
+                    break;
+            }
+        } //ZeeDiaz (Zaid)}
+        else {
             if ((space.x + space.y) % 2 == 0) {
                 this.setStyle("-fx-background-color: white;");
             } else {

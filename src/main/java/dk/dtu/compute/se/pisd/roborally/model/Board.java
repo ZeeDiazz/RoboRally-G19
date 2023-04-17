@@ -26,8 +26,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.BLUE_CONVEYOR_BELT;
+import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -59,6 +60,13 @@ public class Board extends Subject {
 
     private boolean stepMode;
 
+    /**
+     * @author ZeeDiazz (Zaid)
+     * Construtor for Board, which also creates spaces and obstacles.
+     * @param width
+     * @param height
+     * @param boardName
+     */
     public Board(int width, int height, @NotNull String boardName) {
         this.boardName = boardName;
         this.width = width;
@@ -67,11 +75,14 @@ public class Board extends Subject {
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 Space space;
-                if(x == 0 && y == 1) {
-                    space = new Obstacle(this, 0, 1, BLUE_CONVEYOR_BELT, Heading.SOUTH);
-                } else {
-                    space = new Space(this,x,y);
+                //ZeeDiazz (Zaid) {
+                if (x == 0 && y == 1 || x == 2 && y == 3) {
+                    space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
                 }
+                else {
+                    space = new Space(this, x, y);
+                }
+                //}
                 spaces[x][y] = space;
             }
         }
