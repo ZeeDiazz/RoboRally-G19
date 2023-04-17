@@ -66,25 +66,6 @@ public class Space extends Subject {
             notifyChange();
         }
     }
-    /**
-     * @author ZeeDaizz (Zaid)
-     *
-     */
-    public Obstacle getObstacle() {
-        return obstacle;
-    }
-    /**
-     * @author ZeeDaizz (Zaid)
-     *
-     */
-    public void setObstacle(Obstacle obstacle) {
-        Obstacle oldObstacle = this.obstacle;
-        if(obstacle !=oldObstacle &&
-                (obstacle == null|| board == obstacle.board)){
-            this.obstacle = obstacle;
-            notifyChange();
-        }
-    }
 
     void playerChanged() {
         // This is a minor hack; since some views that are registered with the space

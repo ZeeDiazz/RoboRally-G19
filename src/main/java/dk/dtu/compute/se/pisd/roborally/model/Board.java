@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.BLUE_CONVEYOR_BELT;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -65,7 +66,12 @@ public class Board extends Subject {
         spaces = new Space[width][height];
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                Space space = new Space(this, x, y);
+                Space space;
+                if(x == 0 && y == 0) {
+                    space = new Obstacle(this, 0, 0, BLUE_CONVEYOR_BELT, Heading.SOUTH);
+                } else {
+                    space = new Space(this,x,y);
+                }
                 spaces[x][y] = space;
             }
         }
