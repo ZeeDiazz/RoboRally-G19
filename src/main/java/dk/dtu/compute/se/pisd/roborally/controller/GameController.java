@@ -367,14 +367,16 @@ public class GameController {
             currentStep++;
             if (currentStep < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
-                if(currentPlayer.getSpace() instanceof Obstacle obstacle){
-                     switch (obstacle.getType()){
-                         case BLUE_CONVEYOR_BELT:
-                             move(currentPlayer,obstacle.getDirection(),2);
-                             break;
-                         case GREEN_CONVEYOR_BELT:
-                             break;
-                     }
+                for(int i = 0; i < board.getPlayersNumber(); i++) {
+                    if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
+                        switch (obstacle.getType()) {
+                            case BLUE_CONVEYOR_BELT:
+                                move(board.getPlayer(i), obstacle.getDirection(), 2);
+                                break;
+                            case GREEN_CONVEYOR_BELT:
+                                break;
+                        }
+                    }
                 }
                 board.setStep(currentStep);
             } else {

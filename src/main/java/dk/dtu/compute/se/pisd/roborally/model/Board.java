@@ -67,8 +67,8 @@ public class Board extends Subject {
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 Space space;
-                if(x == 0 && y == 0) {
-                    space = new Obstacle(this, 0, 0, BLUE_CONVEYOR_BELT, Heading.SOUTH);
+                if(x == 0 && y == 1) {
+                    space = new Obstacle(this, 0, 1, BLUE_CONVEYOR_BELT, Heading.SOUTH);
                 } else {
                     space = new Space(this,x,y);
                 }

@@ -23,8 +23,10 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import javafx.beans.Observable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
@@ -58,11 +60,14 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setPrefHeight(SPACE_HEIGHT);
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
-
-        if ((space.x + space.y) % 2 == 0) {
-            this.setStyle("-fx-background-color: white;");
+        if(space instanceof Obstacle) {
+                this.setStyle("-fx-background-color: blue;");
         } else {
-            this.setStyle("-fx-background-color: black;");
+            if ((space.x + space.y) % 2 == 0) {
+                this.setStyle("-fx-background-color: white;");
+            } else {
+                this.setStyle("-fx-background-color: black;");
+            }
         }
 
         // updatePlayer();
