@@ -76,13 +76,16 @@ public class Board extends Subject {
             for(int y = 0; y < height; y++) {
                 Space space;
                 //ZeeDiazz (Zaid) {
-                if (x == 0 && y == 1 || x == 2 && y == 3) {
-                    space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
-                }
-                else {
-                    space = new Space(this, x, y);
-                }
-                //}
+                        if (x == 0 && y == 1 || x == 2 && y == 3) {
+                            space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
+                        }
+                        else if (x == 1 && y == 5) {
+                            space = new Obstacle(this, x, y, GREEN_CONVEYOR_BELT, Heading.NORTH);
+                        }
+                        else {
+                            space = new Space(this, x, y);
+                        }
+                    //}
                 spaces[x][y] = space;
             }
         }
