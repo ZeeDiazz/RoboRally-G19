@@ -37,12 +37,14 @@ public class Space extends Subject {
     public final int y;
 
     private Player player;
+    private Obstacle obstacle;
 
     public Space(Board board, int x, int y) {
         this.board = board;
         this.x = x;
         this.y = y;
         player = null;
+        obstacle = null;
     }
 
     public Player getPlayer() {
@@ -61,6 +63,25 @@ public class Space extends Subject {
             if (player != null) {
                 player.setSpace(this);
             }
+            notifyChange();
+        }
+    }
+    /**
+     * @author ZeeDaizz (Zaid)
+     *
+     */
+    public Obstacle getObstacle() {
+        return obstacle;
+    }
+    /**
+     * @author ZeeDaizz (Zaid)
+     *
+     */
+    public void setObstacle(Obstacle obstacle) {
+        Obstacle oldObstacle = this.obstacle;
+        if(obstacle !=oldObstacle &&
+                (obstacle == null|| board == obstacle.board)){
+            this.obstacle = obstacle;
             notifyChange();
         }
     }
