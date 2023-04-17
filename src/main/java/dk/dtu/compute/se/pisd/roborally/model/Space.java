@@ -23,6 +23,10 @@ package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 /**
  * Represent the Space of the board, and extends Subject
  *
@@ -37,6 +41,8 @@ public class Space extends Subject {
     public final int y;
 
     private Player player;
+
+    public List<Heading> walls = new ArrayList<>();
 
     /**
      * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
