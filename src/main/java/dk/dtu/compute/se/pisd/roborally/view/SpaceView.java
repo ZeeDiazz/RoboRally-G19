@@ -36,6 +36,11 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * ...
  *
@@ -51,6 +56,7 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     /**
      * @author ZeeDiazz (Zaid)
+     * Assigning different colors to different types of Obstacle
      * @param space
      */
     public SpaceView(@NotNull Space space) {

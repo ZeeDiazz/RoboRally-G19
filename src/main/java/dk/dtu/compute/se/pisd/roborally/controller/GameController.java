@@ -378,6 +378,9 @@ public class GameController {
                                 move(board.getPlayer(i), obstacle.getDirection(), 1);
                                 break;
                             case PUSH_PANEL:
+                                //move the player according to its register
+                                //Just for now
+                                move(board.getPlayer(i), obstacle.getDirection(), 1);
                                 break;
                             case BOARD_LASER:
                                 break;
