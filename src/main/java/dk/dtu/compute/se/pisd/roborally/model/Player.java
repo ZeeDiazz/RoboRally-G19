@@ -40,6 +40,7 @@ public class Player extends Subject {
     final public static int NO_CARDS = 8;
 
     final public Board board;
+    public int playersCurrentCheckpoint = 0;
 
     private String name;
     private String color;
@@ -181,6 +182,15 @@ public class Player extends Subject {
      */
     public CommandCardField getCardField(int i) {
         return cards[i];
+    }
+
+
+    public void setReboot (Space space){
+        if(space instanceof CheckPoint checkPoint){
+            if(checkPoint.getCheckpointFlagged()){
+            board.getCurrentPlayer().setSpace(space);
+            }
+        }
     }
 
 }
