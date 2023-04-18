@@ -6,10 +6,12 @@ import java.awt.*;
 
 
 public class CheckPoint extends Space{
+    public int counter;
     public Boolean checkpointFlagged;
 
-    public CheckPoint(Board board, int x, int y){
+    public CheckPoint(Board board, int x, int y, int counter){
         super(board,x,y);
+        this.counter = counter;
         isCheckPoint = true;
         this.checkpointFlagged = false;
     }
@@ -47,3 +49,6 @@ public class CheckPoint extends Space{
 // To implement in board class
 // CheckPoint checkPoint = new CheckPoint(this,3,4);
 //        setSpace(checkPoint,3,5);
+
+// Counter i constructor
+// this.getCurrentplayer.setResetPoint(this.player.currentSpace)
