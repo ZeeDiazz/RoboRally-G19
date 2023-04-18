@@ -40,7 +40,7 @@ public class Player extends Subject {
     final public static int NO_CARDS = 8;
 
     final public Board board;
-    public int playersCurrentCheckpoint = 0;
+    public int playersCurrentCheckpointCounter = 0;
 
     private String name;
     private String color;

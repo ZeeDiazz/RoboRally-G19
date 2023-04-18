@@ -337,12 +337,12 @@ public class GameController {
                 for (int i = 0; i < board.getPlayersNumber(); i++) {
                     if (board.getPlayer(i).getSpace() instanceof CheckPoint checkPoint) {
                         // hvis det checkpoint spilleren er på er det første og spillerens checkpoint er 0
-                        if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCount == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
-                            board.getPlayer(i).playersCurrentCheckpointCount = 1;//checkPoint.getCheckPointCounter()
+                        if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCounter == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 1;//checkPoint.getCheckPointCounter()
                             //skifter farve some placeholder for setReboot metoden
                             board.getPlayer(i).setColor("orange");
-                        } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCount == 1){
-                            board.getPlayer(i).playersCurrentCheckpointCount = 2; //checkPoint.getCheckPointCounter()
+                        } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCounter == 1){
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 2; //checkPoint.getCheckPointCounter()
                             board.getPlayer(i).setColor("blue");
 
                         } {
