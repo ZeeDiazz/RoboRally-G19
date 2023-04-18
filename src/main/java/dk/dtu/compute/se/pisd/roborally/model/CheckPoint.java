@@ -1,9 +1,5 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
-import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-
-import java.awt.*;
-
 
 public class CheckPoint extends Space{
     public int counter;
@@ -16,13 +12,24 @@ public class CheckPoint extends Space{
         this.checkpointFlagged = false;
     }
 
+    public int getCheckPointCounter(){return counter;}
+
+    // TODO: setReboot() aka add checkpoint to player
+
+
+
+    // to be removed
     public void setCheckpointFlagged(Boolean checkpointFlagged) {
         this.checkpointFlagged = checkpointFlagged;
         notifyChange();
     }
-
     public boolean getCheckpointFlagged(){
         return checkpointFlagged;
+    }
+    public int addToPlayersCurrentCheckPointCounter(Player player){
+        player.playersCurrentCheckpointCount += counter;
+
+        return player.playersCurrentCheckpointCount;
     }
 
 }
