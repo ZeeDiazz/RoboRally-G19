@@ -49,7 +49,7 @@ public class GameController {
      *
      * @param space the space to which the current player should move
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+    public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
 
 
@@ -220,12 +220,14 @@ public class GameController {
 
     /**
      * This method moves a player forward by a certain amount.
+     *
      * @param player refers to the player which is about to move
      */
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
         move(player, player.getHeading(), 1);
     }
+
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
         move(player, player.getHeading(), 2);
@@ -245,6 +247,7 @@ public class GameController {
 
     /**
      * This method turns the player to the right regardless of the direction the player are currently facing.
+     *
      * @param player is the player that will perform the turn
      */
     // TODO Assignment V2
@@ -265,6 +268,7 @@ public class GameController {
 
     /**
      * This method turns the player to the left regardless of the direction the player is currently facing.
+     *
      * @param player is the player that will perform the turn
      */
     // TODO Assignment V2
@@ -285,6 +289,7 @@ public class GameController {
 
     /**
      * This method override the target card with the destination card, effectively moving the card.
+     *
      * @param source is the command card that will be moved
      * @param target is the empty command card the source card will be moved to
      * @return True if the cards were moved successfully, else false
@@ -314,15 +319,44 @@ public class GameController {
      * This method sets the current player to be the next player.
      * It does this by increasing the MoveCounter everytime it is the next players turn.
      * This way it keeps count of the order of which players turn it is.
+     *
      * @param currentPlayer is the current player that will become the next player
      */
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
-        int i = this.board.getPlayerNumber(currentPlayer);
-        i++;
-        if (i >= this.board.getPlayersNumber()) {
-            i = 0;
+        // Daniel {
+        int currentStep = this.board.getStep();
+        int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer);
+        nextPlayerNumber++;
+        if (nextPlayerNumber >= this.board.getPlayersNumber()) {
+            nextPlayerNumber = 0;
+            currentStep++;
+            if (currentStep < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(currentStep);
+                //Felix723 (Felix Schmidt){
+                for (int i = 0; i < board.getPlayersNumber(); i++) {
+                    if (board.getPlayer(i).getSpace() instanceof CheckPoint checkPoint) {
+                        // hvis det checkpoint spilleren er på er det første og spillerens checkpoint er 0
+                        if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCount == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
+                            board.getPlayer(i).playersCurrentCheckpointCount = 1;//checkPoint.getCheckPointCounter()
+                            //skifter farve some placeholder for setReboot metoden
+                            board.getPlayer(i).setColor("orange");
+                        } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCount == 1){
+                            board.getPlayer(i).playersCurrentCheckpointCount = 2; //checkPoint.getCheckPointCounter()
+                            board.getPlayer(i).setColor("blue");
+
+                        } {
+
+                        }
+                    }
+                }
+                //Felix723 (Felix Schmidt)}
+                board.setStep(currentStep);
+            } else {
+                startProgrammingPhase();
+            }
+            // Daniel }
         }
-        this.board.setCurrentPlayer(this.board.getPlayer(i));
+        this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
     }
 }
