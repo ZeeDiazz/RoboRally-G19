@@ -240,6 +240,7 @@ public class GameController {
             newSpace = player.board.getNeighbour(newSpace, playerDirection);
         }
 
+
         player.setSpace(newSpace);
     }
 
@@ -324,5 +325,25 @@ public class GameController {
             i = 0;
         }
         this.board.setCurrentPlayer(this.board.getPlayer(i));
+    }
+    public boolean canPushOpponent(Heading heading,int x,int y){
+        Space space = new Space(board,x,y);
+        if (space.hasWall(heading)){
+            return false;
+        }
+        Space neighbour = board.getNeighbour(space, heading);
+        if (neighbour.hasWall(heading.next().next())) {
+            return false;
+        }
+        if (board.hasPlayer(neighbour)) {
+            switch (heading) {
+                case NORTH -> y -= 1;
+                case SOUTH -> y += 1;
+                case EAST -> x += 1;
+                case WEST -> x -= 1;
+            }
+            return canPushOpponent(heading, x, y);
+        }
+        return true;
     }
 }

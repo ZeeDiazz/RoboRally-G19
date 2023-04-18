@@ -312,5 +312,14 @@ public class Board extends Subject {
                 ", Step: " + getMoveCounter();
     }
 
+    /**
+     * Checks if the given space got a player on it
+     * @param space the space to check
+     * @return true if there is a plaer on the space, else false
+     */
+    public boolean hasPlayer(Space space){
+            return space.getPlayer() != null;
+    }
+
 
 }

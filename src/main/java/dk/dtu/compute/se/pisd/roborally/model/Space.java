@@ -42,7 +42,14 @@ public class Space extends Subject {
 
     private Player player;
 
+
     public List<Heading> walls = new ArrayList<>();
+
+    public boolean hasWall(Heading heading){
+            return walls.contains(heading); // returns true if the direction is present in the list
+            // indicating that the player's movement is blocked by a wall in that direction.
+    }
+
 
     /**
      * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
@@ -83,6 +90,7 @@ public class Space extends Subject {
             }
             notifyChange();
         }
+
     }
 
     /**
