@@ -6,7 +6,6 @@ import java.awt.*;
 
 
 public class CheckPoint extends Space{
-    public Boolean isCheckPoint;
     public Boolean checkpointFlagged;
 
     public CheckPoint(Board board, int x, int y){
@@ -44,3 +43,7 @@ public class CheckPoint extends Space{
      * @param checkpointFlagged
      * @auther Felix Schmidt, s224313@gmail.com
      */
+
+// To implement in board class
+// CheckPoint checkPoint = new CheckPoint(this,3,4);
+//        setSpace(checkPoint,3,5);
