@@ -27,9 +27,9 @@ public class CheckPoint extends Space{
         return checkpointFlagged;
     }
     public int addToPlayersCurrentCheckPointCounter(Player player){
-        player.playersCurrentCheckpointCount += counter;
+        player.playersCurrentCheckpointCounter += counter;
 
-        return player.playersCurrentCheckpointCount;
+        return player.playersCurrentCheckpointCounter;
     }
 
 }
