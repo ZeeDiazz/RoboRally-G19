@@ -284,15 +284,23 @@ public class GameController {
 
     private void move(@NotNull Player player, Heading playerDirection, int amount) {
         Space currentSpace = player.getSpace();
+        if (!currentSpace.canMove(playerDirection)){
+            return;
+        }
         Space newSpace = currentSpace;
 
         for (int i = 0; i < amount; i++) {
             newSpace = player.board.getNeighbour(newSpace, playerDirection);
+            if (newSpace.getPlayer() != null) {
+                move(newSpace.getPlayer(), playerDirection, 1);
+            }
         }
+
 
         if (spaceIsOccupied(newSpace)) {
             return;
         }
+
 
         player.setSpace(newSpace);
     }
@@ -429,5 +437,25 @@ public class GameController {
                 }
             }
         }
+    }
+    public boolean canPushOpponent(Heading heading,int x,int y){
+        Space space = new Space(board,x,y);
+        if (space.hasWall(heading)){
+            return false;
+        }
+        Space neighbour = board.getNeighbour(space, heading);
+        if (neighbour.hasWall(heading.next().next())) {
+            return false;
+        }
+        if (board.hasPlayer(neighbour)) {
+            switch (heading) {
+                case NORTH -> y -= 1;
+                case SOUTH -> y += 1;
+                case EAST -> x += 1;
+                case WEST -> x -= 1;
+            }
+            return canPushOpponent(heading, x, y);
+        }
+        return true;
     }
 }

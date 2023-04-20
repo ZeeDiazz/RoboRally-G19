@@ -30,7 +30,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.beans.Observable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -51,8 +51,10 @@ import java.io.InputStream;
  */
 public class SpaceView extends StackPane implements ViewObserver {
 
-    final public static int SPACE_HEIGHT = 75; // 60; // 75;
-    final public static int SPACE_WIDTH = 75;  // 60; // 75;
+    final public static int SPACE_HEIGHT = 60; // 60; // 75;
+    final public static int SPACE_WIDTH = 60;  // 60; // 75;
+    final public static double wallThickness = 3;
+    final public static Color wallColor = Color.MEDIUMPURPLE;
 
     public final Space space;
 
@@ -106,7 +108,20 @@ public class SpaceView extends StackPane implements ViewObserver {
             } else {
                 this.setStyle("-fx-background-color: black;");
             }
-        }
+         }
+
+        double top = space.hasWall(Heading.NORTH) ? wallThickness : 0;
+        double right = space.hasWall(Heading.EAST) ? wallThickness : 0;
+        double bottom = space.hasWall(Heading.SOUTH) ? wallThickness : 0;
+        double left = space.hasWall(Heading.WEST) ? wallThickness : 0;
+
+        BorderWidths borderWidths = new BorderWidths(top, right, bottom, left);
+        BorderStroke borderStroke = new BorderStroke(wallColor, BorderStrokeStyle.SOLID, null, borderWidths);
+        Border border = new Border(borderStroke);
+        this.setBorder(border);
+
+
+       // }
 
         // updatePlayer();
 
@@ -140,5 +155,4 @@ public class SpaceView extends StackPane implements ViewObserver {
             updatePlayer();
         }
     }
-
 }
