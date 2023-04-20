@@ -34,6 +34,7 @@ import java.util.List;
  *
  */
 public class Space extends Subject {
+    public Boolean isCheckPoint;
 
     public final Board board;
 

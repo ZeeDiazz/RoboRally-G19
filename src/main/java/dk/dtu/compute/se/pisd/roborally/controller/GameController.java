@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
  *This class is responsible for the users interaction with:
  * game phases, execution of cards, execution of steps, movement, and who's the current player.
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 
 public class GameController {
@@ -37,8 +36,15 @@ public class GameController {
     final public Board board;
 
     /**
-     * @param board The board created by the players
+     * @author Zigalow
+     * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
+     * This is also so that the PlayerView class is able to access the interactive card in question
+     *
+     *
      */
+    public Command currentInteractiveCard;
+
+
     public GameController(@NotNull Board board) {
         this.board = board;
     }
@@ -49,11 +55,18 @@ public class GameController {
      *
      * @param space the space to which the current player should move
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+
+    /**
+     * @author Zigalow
+     * This method makes it possible to click on a space, and make the current player's robot move to that space
+     * @param space The space which the player's robot is going to be moved to
+     *
+     */
+    public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
 
 
-        if (space.getPlayer() != null) {
+        if (spaceIsOccupied(space)) {
             return;
         } else {
             space.setPlayer(currentPlayer);
@@ -61,12 +74,19 @@ public class GameController {
         nextPlayer(currentPlayer);
     }
 
-
-    /***
-     * This method starts the programming phase.
-     * it does this by setting the current phase to PROGRAMMING, setting the current player and resets the steps.
-     *
+    /**
+     * @author Zigalow
+     * This method is for checking whether a space is being occupied by a robot
+     * @param space The space which is checked whether it's being occupied by a robot
+     * @return Returns true if there is another robot on the space received as parameter
      */
+
+    public boolean spaceIsOccupied(Space space) {
+        return space.getPlayer() != null;
+    }
+
+
+    // XXX: V2
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
@@ -97,12 +117,6 @@ public class GameController {
     }
 
     // XXX: V2
-
-    /**
-     * This methods finish or ends the programming phase.
-     * It does this by changing the fields(spaces) visibility and setting the current phase to the next(ACTIVATION).
-     * And again resetting the steps.
-     */
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
@@ -133,32 +147,50 @@ public class GameController {
         }
     }
 
-    /**
-     * This method executes the next steps while setting the StepMode to false.
-     */
+
     // XXX: V2
     public void executePrograms() {
         board.setStepMode(false);
         continuePrograms();
     }
 
+
     /**
-     * This method executes the next steps while setting the StepMode to true
+     * @author Zigalow
+     * This method starts the Player Interaction phase
+     * @param options Refers to the command of the interactive card
      */
+
+
+
+
+    // XXX: V3
+    private void startPlayerInteractionPhase(Command options) {
+        this.currentInteractiveCard = options;
+        this.board.setPhase(Phase.PLAYER_INTERACTION);
+    }
+
     // XXX: V2
     public void executeStep() {
         board.setStepMode(true);
         continuePrograms();
     }
 
-    // XXX: V2
+
+    // XXX: V2/V3
     private void continuePrograms() {
         do {
             executeNextStep();
+            if (this.board.getPhase() != Phase.PLAYER_INTERACTION) {
+                nextPlayer(board.getCurrentPlayer());
+            } else {
+                return;
+            }
         } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
     }
 
-    // XXX: V2
+
+    // XXX: V2/V3
     private void executeNextStep() {
         Player currentPlayer = board.getCurrentPlayer();
         if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
@@ -167,9 +199,14 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
+                    if (card.command.isInteractive()) {
+                        startPlayerInteractionPhase(command);
+                        return;
+                    }
                     executeCommand(currentPlayer, command);
                 }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+
+             /*   int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
@@ -181,7 +218,7 @@ public class GameController {
                     } else {
                         startProgrammingPhase();
                     }
-                }
+                }*/
             } else {
                 // this should not happen
                 assert false;
@@ -219,18 +256,31 @@ public class GameController {
     }
 
     /**
-     * This method moves a player forward by a certain amount.
-     * @param player refers to the player which is about to move
+     * @author Zigalow
+     * This method is for executing an interactive card, where a player has chosen what command to execute
+     * <p>If all the programs was chosen to be executed before the interactive card,
+     * they will continue to do so after an option has been chosen</p>
+     * @param option The command which the player has chosen to execute
      */
+    public void executeCommandOptionAndContinue(Command option) {
+        executeCommand(board.getCurrentPlayer(), option);
+        this.board.setPhase(Phase.ACTIVATION);
+        nextPlayer(this.board.getCurrentPlayer());
+        if (!this.board.isStepMode()) {
+            this.executePrograms();
+        }
+    }
+
+
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
         move(player, player.getHeading(), 1);
     }
+
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
         move(player, player.getHeading(), 2);
     }
-
 
     private void move(@NotNull Player player, Heading playerDirection, int amount) {
         Space currentSpace = player.getSpace();
@@ -247,13 +297,14 @@ public class GameController {
         }
 
 
+        if (spaceIsOccupied(newSpace)) {
+            return;
+        }
+
+
         player.setSpace(newSpace);
     }
 
-    /**
-     * This method turns the player to the right regardless of the direction the player are currently facing.
-     * @param player is the player that will perform the turn
-     */
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
@@ -270,10 +321,6 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
-    /**
-     * This method turns the player to the left regardless of the direction the player is currently facing.
-     * @param player is the player that will perform the turn
-     */
     // TODO Assignment V2
     public void turnLeft(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
@@ -290,12 +337,6 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
-    /**
-     * This method override the target card with the destination card, effectively moving the card.
-     * @param source is the command card that will be moved
-     * @param target is the empty command card the source card will be moved to
-     * @return True if the cards were moved successfully, else false
-     */
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -318,19 +359,88 @@ public class GameController {
     }
 
     /**
-     * This method sets the current player to be the next player.
-     * It does this by increasing the MoveCounter everytime it is the next players turn.
-     * This way it keeps count of the order of which players turn it is.
-     * @param currentPlayer is the current player that will become the next player
+     * @author Zigalow, Daniel
+     * This method relates to all that has to do with passing on the turn to the next player
+     * <p>If the last player has executed his/her last command, the programming phase will start</p>
+     *
+     * @param currentPlayer The current turn's player before the end of a turn
+     *
      */
+
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
-        int i = this.board.getPlayerNumber(currentPlayer);
-        i++;
-        if (i >= this.board.getPlayersNumber()) {
-            i = 0;
+        // Daniel {
+        int currentStep = this.board.getStep();
+        int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer);
+        nextPlayerNumber++;
+        if (nextPlayerNumber >= this.board.getPlayersNumber()) {
+            nextPlayerNumber = 0;
+            currentStep++;
+            if (currentStep < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(currentStep);
+                //ZeeDiazz (Zaid){
+                obstacleAction(currentPlayer);
+                //ZeeDiazz (Zaid)}
+
+                //Felix723 (Felix Schmidt){
+                for (int i = 0; i < board.getPlayersNumber(); i++) {
+                    if (board.getPlayer(i).getSpace() instanceof CheckPoint checkPoint) {
+                        // hvis det checkpoint spilleren er på er det første og spillerens checkpoint er 0
+                        if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCounter == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 1;//checkPoint.getCheckPointCounter()
+
+                        } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCounter == 1){
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 2; //checkPoint.getCheckPointCounter()
+                            //skifter farve some placeholder for at man har nået sidste checkpoint
+                            board.getPlayer(i).setColor("orange");
+
+                        } {
+
+                        }
+                    }
+                }
+                //Felix723 (Felix Schmidt)}
+
+                board.setStep(currentStep);
+            } else {
+                startProgrammingPhase();
+            }
+
+
+
+        // Daniel }
+
         }
-        this.board.setCurrentPlayer(this.board.getPlayer(i));
+        this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     *  It checks if a player is on an obstacle, and executes the obstacles action.
+     * @param currentPlayer
+     */
+    public void obstacleAction(Player currentPlayer) {
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
+                switch (obstacle.getType()) {
+                    case BLUE_CONVEYOR_BELT:
+                        move(board.getPlayer(i), obstacle.getDirection(), 2);
+                        break;
+                    case GREEN_CONVEYOR_BELT:
+                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        break;
+                    case PUSH_PANEL:
+                        //move the player according to its register
+                        //The code below is just for now
+                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        break;
+                    case BOARD_LASER:
+                        break;
+                    case GEAR:
+                        break;
+                }
+            }
+        }
     }
     public boolean canPushOpponent(Heading heading,int x,int y){
         Space space = new Space(board,x,y);
