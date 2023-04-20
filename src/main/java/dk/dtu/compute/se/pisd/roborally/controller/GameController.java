@@ -403,7 +403,6 @@ public class GameController {
      * @author Zigalow, Daniel
      * This method relates to all that has to do with passing on the turn to the next player
      * <p>If the last player has executed his/her last command, the programming phase will start</p>
-     *
      * @param currentPlayer The current turn's player before the end of a turn
      *
      */
@@ -420,6 +419,10 @@ public class GameController {
             currentStep++;
             if (currentStep < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
+
+                //ZeeDiazz (Zaid){
+                obstacleAction(currentPlayer);
+   
 
                 //Felix723 (Felix Schmidt){
                 for (int i = 0; i < board.getPlayersNumber(); i++) {
@@ -440,6 +443,7 @@ public class GameController {
                 }
                 //Felix723 (Felix Schmidt)}
 
+
                 board.setStep(currentStep);
             } else {
                 startProgrammingPhase();
@@ -449,5 +453,34 @@ public class GameController {
 
         }
         this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     *  It checks if a player is on an obstacle, and executes the obstacles action.
+     * @param currentPlayer
+     */
+    public void obstacleAction(Player currentPlayer) {
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
+                switch (obstacle.getType()) {
+                    case BLUE_CONVEYOR_BELT:
+                        move(board.getPlayer(i), obstacle.getDirection(), 2);
+                        break;
+                    case GREEN_CONVEYOR_BELT:
+                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        break;
+                    case PUSH_PANEL:
+                        //move the player according to its register
+                        //The code below is just for now
+                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        break;
+                    case BOARD_LASER:
+                        break;
+                    case GEAR:
+                        break;
+                }
+            }
+        }
     }
 }

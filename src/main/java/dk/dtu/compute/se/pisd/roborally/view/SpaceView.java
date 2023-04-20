@@ -24,15 +24,23 @@ package dk.dtu.compute.se.pisd.roborally.view;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.model.CheckPoint;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import javafx.beans.Observable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * ...
@@ -49,8 +57,13 @@ public class SpaceView extends StackPane implements ViewObserver {
     public final Space space;
 
     /**
+
      * This method creates a new singular space
+     * @author ZeeDiazz (Zaid), Felix723
+     * Assigning different colors to different types of Obstacle
      * @param space The space that will be viewed
+
+
      */
     public SpaceView(@NotNull Space space) {
         this.space = space;
@@ -63,9 +76,30 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setPrefHeight(SPACE_HEIGHT);
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
-        if(space instanceof CheckPoint checkPoint){
+
+
+        //ZeeDiaz (Zaid){
+        if(space instanceof Obstacle obstacle) {
+            switch (obstacle.getType()){
+                case BLUE_CONVEYOR_BELT :
+                    this.setStyle("-fx-background-color: blue;");
+                    break;
+                case GREEN_CONVEYOR_BELT:
+                    this.setStyle("-fx-background-color: green;");
+                    break;
+                case PUSH_PANEL:
+                    break;
+                case BOARD_LASER:
+                    break;
+                case GEAR:
+                    break;
+            }
+        } //ZeeDiaz (Zaid)}
+
+        else if(space instanceof CheckPoint checkPoint){
                 this.setStyle("-fx-background-color: orange;");
             }
+
         else {
             if ((space.x + space.y) % 2 == 0) {
                 this.setStyle("-fx-background-color: white;");

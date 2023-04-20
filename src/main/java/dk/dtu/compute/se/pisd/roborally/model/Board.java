@@ -26,7 +26,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -59,8 +61,9 @@ public class Board extends Subject {
     private boolean stepMode;
 
     /**
-     * Creates a new board with the given board name, width and height.
-     *
+     * Creates a new board with the given board name, width and height. Also an construtor for Board, which also creates spaces and obstacles
+     * 
+     * @author ZeeDiazz (Zaid)
      * @param boardName the name of the board
      * @param width     the width of the board
      * @param height    the height of the board
@@ -74,15 +77,25 @@ public class Board extends Subject {
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 Space space;
-                //Felix723 (Felix) {
-                if (x == 3 && y == 4) {
+
+                //ZeeDiazz (Zaid) {
+                        if (x == 0 && y == 1 || x == 2 && y == 3) {
+                            space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
+                        }
+                        else if (x == 1 && y == 5) {
+                            space = new Obstacle(this, x, y, GREEN_CONVEYOR_BELT, Heading.NORTH);
+                        }
+                       
+                 //   }
+                else if (x == 3 && y == 4) {
                     space = new CheckPoint(this, x, y,0);
                 } else if (x == 6 && y == 2) {
                     space = new CheckPoint(this,x,y,1);
                 } else {
                     space = new Space(this, x, y);
                 }
-                //}
+                }
+
                 spaces[x][y] = space;
             }
         }
