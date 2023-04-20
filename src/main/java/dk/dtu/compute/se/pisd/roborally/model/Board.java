@@ -26,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
@@ -163,7 +162,7 @@ public class Board extends Subject {
      *
      * @return number of player
      */
-    public int getPlayersNumber() {
+    public int getPlayerCount() {
         return players.size();
     }
 
@@ -182,13 +181,13 @@ public class Board extends Subject {
     /**
      * Gets the index of the player in the list of players
      *
-     * @param i index of the player
+     * @param index index of the player
      * @return the players index, else null if the index is out of bounds
      */
 
-    public Player getPlayer(int i) {
-        if (i >= 0 && i < players.size()) {
-            return players.get(i);
+    public Player getPlayer(int index) {
+        if (index >= 0 && index < players.size()) {
+            return players.get(index);
         } else {
             return null;
         }
@@ -286,11 +285,7 @@ public class Board extends Subject {
      * @return the players number, or -1 if player are not on the board
      */
     public int getPlayerNumber(@NotNull Player player) {
-        if (player.board == this) {
-            return players.indexOf(player);
-        } else {
-            return -1;
-        }
+        return players.indexOf(player);
     }
 
     /**
@@ -306,19 +301,13 @@ public class Board extends Subject {
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         int x = space.x;
         int y = space.y;
+
+        // TODO this will loop the players around to the other side of the board
         switch (heading) {
-            case SOUTH:
-                y = (y + 1) % height;
-                break;
-            case WEST:
-                x = (x + width - 1) % width;
-                break;
-            case NORTH:
-                y = (y + height - 1) % height;
-                break;
-            case EAST:
-                x = (x + 1) % width;
-                break;
+            case SOUTH -> y = (y + 1) % height;
+            case WEST -> x = (x + width - 1) % width;
+            case NORTH -> y = (y + height - 1) % height;
+            case EAST -> x = (x + 1) % width;
         }
 
         return getSpace(x, y);
@@ -362,9 +351,7 @@ public class Board extends Subject {
      * @param space the space to check
      * @return true if there is a plaer on the space, else false
      */
-    public boolean hasPlayer(Space space){
-            return space.getPlayer() != null;
+    public boolean hasPlayer(Space space) {
+        return space.getPlayer() != null;
     }
-
-
 }
