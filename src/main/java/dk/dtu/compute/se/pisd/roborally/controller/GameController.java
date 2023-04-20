@@ -376,18 +376,14 @@ public class GameController {
 
                 //Felix723 (Felix Schmidt){
                 for (int i = 0; i < board.getPlayersNumber(); i++) {
-                    if (board.getPlayer(i).getSpace() instanceof CheckPoint checkPoint) {
-                        // hvis det checkpoint spilleren er på er det første og spillerens checkpoint er 0
-                        if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCounter == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
-                            board.getPlayer(i).playersCurrentCheckpointCounter = 1;//checkPoint.getCheckPointCounter()
+                    Player checkingPlayer = board.getPlayer(i);
+                    if (checkingPlayer.getSpace() instanceof CheckPoint checkPoint) {
+                        if (checkPoint.counter == checkingPlayer.playersCurrentCheckpointCounter) {
+                            checkingPlayer.playersCurrentCheckpointCounter = checkPoint.counter + 1;
 
-                        } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCounter == 1){
-                            board.getPlayer(i).playersCurrentCheckpointCounter = 2; //checkPoint.getCheckPointCounter()
-                            //skifter farve some placeholder for at man har nået sidste checkpoint
-                            board.getPlayer(i).setColor("orange");
-
-                        } {
-
+                            if (checkingPlayer.playersCurrentCheckpointCounter == Board.checkpointCount) {
+                                checkingPlayer.setColor("purple");
+                            }
                         }
                     }
                 }
