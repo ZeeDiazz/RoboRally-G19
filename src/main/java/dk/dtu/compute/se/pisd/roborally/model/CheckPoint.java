@@ -35,6 +35,7 @@ public class CheckPoint extends Space {
     public void playerPassed(Player player) {
         if (!hasPassed(player)) {
             player.checkpointGoal = this.Id + 1;
+            player.setRebootSpace(this);
         }
     }
 }
