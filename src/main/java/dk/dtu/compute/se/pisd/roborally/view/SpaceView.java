@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.CheckPoint;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
@@ -35,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * ...
- *
+ * This class creates a black or white space on the game board with a specific height and width
+ * if the space contains a player, a player is displayed as a polygon
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
@@ -46,7 +48,10 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     public final Space space;
 
-
+    /**
+     * This method creates a new singular space
+     * @param space The space that will be viewed
+     */
     public SpaceView(@NotNull Space space) {
         this.space = space;
 
@@ -58,11 +63,15 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setPrefHeight(SPACE_HEIGHT);
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
-
-        if ((space.x + space.y) % 2 == 0) {
-            this.setStyle("-fx-background-color: white;");
-        } else {
-            this.setStyle("-fx-background-color: black;");
+        if(space instanceof CheckPoint checkPoint){
+                this.setStyle("-fx-background-color: orange;");
+            }
+        else {
+            if ((space.x + space.y) % 2 == 0) {
+                this.setStyle("-fx-background-color: white;");
+            } else {
+                this.setStyle("-fx-background-color: black;");
+            }
         }
 
         // updatePlayer();

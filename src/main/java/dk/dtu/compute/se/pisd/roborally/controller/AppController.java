@@ -42,10 +42,13 @@ import java.util.Optional;
 
 /**
  * ...
- *
+ * This class is responsible for the users interaction with; staring new game, saving game, load game, stop game
+ * and exit game.
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
+
+
 public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
@@ -55,10 +58,18 @@ public class AppController implements Observer {
 
     private GameController gameController;
 
+    /**
+     * @param roboRally The Roborally game being played
+     */
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
     }
 
+    /**
+     * This method firstly creates a dialog dropbox choice dialog with options for numbers of players.
+     * Then creates an empty board with the required number of players(including the view)
+     * and starts the programming phase
+     */
     public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
@@ -127,6 +138,10 @@ public class AppController implements Observer {
         return false;
     }
 
+    /**
+     * This method alerts the player with a comfirmation to ensure that the player wants to exit the application.
+     * It does this through a button pop up, that awaits confirmation from the player.
+     */
     public void exit() {
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -146,6 +161,10 @@ public class AppController implements Observer {
         }
     }
 
+    /**
+     * This method checks if the game is running
+     * @return True if the current state/instance of game controller is not NULL.
+     */
     public boolean isGameRunning() {
         return gameController != null;
     }
