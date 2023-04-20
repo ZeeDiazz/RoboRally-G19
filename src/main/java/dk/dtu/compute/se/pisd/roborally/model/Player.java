@@ -40,12 +40,13 @@ public class Player extends Subject {
     final public static int NO_CARDS = 8;
 
     final public Board board;
-    public int playersCurrentCheckpointCounter = 0;
+    public int checkpointGoal = 0;
 
     private String name;
     private String color;
 
     private Space space;
+    private Space rebootSpace;
     private Heading heading = SOUTH;
 
     private CommandCardField[] program;
@@ -168,29 +169,37 @@ public class Player extends Subject {
 
     /**
      * Gets the program field at the specific index
-     * @param i index og the program field
+     * @param index index og the program field
      * @return  the command card field at the specific index
      */
-    public CommandCardField getProgramField(int i) {
-        return program[i];
+    public CommandCardField getProgramField(int index) {
+        return program[index];
     }
 
     /**
      * Gets the program field at the specific index
-     * @param i index og the program field
+     * @param index index og the program field
      * @return the command card field at the specific index
      */
-    public CommandCardField getCardField(int i) {
-        return cards[i];
+    public CommandCardField getCardField(int index) {
+        return cards[index];
     }
 
-
-    public void setReboot (Space space){
-        if(space instanceof CheckPoint checkPoint){
-            if(checkPoint.getCheckpointFlagged()){
-            board.getCurrentPlayer().setSpace(space);
-            }
-        }
+    /**
+     * @author Daniel Jensen
+     * Set the reboot space of a player, used when the player has to reboot
+     * @param space The space the player will reboot on
+     */
+    public void setRebootSpace(Space space) {
+        this.rebootSpace = space;
     }
 
+    /**
+     * @author Daniel Jensen
+     * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
+     */
+    public void reboot() {
+        setSpace(this.rebootSpace);
+        notifyChange();
+    }
 }
