@@ -33,6 +33,8 @@ public class CheckPoint extends Space {
      * @param player The player who passed the checkpoint
      */
     public void playerPassed(Player player) {
-        player.checkpointGoal = this.Id + 1;
+        if (!hasPassed(player)) {
+            player.checkpointGoal = this.Id + 1;
+        }
     }
 }
