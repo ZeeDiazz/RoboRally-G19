@@ -370,6 +370,29 @@ public class GameController {
             currentStep++;
             if (currentStep < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
+                //ZeeDiazz (Zaid){
+                obstacleAction(currentPlayer);
+                //ZeeDiazz (Zaid)}
+
+                //Felix723 (Felix Schmidt){
+                for (int i = 0; i < board.getPlayersNumber(); i++) {
+                    if (board.getPlayer(i).getSpace() instanceof CheckPoint checkPoint) {
+                        // hvis det checkpoint spilleren er på er det første og spillerens checkpoint er 0
+                        if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCounter == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 1;//checkPoint.getCheckPointCounter()
+
+                        } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCounter == 1){
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 2; //checkPoint.getCheckPointCounter()
+                            //skifter farve some placeholder for at man har nået sidste checkpoint
+                            board.getPlayer(i).setColor("orange");
+
+                        } {
+
+                        }
+                    }
+                }
+                //Felix723 (Felix Schmidt)}
+
                 board.setStep(currentStep);
             } else {
                 startProgrammingPhase();
@@ -381,5 +404,34 @@ public class GameController {
 
         }
         this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     *  It checks if a player is on an obstacle, and executes the obstacles action.
+     * @param currentPlayer
+     */
+    public void obstacleAction(Player currentPlayer) {
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
+                switch (obstacle.getType()) {
+                    case BLUE_CONVEYOR_BELT:
+                        move(board.getPlayer(i), obstacle.getDirection(), 2);
+                        break;
+                    case GREEN_CONVEYOR_BELT:
+                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        break;
+                    case PUSH_PANEL:
+                        //move the player according to its register
+                        //The code below is just for now
+                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        break;
+                    case BOARD_LASER:
+                        break;
+                    case GEAR:
+                        break;
+                }
+            }
+        }
     }
 }
