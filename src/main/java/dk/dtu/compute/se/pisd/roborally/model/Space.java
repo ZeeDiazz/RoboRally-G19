@@ -34,8 +34,6 @@ import java.util.List;
  *
  */
 public class Space extends Subject {
-    public Boolean isCheckPoint;
-
     public final Board board;
 
     public final int x;
@@ -46,9 +44,9 @@ public class Space extends Subject {
 
     public List<Heading> walls = new ArrayList<>();
 
-    public boolean hasWall(Heading heading){
-            return walls.contains(heading); // returns true if the direction is present in the list
-            // indicating that the player's movement is blocked by a wall in that direction.
+    public boolean hasWall(Heading heading) {
+        return walls.contains(heading); // returns true if the direction is present in the list
+        // indicating that the player's movement is blocked by a wall in that direction.
     }
 
 
@@ -91,7 +89,10 @@ public class Space extends Subject {
             }
             notifyChange();
         }
+    }
 
+    public boolean hasPlayer() {
+        return getPlayer() != null;
     }
 
     /**
@@ -101,8 +102,8 @@ public class Space extends Subject {
      * @return Returns true if the move is legal and false if not
      */
 
-    public boolean canMove(Heading heading){
-        if(hasWall(heading)){
+    public boolean canMove(Heading heading) {
+        if(hasWall(heading)) {
             return false;
         }
         Space neighbour = board.getNeighbour(this, heading);
