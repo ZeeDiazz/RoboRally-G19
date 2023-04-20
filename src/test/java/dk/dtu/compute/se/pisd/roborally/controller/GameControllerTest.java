@@ -1,13 +1,12 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.BLUE_CONVEYOR_BELT;
 
 class GameControllerTest {
 
@@ -58,5 +57,27 @@ class GameControllerTest {
         Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
         Assertions.assertNull(board.getSpace(0, 0).getPlayer(), "Space (0,0) should be empty!");
     }
+    @Test
+    void testObstacleAction(){
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
 
+        //Player starts at 0,0 space
+        gameController.moveCurrentPlayerToSpace( board.getSpace(0, 0));
+
+        //Check if player starts at 0,0 space
+        Assertions.assertEquals(current,board.getSpace(0, 0).getPlayer(),"Player " + current.getName() + " should be Space (0,0)!");
+
+        //Space 0,1 is now a Blue Conveyor belt
+        Space space = new Obstacle(board,0,1, BLUE_CONVEYOR_BELT, Heading.SOUTH);
+
+        //Set players place at Blue Conveyor belt.
+        current.setSpace(space);
+
+        //Run the method obstacleAction
+        gameController.obstacleAction(current);
+
+        //Check if the player moved two spaces
+        Assertions.assertEquals(current,board.getSpace(0, 3).getPlayer(),"Player " + current.getName() + " should be Space (0,3)!");
+    }
 }
