@@ -234,10 +234,16 @@ public class GameController {
 
     private void move(@NotNull Player player, Heading playerDirection, int amount) {
         Space currentSpace = player.getSpace();
+        if (!currentSpace.canMove(playerDirection)){
+            return;
+        }
         Space newSpace = currentSpace;
 
         for (int i = 0; i < amount; i++) {
             newSpace = player.board.getNeighbour(newSpace, playerDirection);
+            if (newSpace.getPlayer() != null) {
+                move(newSpace.getPlayer(), playerDirection, 1);
+            }
         }
 
 

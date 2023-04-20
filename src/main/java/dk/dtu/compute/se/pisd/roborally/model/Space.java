@@ -92,6 +92,19 @@ public class Space extends Subject {
         }
 
     }
+    public boolean canMove(Heading heading){
+        if(hasWall(heading)){
+            return false;
+        }
+        Space neighbour = board.getNeighbour(this, heading);
+        if (neighbour.hasWall(heading.next().next())) {
+            return false;
+        }
+        if (neighbour.getPlayer() == null) {
+            return true;
+        }
+        return neighbour.canMove(heading);
+    }
 
     /**
      * HACK
