@@ -339,11 +339,11 @@ public class GameController {
                         // hvis det checkpoint spilleren er på er det første og spillerens checkpoint er 0
                         if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCounter == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
                             board.getPlayer(i).playersCurrentCheckpointCounter = 1;//checkPoint.getCheckPointCounter()
-                            //skifter farve some placeholder for setReboot metoden
-                            board.getPlayer(i).setColor("orange");
+
                         } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCounter == 1){
                             board.getPlayer(i).playersCurrentCheckpointCounter = 2; //checkPoint.getCheckPointCounter()
-                            board.getPlayer(i).setColor("blue");
+                            //skifter farve some placeholder for at man har nået sidste checkpoint
+                            board.getPlayer(i).setColor("orange");
 
                         } {
 
