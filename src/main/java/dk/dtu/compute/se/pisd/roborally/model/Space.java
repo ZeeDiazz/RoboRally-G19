@@ -24,12 +24,13 @@ package dk.dtu.compute.se.pisd.roborally.model;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 /**
- * ...
+ * Represent the Space of the board, and extends Subject
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
 public class Space extends Subject {
+    public Boolean isCheckPoint;
 
     public final Board board;
 
@@ -38,6 +39,12 @@ public class Space extends Subject {
 
     private Player player;
 
+    /**
+     * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
+     * @param board the game board the space belong to.
+     * @param x x-coordinate of the space on the board.
+     * @param y y-coordinate of the space on the board.
+     */
     public Space(Board board, int x, int y) {
         this.board = board;
         this.x = x;
@@ -45,10 +52,18 @@ public class Space extends Subject {
         player = null;
     }
 
+    /**
+     * Gets the player currently occupying this space.
+     * @return The player on the space, and null if the space is unoccupied
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Sets the player currently occupying this space.
+     * @param player The player to set as occupying this space.
+     */
     public void setPlayer(Player player) {
         Player oldPlayer = this.player;
         if (player != oldPlayer &&
@@ -65,6 +80,9 @@ public class Space extends Subject {
         }
     }
 
+    /**
+     * HACK
+     */
     void playerChanged() {
         // This is a minor hack; since some views that are registered with the space
         // also need to update when some player attributes change, the player can

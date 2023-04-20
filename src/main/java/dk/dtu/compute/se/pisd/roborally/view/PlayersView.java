@@ -29,7 +29,8 @@ import javafx.scene.control.TabPane;
 
 /**
  * ...
- *
+ * This class
+ * It implements ViewObserver to update the current subject
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
@@ -39,6 +40,10 @@ public class PlayersView extends TabPane implements ViewObserver {
 
     private PlayerView[] playerViews;
 
+    /**
+     * This method creates a new player using the playerView method
+     * @param gameController The controller of the game
+     */
     public PlayersView(GameController gameController) {
         board = gameController.board;
 
@@ -53,6 +58,10 @@ public class PlayersView extends TabPane implements ViewObserver {
         update(board);
     }
 
+    /**
+     * This method updates the view of the current player
+     * @param subject Subject is the board
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == board) {

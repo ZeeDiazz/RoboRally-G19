@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.controller;
+package java.dk.dtu.compute.se.pisd.roborally.controller;
 
 import org.junit.jupiter.api.Test;
 

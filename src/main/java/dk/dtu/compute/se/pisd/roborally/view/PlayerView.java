@@ -61,6 +61,13 @@ public class PlayerView extends Tab implements ViewObserver {
 
     private GameController gameController;
 
+    /**
+     * This method creates a new player(view) that can view its cards and the buttons:
+     * finish, execute and step
+     *
+     * @param gameController Controller of the game
+     * @param player The one player to be created
+     */
     public PlayerView(@NotNull GameController gameController, @NotNull Player player) {
         super(player.getName());
         this.setStyle("-fx-text-base-color: " + player.getColor() + ";");
@@ -131,6 +138,10 @@ public class PlayerView extends Tab implements ViewObserver {
         }
     }
 
+    /**
+     * This method updates the player view if certain states of the game changes
+     * @param subject The subject of the game which was updated (board, player or phase)
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == player.board) {

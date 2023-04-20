@@ -1,6 +1,8 @@
-package dk.dtu.compute.se.pisd.roborally.controller;
+package java.dk.dtu.compute.se.pisd.roborally.controller;
+
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

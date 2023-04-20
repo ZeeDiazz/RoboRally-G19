@@ -26,14 +26,17 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * ...
- *
+ *This class is responsible for the users interaction with:
+ * game phases, execution of cards, execution of steps, movement, and who's the current player.
  * @author Ekkart Kindler, ekki@dtu.dk
  */
+
 public class GameController {
 
     final public Board board;
 
     /**
+
      * @author Zigalow
      * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
      * This is also so that the PlayerView class is able to access the interactive card in question
@@ -41,6 +44,7 @@ public class GameController {
      *
      */
     public Command currentInteractiveCard;
+
 
     public GameController(@NotNull Board board) {
         this.board = board;
@@ -59,6 +63,7 @@ public class GameController {
      * @param space The space which the player's robot is going to be moved to
      *
      */
+
     public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
 
@@ -70,6 +75,14 @@ public class GameController {
         }
         nextPlayer(currentPlayer);
     }
+
+
+
+    /***
+     * This method starts the programming phase.
+     * it does this by setting the current phase to PROGRAMMING, setting the current player and resets the steps.
+     *
+     */
 
     /**
      * @author Zigalow
@@ -84,6 +97,7 @@ public class GameController {
 
 
     // XXX: V2
+
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
@@ -114,6 +128,12 @@ public class GameController {
     }
 
     // XXX: V2
+
+    /**
+     * This methods finish or ends the programming phase.
+     * It does this by changing the fields(spaces) visibility and setting the current phase to the next(ACTIVATION).
+     * And again resetting the steps.
+     */
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
@@ -145,11 +165,21 @@ public class GameController {
     }
 
 
+    /**
+     * This method executes the next steps while setting the StepMode to false.
+     */
+
+
     // XXX: V2
     public void executePrograms() {
         board.setStepMode(false);
         continuePrograms();
     }
+
+
+    /**
+     * This method executes the next steps while setting the StepMode to true
+     */
 
 
     /**
@@ -166,6 +196,7 @@ public class GameController {
         this.currentInteractiveCard = options;
         this.board.setPhase(Phase.PLAYER_INTERACTION);
     }
+
 
     // XXX: V2
     public void executeStep() {
@@ -253,6 +284,7 @@ public class GameController {
     }
 
     /**
+
      * @author Zigalow
      * This method is for executing an interactive card, where a player has chosen what command to execute
      * <p>If all the programs was chosen to be executed before the interactive card,
@@ -269,6 +301,7 @@ public class GameController {
     }
 
 
+
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
         move(player, player.getHeading(), 1);
@@ -278,6 +311,7 @@ public class GameController {
     public void fastForward(@NotNull Player player) {
         move(player, player.getHeading(), 2);
     }
+
 
     private void move(@NotNull Player player, Heading playerDirection, int amount) {
         Space currentSpace = player.getSpace();
@@ -294,6 +328,11 @@ public class GameController {
         player.setSpace(newSpace);
     }
 
+    /**
+     * This method turns the player to the right regardless of the direction the player are currently facing.
+     *
+     * @param player is the player that will perform the turn
+     */
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
@@ -310,6 +349,11 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
+    /**
+     * This method turns the player to the left regardless of the direction the player is currently facing.
+     *
+     * @param player is the player that will perform the turn
+     */
     // TODO Assignment V2
     public void turnLeft(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
@@ -326,6 +370,13 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
+    /**
+     * This method override the target card with the destination card, effectively moving the card.
+     *
+     * @param source is the command card that will be moved
+     * @param target is the empty command card the source card will be moved to
+     * @return True if the cards were moved successfully, else false
+     */
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -348,12 +399,14 @@ public class GameController {
     }
 
     /**
+
      * @author Zigalow, Daniel
      * This method relates to all that has to do with passing on the turn to the next player
      * <p>If the last player has executed his/her last command, the programming phase will start</p>
      * @param currentPlayer The current turn's player before the end of a turn
      *
      */
+
 
     public void nextPlayer(Player currentPlayer) {
         this.board.increaseMoveCounter();
@@ -366,14 +419,38 @@ public class GameController {
             currentStep++;
             if (currentStep < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
+
                 //ZeeDiazz (Zaid){
                 obstacleAction(currentPlayer);
-                //ZeeDiazz (Zaid)}
+   
+
+                //Felix723 (Felix Schmidt){
+                for (int i = 0; i < board.getPlayersNumber(); i++) {
+                    if (board.getPlayer(i).getSpace() instanceof CheckPoint checkPoint) {
+                        // hvis det checkpoint spilleren er på er det første og spillerens checkpoint er 0
+                        if(checkPoint.counter == 0 && board.getPlayer(i).playersCurrentCheckpointCounter == 0){/*board.getPlayer(i).playersCurrentCheckpoint == checkPoint.getCheckPointCounter()*/
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 1;//checkPoint.getCheckPointCounter()
+
+                        } else if (checkPoint.counter == 1 && board.getPlayer(i).playersCurrentCheckpointCounter == 1){
+                            board.getPlayer(i).playersCurrentCheckpointCounter = 2; //checkPoint.getCheckPointCounter()
+                            //skifter farve some placeholder for at man har nået sidste checkpoint
+                            board.getPlayer(i).setColor("orange");
+
+                        } {
+
+                        }
+                    }
+                }
+                //Felix723 (Felix Schmidt)}
+
+
                 board.setStep(currentStep);
             } else {
                 startProgrammingPhase();
             }
+
         // Daniel }
+
         }
         this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
     }
