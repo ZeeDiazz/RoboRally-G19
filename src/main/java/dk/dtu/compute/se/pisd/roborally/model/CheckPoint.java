@@ -1,57 +1,38 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 
-public class CheckPoint extends Space{
-    public int counter;
-    public Boolean checkpointFlagged;
+public class CheckPoint extends Space {
+    public final int Id;
 
-/**
-     * Constructor for CheckPoint
- *@param board the game board the space belong to.
-  * @param x x-coordinate of the space on the board.
- * @param y y-coordinate of the space on the board.
- * @param counter counter for order of checkpoints
-     * @author Felix Schmidt, s224313@dtu.dk
-     */
-    public CheckPoint(Board board, int x, int y, int counter){
+    /**
+    * @author Felix Schmidt, s224313@dtu.dk
+    * Constructor for CheckPoint
+    * @param board the game board the space belong to.
+    * @param x x-coordinate of the space on the board.
+    * @param y y-coordinate of the space on the board.
+    * @param Id counter for order of checkpoints
+    */
+    public CheckPoint(Board board, int x, int y, int Id){
         super(board,x,y);
-        this.counter = counter;
-        isCheckPoint = true;
-        this.checkpointFlagged = false;
-    }
-
-    public int getCheckPointCounter(){return counter;}
-
-    // TODO: setReboot() aka add checkpoint to player
-
-
-    /**
-     * This method sets the flag of a checkpoint to a boolean value
-     * @param checkpointFlagged
-     * @authoer Felix Schmidt
-     */
-    public void setCheckpointFlagged(Boolean checkpointFlagged) {
-        this.checkpointFlagged = checkpointFlagged;
-        notifyChange();
-    }
-    /**
-     * get method for to see if a checkpoint is flagged
-     * @return true if checkpoint is flagged, false if checkpoint is not flagged
-     * @author Felix Schmidt, s224313@dtu.dk
-     */
-    public boolean getCheckpointFlagged(){
-        return checkpointFlagged;
+        this.Id = Id;
     }
 
     /**
-     * This method adds to players checkpointcounter
-     * @param player
-     * @return players current checkpointcounter
+     * @author Daniel Jensen
+     * Check whether a player has passed this checkpoint
+     * @param player The player to check
+     * @return True if the player has passed this checkpoint, else false.
      */
-    public int addToPlayersCurrentCheckPointCounter(Player player){
-        player.playersCurrentCheckpointCounter += counter;
-
-        return player.playersCurrentCheckpointCounter;
+    public boolean hasPassed(Player player) {
+        return player.checkpointGoal < this.Id;
     }
 
+    /**
+     * @author Daniel Jensen
+     * Called when a player has passed this checkpoint. It will set the next target for the player.
+     * @param player The player who passed the checkpoint
+     */
+    public void playerPassed(Player player) {
+        player.checkpointGoal = this.Id + 1;
+    }
 }
