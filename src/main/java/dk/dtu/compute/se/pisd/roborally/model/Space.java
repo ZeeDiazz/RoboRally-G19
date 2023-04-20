@@ -93,6 +93,14 @@ public class Space extends Subject {
         }
 
     }
+
+    /**
+     * @author Zahed Wafa
+     * This method checks whether it's possible to make a legal move
+     * @param heading The direction in which way the player wants to move in
+     * @return Returns true if the move is legal and false if not
+     */
+
     public boolean canMove(Heading heading){
         if(hasWall(heading)){
             return false;

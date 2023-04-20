@@ -358,7 +358,7 @@ public class GameController {
     }
 
     /**
-     * @author Zigalow, Daniel
+     * @author Zigalow, Daniel, Zaid Sheikh, Felix723
      * This method relates to all that has to do with passing on the turn to the next player
      * <p>If the last player has executed his/her last command, the programming phase will start</p>
      *

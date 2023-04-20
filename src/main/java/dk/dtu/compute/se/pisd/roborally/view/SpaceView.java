@@ -46,8 +46,8 @@ import java.io.InputStream;
  * ...
  * This class creates a black or white space on the game board with a specific height and width
  * if the space contains a player, a player is displayed as a polygon
- * @author Ekkart Kindler, ekki@dtu.dk
  *
+ * @author Ekkart Kindler, ekki@dtu.dk
  */
 public class SpaceView extends StackPane implements ViewObserver {
 
@@ -59,13 +59,11 @@ public class SpaceView extends StackPane implements ViewObserver {
     public final Space space;
 
     /**
-
      * This method creates a new singular space
-     * @author ZeeDiazz (Zaid), Felix723
-     * Assigning different colors to different types of Obstacle
+     *
      * @param space The space that will be viewed
-
-
+     * @author ZeeDiazz (Zaid), Felix723, Zahed Wafa
+     * Assigning different colors to different types of Obstacle
      */
     public SpaceView(@NotNull Space space) {
         this.space = space;
@@ -81,9 +79,9 @@ public class SpaceView extends StackPane implements ViewObserver {
 
 
         //ZeeDiaz (Zaid){
-        if(space instanceof Obstacle obstacle) {
-            switch (obstacle.getType()){
-                case BLUE_CONVEYOR_BELT :
+        if (space instanceof Obstacle obstacle) {
+            switch (obstacle.getType()) {
+                case BLUE_CONVEYOR_BELT:
                     this.setStyle("-fx-background-color: blue;");
                     break;
                 case GREEN_CONVEYOR_BELT:
@@ -98,18 +96,16 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
         } //ZeeDiaz (Zaid)}
 
-        else if(space instanceof CheckPoint checkPoint){
-                this.setStyle("-fx-background-color: orange;");
-            }
-
-        else {
+        else if (space instanceof CheckPoint checkPoint) {
+            this.setStyle("-fx-background-color: orange;");
+        } else {
             if ((space.x + space.y) % 2 == 0) {
                 this.setStyle("-fx-background-color: white;");
             } else {
                 this.setStyle("-fx-background-color: black;");
             }
-         }
-
+        }
+        // Zahed Wafa {
         double top = space.hasWall(Heading.NORTH) ? wallThickness : 0;
         double right = space.hasWall(Heading.EAST) ? wallThickness : 0;
         double bottom = space.hasWall(Heading.SOUTH) ? wallThickness : 0;
@@ -119,9 +115,9 @@ public class SpaceView extends StackPane implements ViewObserver {
         BorderStroke borderStroke = new BorderStroke(wallColor, BorderStrokeStyle.SOLID, null, borderWidths);
         Border border = new Border(borderStroke);
         this.setBorder(border);
+        // Zahed Wafa }
 
-
-       // }
+        // }
 
         // updatePlayer();
 
@@ -137,14 +133,14 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (player != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,
-                    20.0, 0.0 );
+                    20.0, 0.0);
             try {
                 arrow.setFill(Color.valueOf(player.getColor()));
             } catch (Exception e) {
                 arrow.setFill(Color.MEDIUMPURPLE);
             }
 
-            arrow.setRotate((90*player.getHeading().ordinal())%360);
+            arrow.setRotate((90 * player.getHeading().ordinal()) % 360);
             this.getChildren().add(arrow);
         }
     }
