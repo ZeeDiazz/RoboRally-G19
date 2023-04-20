@@ -21,7 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally;
 
-/**
+/**u
  * This is a class for starting up the RoboRally application. This is a
  * workaround for a strange quirk in the Open JavaFX project launcher,
  * which prevents starting a JavaFX application in IntelliJ directly:
@@ -31,7 +31,6 @@ package dk.dtu.compute.se.pisd.roborally;
  * @author Ekkart Kindler, ekki@dtu.dk
  */
 public class StartRoboRally {
-
     public static void main(String[] args) {
         RoboRally.main(args);
     }

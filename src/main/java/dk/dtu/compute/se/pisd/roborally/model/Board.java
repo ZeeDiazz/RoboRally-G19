@@ -74,6 +74,7 @@ public class Board extends Subject {
         this.height = height;
         spaces = new Space[width][height];
         for (int x = 0; x < width; x++) {
+
             for (int y = 0; y < height; y++) {
                 Space space;
 
@@ -93,6 +94,10 @@ public class Board extends Subject {
                     space = new Space(this, x, y);
                 }
 
+
+                if (x == 1 && y == 1) {
+                    space.walls.add(Heading.SOUTH);
+                }
 
                 spaces[x][y] = space;
             }
@@ -348,6 +353,15 @@ public class Board extends Subject {
         return "Phase: " + getPhase().name() +
                 ", Player = " + getCurrentPlayer().getName() +
                 ", Step: " + getMoveCounter();
+    }
+
+    /**
+     * Checks if the given space got a player on it
+     * @param space the space to check
+     * @return true if there is a plaer on the space, else false
+     */
+    public boolean hasPlayer(Space space){
+            return space.getPlayer() != null;
     }
 
 

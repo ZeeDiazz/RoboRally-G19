@@ -23,6 +23,10 @@ package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 /**
  * Represent the Space of the board, and extends Subject
  *
@@ -38,6 +42,15 @@ public class Space extends Subject {
     public final int y;
 
     private Player player;
+
+
+    public List<Heading> walls = new ArrayList<>();
+
+    public boolean hasWall(Heading heading){
+            return walls.contains(heading); // returns true if the direction is present in the list
+            // indicating that the player's movement is blocked by a wall in that direction.
+    }
+
 
     /**
      * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
@@ -78,6 +91,20 @@ public class Space extends Subject {
             }
             notifyChange();
         }
+
+    }
+    public boolean canMove(Heading heading){
+        if(hasWall(heading)){
+            return false;
+        }
+        Space neighbour = board.getNeighbour(this, heading);
+        if (neighbour.hasWall(heading.next().next())) {
+            return false;
+        }
+        if (neighbour.getPlayer() == null) {
+            return true;
+        }
+        return neighbour.canMove(heading);
     }
 
     /**
