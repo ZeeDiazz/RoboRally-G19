@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.model;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -41,13 +42,7 @@ public class Space extends Subject {
 
     private Player player;
 
-
-    public List<Heading> walls = new ArrayList<>();
-
-    public boolean hasWall(Heading heading) {
-        return walls.contains(heading); // returns true if the direction is present in the list
-        // indicating that the player's movement is blocked by a wall in that direction.
-    }
+    private final ArrayList<Heading> walls;
 
 
     /**
@@ -57,10 +52,23 @@ public class Space extends Subject {
      * @param y y-coordinate of the space on the board.
      */
     public Space(Board board, int x, int y) {
+        this(board, x, y, new Heading[0]);
+    }
+
+    /**
+     * @author Daniel Jensen
+     * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
+     * @param board the game board the space belong to.
+     * @param x x-coordinate of the space on the board.
+     * @param y y-coordinate of the space on the board.
+     * @param walls The walls on this space
+     */
+    public Space(Board board, int x, int y, Heading... walls) {
         this.board = board;
         this.x = x;
         this.y = y;
         player = null;
+        this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
 
     /**
@@ -91,8 +99,34 @@ public class Space extends Subject {
         }
     }
 
+    /**
+     * Whether this space currently has a player occupying it
+     * @return True if there is a player on this space, else false.
+     */
     public boolean hasPlayer() {
         return getPlayer() != null;
+    }
+
+    /**
+     * @author Daniel Jensen
+     * Add a wall to this space
+     * @param direction The direction to place the wall
+     */
+    public void addWall(Heading direction) {
+        if (!hasWall(direction)) {
+            walls.add(direction);
+            notifyChange();
+        }
+    }
+
+    /**
+     * @author Zahedullah Wafa
+     * Indicating whether this space has a wall in the given direction
+     * @param direction The direction to check
+     * @return True if this space has a wall that way
+     */
+    public boolean hasWall(Heading direction) {
+        return walls.contains(direction);
     }
 
     /**
@@ -107,7 +141,7 @@ public class Space extends Subject {
             return false;
         }
         Space neighbour = board.getNeighbour(this, heading);
-        if (neighbour.hasWall(heading.next().next())) {
+        if (neighbour.hasWall(Heading.turnAround(heading))) {
             return false;
         }
         if (neighbour.getPlayer() == null) {
