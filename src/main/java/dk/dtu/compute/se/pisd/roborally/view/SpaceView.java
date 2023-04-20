@@ -54,7 +54,7 @@ public class SpaceView extends StackPane implements ViewObserver {
     final public static int SPACE_HEIGHT = 60; // 60; // 75;
     final public static int SPACE_WIDTH = 60;  // 60; // 75;
     final public static double wallThickness = 3;
-    final public static Color wallColor = Color.MEDIUMPURPLE;
+    final public static Color wallColor = Color.RED;
 
     public final Space space;
 
