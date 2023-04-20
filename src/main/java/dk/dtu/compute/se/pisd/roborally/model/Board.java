@@ -97,7 +97,7 @@ public class Board extends Subject {
 
 
                 if (x == 1 && y == 1) {
-                    space.walls.add(Heading.SOUTH);
+                    space.addWall(Heading.SOUTH);
                 }
 
                 spaces[x][y] = space;
