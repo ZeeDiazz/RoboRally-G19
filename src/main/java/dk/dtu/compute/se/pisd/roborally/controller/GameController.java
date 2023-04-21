@@ -92,7 +92,7 @@ public class GameController {
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
 
-        for (int i = 0; i < board.getPlayersNumber(); i++) {
+        for (int i = 0; i < board.getPlayerCount(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
                 for (int j = 0; j < Player.NO_REGISTERS; j++) {
@@ -128,7 +128,7 @@ public class GameController {
     // XXX: V2
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {
-            for (int i = 0; i < board.getPlayersNumber(); i++) {
+            for (int i = 0; i < board.getPlayerCount(); i++) {
                 Player player = board.getPlayer(i);
                 CommandCardField field = player.getProgramField(register);
                 field.setVisible(true);
@@ -138,7 +138,7 @@ public class GameController {
 
     // XXX: V2
     private void makeProgramFieldsInvisible() {
-        for (int i = 0; i < board.getPlayersNumber(); i++) {
+        for (int i = 0; i < board.getPlayerCount(); i++) {
             Player player = board.getPlayer(i);
             for (int j = 0; j < Player.NO_REGISTERS; j++) {
                 CommandCardField field = player.getProgramField(j);
@@ -372,7 +372,7 @@ public class GameController {
         int currentStep = this.board.getStep();
         int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer);
         nextPlayerNumber++;
-        if (nextPlayerNumber >= this.board.getPlayersNumber()) {
+        if (nextPlayerNumber >= this.board.getPlayerCount()) {
             nextPlayerNumber = 0;
             currentStep++;
             if (currentStep < Player.NO_REGISTERS) {
@@ -382,15 +382,15 @@ public class GameController {
                 //ZeeDiazz (Zaid)}
 
                 //Felix723 (Felix Schmidt){
-                for (int i = 0; i < board.getPlayersNumber(); i++) {
+                for (int i = 0; i < board.getPlayerCount(); i++) {
                     Player checkingPlayer = board.getPlayer(i);
                     if (checkingPlayer.getSpace() instanceof CheckPoint checkPoint) {
-                        if (checkPoint.counter == checkingPlayer.playersCurrentCheckpointCounter) {
-                            checkingPlayer.playersCurrentCheckpointCounter = checkPoint.counter + 1;
+                        if (!checkPoint.hasPassed(checkingPlayer)) {
+                            checkPoint.playerPassed(checkingPlayer);
+                        }
 
-                            if (checkingPlayer.playersCurrentCheckpointCounter == Board.checkpointCount) {
-                                checkingPlayer.setColor("purple");
-                            }
+                        if (checkingPlayer.checkpointGoal == Board.checkpointCount) {
+                            checkingPlayer.setColor("purple");
                         }
                     }
                 }
@@ -415,7 +415,7 @@ public class GameController {
      * @param currentPlayer
      */
     public void obstacleAction(Player currentPlayer) {
-        for (int i = 0; i < board.getPlayersNumber(); i++) {
+        for (int i = 0; i < board.getPlayerCount(); i++) {
             if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
                 switch (obstacle.getType()) {
                     case BLUE_CONVEYOR_BELT:
@@ -436,25 +436,5 @@ public class GameController {
                 }
             }
         }
-    }
-    public boolean canPushOpponent(Heading heading,int x,int y){
-        Space space = new Space(board,x,y);
-        if (space.hasWall(heading)){
-            return false;
-        }
-        Space neighbour = board.getNeighbour(space, heading);
-        if (neighbour.hasWall(heading.next().next())) {
-            return false;
-        }
-        if (board.hasPlayer(neighbour)) {
-            switch (heading) {
-                case NORTH -> y -= 1;
-                case SOUTH -> y += 1;
-                case EAST -> x += 1;
-                case WEST -> x -= 1;
-            }
-            return canPushOpponent(heading, x, y);
-        }
-        return true;
     }
 }
