@@ -27,11 +27,7 @@ public class CheckPointView extends StackPane implements ViewObserver {
         this.setMaxHeight(CHECKPOINT_HEIGHT);
 
 
-        if(checkPoint.getCheckpointFlagged()){
-            this.setStyle("-fx-background-color: red");
-        }else{
-            this.setStyle("-fx-background-color: green");
-        }
+        this.setStyle("-fx-background-color: red");
 
         checkPoint.attach(this);
         update(checkPoint);
@@ -39,9 +35,11 @@ public class CheckPointView extends StackPane implements ViewObserver {
 
     @Override
     public void updateView(Subject subject) {
+        /*
         if(checkPoint.getCheckpointFlagged()){
             // do something
         }
+         */
     }
 
 
