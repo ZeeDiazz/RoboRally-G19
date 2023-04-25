@@ -317,11 +317,14 @@ public class GameController {
         Space currentSpace = player.getSpace();
 
         for (int i = 0; i < move.Amount; i++) {
-            if (currentSpace == null || !currentSpace.canMove(direction)) {
+            if (!currentSpace.canMove(direction)) {
                 continue;
             }
             currentSpace = player.board.getNeighbour(currentSpace, direction);
-            if (currentSpace.getPlayer() != null) {
+            if (currentSpace == null) {
+                break;
+            }
+            if (currentSpace.hasPlayer()) {
                 Move otherPlayerMove = new Move(currentSpace.Position, direction, 1, currentSpace.getPlayer());
                 performMove(otherPlayerMove);
             }
