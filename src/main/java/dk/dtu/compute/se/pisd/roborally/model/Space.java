@@ -140,6 +140,7 @@ public class Space extends Subject {
             return false;
         }
         Space neighbour = board.getNeighbour(this, heading);
+        // TODO handle null (meaning the player is going off the board)
         if (neighbour.hasWall(Heading.turnAround(heading))) {
             return false;
         }
