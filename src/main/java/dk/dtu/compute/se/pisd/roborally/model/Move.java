@@ -1,6 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
-public class Move {
+public final class Move {
     public final Position Start;
     public final Position End;
 
