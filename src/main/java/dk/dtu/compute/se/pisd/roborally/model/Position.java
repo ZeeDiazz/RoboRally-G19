@@ -9,11 +9,11 @@ public final class Position {
         this.Y = y;
     }
 
-    public static Position Move(Position position, Heading heading) {
-        return Move(position, heading, 1);
+    public static Position move(Position position, Heading heading) {
+        return move(position, heading, 1);
     }
 
-    public static Position Move(Position position, Heading heading, int amount) {
+    public static Position move(Position position, Heading heading, int amount) {
         int deltaX = 0;
         int deltaY = 0;
         switch (heading) {

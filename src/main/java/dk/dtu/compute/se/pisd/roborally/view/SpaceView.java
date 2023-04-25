@@ -99,7 +99,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         else if (space instanceof CheckPoint checkPoint) {
             this.setStyle("-fx-background-color: orange;");
         } else {
-            if ((space.x + space.y) % 2 == 0) {
+            if ((space.Position.X + space.Position.Y) % 2 == 0) {
                 this.setStyle("-fx-background-color: white;");
             } else {
                 this.setStyle("-fx-background-color: black;");

@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import javafx.geometry.Pos;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,8 +38,7 @@ import java.util.List;
 public class Space extends Subject {
     public final Board board;
 
-    public final int x;
-    public final int y;
+    public final Position Position;
 
     private Player player;
 
@@ -65,8 +65,7 @@ public class Space extends Subject {
      */
     public Space(Board board, int x, int y, Heading... walls) {
         this.board = board;
-        this.x = x;
-        this.y = y;
+        this.Position = new Position(x, y);
         player = null;
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
