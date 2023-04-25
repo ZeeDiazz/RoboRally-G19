@@ -24,6 +24,9 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+
 /**
  * ...
  *This class is responsible for the users interaction with:
@@ -274,32 +277,59 @@ public class GameController {
 
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
-        move(player, player.getHeading(), 1);
+        performMove(Move.fromPlayer(player, 1));
     }
 
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
-        move(player, player.getHeading(), 2);
+        performMove(Move.fromPlayer(player, 2));
     }
 
-    private void move(@NotNull Player player, Heading playerDirection, int amount) {
-        Space currentSpace = player.getSpace();
-
-        for (int i = 0; i < amount; i++) {
-            if (!currentSpace.canMove(playerDirection)){
+    private void performSimultaneousMoves(Move... moves) {
+        Hashtable<Position, Move> validMoves = new Hashtable<>();
+        ArrayList<Position> colliding = new ArrayList<>();
+        for (Move move : moves) {
+            if (move == null) {
                 continue;
             }
-            currentSpace = player.board.getNeighbour(currentSpace, playerDirection);
-            if (currentSpace.getPlayer() != null) {
-                move(currentSpace.getPlayer(), playerDirection, 1);
+
+            Position endingPos = move.getEndingPosition();
+            if (colliding.contains(endingPos)) {
+                continue;
+            }
+
+            if (validMoves.containsKey(endingPos)) {
+                colliding.add(endingPos);
+                validMoves.remove(endingPos);
+            }
+            else {
+                validMoves.put(endingPos, move);
             }
         }
 
+        validMoves.values().forEach(this::performMove);
+    }
+
+    private void performMove(Move move) {
+        Player player = move.Moving;
+        Heading direction = move.Direction;
+
+        Space currentSpace = player.getSpace();
+
+        for (int i = 0; i < move.Amount; i++) {
+            if (!currentSpace.canMove(direction)){
+                continue;
+            }
+            currentSpace = player.board.getNeighbour(currentSpace, direction);
+            if (currentSpace.getPlayer() != null) {
+                Move otherPlayerMove = new Move(currentSpace.Position, direction, 1, currentSpace.getPlayer());
+                performMove(otherPlayerMove);
+            }
+        }
 
         if (spaceIsOccupied(currentSpace)) {
             return;
         }
-
 
         player.setSpace(currentSpace);
     }
@@ -307,15 +337,7 @@ public class GameController {
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
-
-        Heading newDirection;
-        switch (playerDirection) {
-            case SOUTH -> newDirection = Heading.WEST;
-            case NORTH -> newDirection = Heading.EAST;
-            case WEST -> newDirection = Heading.NORTH;
-            case EAST -> newDirection = Heading.SOUTH;
-            default -> newDirection = playerDirection;
-        }
+        Heading newDirection = Heading.turnRight(playerDirection);
 
         player.setHeading(newDirection);
     }
@@ -323,15 +345,7 @@ public class GameController {
     // TODO Assignment V2
     public void turnLeft(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
-
-        Heading newDirection;
-        switch (playerDirection) {
-            case SOUTH -> newDirection = Heading.EAST;
-            case NORTH -> newDirection = Heading.WEST;
-            case WEST -> newDirection = Heading.SOUTH;
-            case EAST -> newDirection = Heading.NORTH;
-            default -> newDirection = playerDirection;
-        }
+        Heading newDirection = Heading.turnLeft(playerDirection);
 
         player.setHeading(newDirection);
     }
@@ -415,19 +429,20 @@ public class GameController {
      * @param currentPlayer
      */
     public void obstacleAction(Player currentPlayer) {
+        Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
             if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
                 switch (obstacle.getType()) {
                     case BLUE_CONVEYOR_BELT:
-                        move(board.getPlayer(i), obstacle.getDirection(), 2);
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 2, board.getPlayer(i));
                         break;
                     case GREEN_CONVEYOR_BELT:
-                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
                         break;
                     case PUSH_PANEL:
                         //move the player according to its register
                         //The code below is just for now
-                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
                         break;
                     case BOARD_LASER:
                         break;
@@ -436,5 +451,6 @@ public class GameController {
                 }
             }
         }
+        performSimultaneousMoves(moves);
     }
 }

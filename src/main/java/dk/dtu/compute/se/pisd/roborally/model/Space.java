@@ -144,7 +144,7 @@ public class Space extends Subject {
         if (neighbour.hasWall(Heading.turnAround(heading))) {
             return false;
         }
-        if (neighbour.getPlayer() == null) {
+        if (!neighbour.hasPlayer() || neighbour.getPlayer() == this.getPlayer()) {
             return true;
         }
         return neighbour.canMove(heading);
