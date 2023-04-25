@@ -134,19 +134,24 @@ public class Space extends Subject {
      * @param heading The direction in which way the player wants to move in
      * @return Returns true if the move is legal and false if not
      */
-
     public boolean canMove(Heading heading) {
-        if(hasWall(heading)) {
+        if (hasWall(heading)) {
             return false;
         }
         Space neighbour = board.getNeighbour(this, heading);
-        // TODO handle null (meaning the player is going off the board)
+        // No neighbor means going off the board, which is always allowed
+        if (neighbour == null) {
+            return true;
+        }
+        // If the neighbor has a wall towards this space, it's equivalent to having a wall from this space towards the neighbor
         if (neighbour.hasWall(Heading.turnAround(heading))) {
             return false;
         }
-        if (!neighbour.hasPlayer() || neighbour.getPlayer() == this.getPlayer()) {
+        // If the neighbor has no players, you can always move to it
+        if (!neighbour.hasPlayer()) {
             return true;
         }
+        // If there is a player on neighboring square, you can only move if they can move
         return neighbour.canMove(heading);
     }
 
