@@ -317,7 +317,7 @@ public class GameController {
         Space currentSpace = player.getSpace();
 
         for (int i = 0; i < move.Amount; i++) {
-            if (!currentSpace.canMove(direction)){
+            if (currentSpace == null || !currentSpace.canMove(direction)) {
                 continue;
             }
             currentSpace = player.board.getNeighbour(currentSpace, direction);
@@ -327,11 +327,19 @@ public class GameController {
             }
         }
 
+        if (currentSpace == null) {
+            player.reboot();
+        }
+        else {
+            player.setSpace(currentSpace);
+        }
+
+        // Is this still required?
+        /*
         if (spaceIsOccupied(currentSpace)) {
             return;
         }
-
-        player.setSpace(currentSpace);
+         */
     }
 
     // TODO Assignment V2
