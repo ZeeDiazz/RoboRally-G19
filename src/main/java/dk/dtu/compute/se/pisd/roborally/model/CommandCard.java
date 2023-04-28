@@ -25,30 +25,19 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The class represent a command card, that exstends the Subject class.
- * Command Card represents a specific command that can be executed in the game.
+ * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
 public class CommandCard extends Subject {
-    /**
-     * The Command associated with this Command Card.
-     */
+
     final public Command command;
 
-    /**
-     * Constructs a new command card, with the given command.
-     * @param command The command associated with this Command Card.
-     */
     public CommandCard(@NotNull Command command) {
         this.command = command;
     }
 
-    /**
-     * Returns the command name associated with the command card.
-     * @return the name of the command card.
-     */
     public String getName() {
         return command.displayName;
     }

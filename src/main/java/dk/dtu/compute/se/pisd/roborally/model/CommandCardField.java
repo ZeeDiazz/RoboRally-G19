@@ -24,51 +24,29 @@ package dk.dtu.compute.se.pisd.roborally.model;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 /**
- * A class representing a Command Card Field, that extends the Subject class.
- * Command Card Field represents a field where a Command Card can be placed by a Player.
+ * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
 public class CommandCardField extends Subject {
 
-    /**
-     * The Player associated with this Command Card Field.
-     */
     final public Player player;
 
-    /**
-     * The class represent a command card, that exstends the Subject class.
-     * Command Card represents a specific command that can be executed in the game
-     */
     private CommandCard card;
 
     private boolean visible;
 
-    /**
-     * Constructs a new CommandCardField with the given Player.
-     * @param player The Player associated with this Command Card Field.
-     */
     public CommandCardField(Player player) {
         this.player = player;
         this. card = null;
         this.visible = true;
     }
 
-    /**
-     * Returns the Command Card currently placed in this Command Card Field.
-     * @return The Command Card currently placed in this field, or null if no Command Card is placed.
-     */
     public CommandCard getCard() {
         return card;
     }
 
-    /**
-     * Sets the Command Card to be placed in this Command Card Field.
-     * If the new Command Card is different from the current Command Card,
-     * it will notify observers of the change.
-     * @param card placeing the command card in the field.
-     */
     public void setCard(CommandCard card) {
         if (card != this.card) {
             this.card = card;
@@ -76,19 +54,10 @@ public class CommandCardField extends Subject {
         }
     }
 
-    /**
-     * Returns whether the Command Card in this field is currently visible.
-     * @return true if the Command Card is visible, false otherwise.
-     */
     public boolean isVisible() {
         return visible;
     }
 
-    /**
-     * Sets the visibility of the Command Card in this field.
-     * If the visibility changes, it will notify observers of the change.
-     * @param visible true to make the command card visible, false to make it invisible.
-     */
     public void setVisible(boolean visible) {
         if (visible != this.visible) {
             this.visible = visible;

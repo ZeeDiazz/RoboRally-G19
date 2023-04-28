@@ -27,22 +27,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
- * Shows the game board in the game.
+ * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
+ *
  */
 public class Board extends Subject {
-    private int moveCounter;
 
     public final int width;
 
     public final int height;
-
-    public final String boardName;
 
     private Integer gameId;
 
@@ -58,79 +55,23 @@ public class Board extends Subject {
 
     private boolean stepMode;
 
-    static public final int checkpointCount = 2;
-
-    /**
-     * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
-     *
-     * @param boardName the name of the board
-     * @param width     the width of the board
-     * @param height    the height of the board
-     * @author ZeeDiazz (Zaid)
-     */
-
-    public Board(int width, int height, @NotNull String boardName) {
-        this.boardName = boardName;
+    public Board(int width, int height) {
         this.width = width;
         this.height = height;
         spaces = new Space[width][height];
         for (int x = 0; x < width; x++) {
-
-            for (int y = 0; y < height; y++) {
-                Space space;
-
-                //ZeeDiazz (Zaid) {
-                if (x == 0 && y == 1 || x == 2 && y == 3) {
-                    space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
-                } else if (x == 1 && y == 5) {
-                    space = new Obstacle(this, x, y, GREEN_CONVEYOR_BELT, Heading.NORTH);
-                }
-
-                //   }
-                else if (x == 3 && y == 4) {
-                    space = new CheckPoint(this, x, y, 0);
-                } else if (x == 6 && y == 2) {
-                    space = new CheckPoint(this, x, y, 1);
-                } else {
-                    space = new Space(this, x, y);
-                }
-
-
-                if (x == 1 && y == 1) {
-                    space.addWall(Heading.SOUTH);
-                }
-
+            for(int y = 0; y < height; y++) {
+                Space space = new Space(this, x, y);
                 spaces[x][y] = space;
             }
         }
         this.stepMode = false;
     }
 
-    /**
-     * Creates a new board with the given default board name, width and height
-     *
-     * @param width  the width of the board
-     * @param height the height of the board
-     */
-    public Board(int width, int height) {
-        this(width, height, "defaultboard");
-    }
-
-    /**
-     * Gets the games ID related to the board.
-     *
-     * @return The game ID
-     */
     public Integer getGameId() {
         return gameId;
     }
 
-    /**
-     * Gives the game board its ID, and cant be changed.
-     *
-     * @param gameId sets the game ID
-     * @throws IllegalStateException dosnt allow the ID to change
-     */
     public void setGameId(int gameId) {
         if (this.gameId == null) {
             this.gameId = gameId;
@@ -141,13 +82,6 @@ public class Board extends Subject {
         }
     }
 
-    /**
-     * Gets the given coordinates space on the board.
-     *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @return the given coordinates, or null if out of bounds
-     */
     public Space getSpace(int x, int y) {
         if (x >= 0 && x < width &&
                 y >= 0 && y < height) {
@@ -157,20 +91,10 @@ public class Board extends Subject {
         }
     }
 
-    /**
-     * Gets the correct number of the player in the game
-     *
-     * @return number of player
-     */
-    public int getPlayerCount() {
+    public int getPlayersNumber() {
         return players.size();
     }
 
-    /**
-     * Adds a player to the game
-     *
-     * @param player the added player
-     */
     public void addPlayer(@NotNull Player player) {
         if (player.board == this && !players.contains(player)) {
             players.add(player);
@@ -178,35 +102,18 @@ public class Board extends Subject {
         }
     }
 
-    /**
-     * Gets the index of the player in the list of players
-     *
-     * @param index index of the player
-     * @return the players index, else null if the index is out of bounds
-     */
-
-    public Player getPlayer(int index) {
-        if (index >= 0 && index < players.size()) {
-            return players.get(index);
+    public Player getPlayer(int i) {
+        if (i >= 0 && i < players.size()) {
+            return players.get(i);
         } else {
             return null;
         }
     }
 
-    /**
-     * Gets the current player on the board
-     *
-     * @return the current player
-     */
     public Player getCurrentPlayer() {
         return current;
     }
 
-    /**
-     * Sets the current player on the board
-     *
-     * @param player the current player that has been set
-     */
     public void setCurrentPlayer(Player player) {
         if (player != this.current && players.contains(player)) {
             this.current = player;
@@ -214,20 +121,10 @@ public class Board extends Subject {
         }
     }
 
-    /**
-     * Gets the current phase of the board.
-     *
-     * @return the current phase
-     */
     public Phase getPhase() {
         return phase;
     }
 
-    /**
-     * Sets the current phase of the board
-     *
-     * @param phase to set the current phase
-     */
     public void setPhase(Phase phase) {
         if (phase != this.phase) {
             this.phase = phase;
@@ -235,20 +132,10 @@ public class Board extends Subject {
         }
     }
 
-    /**
-     * Gets the current step of the board
-     *
-     * @return the current step
-     */
     public int getStep() {
         return step;
     }
 
-    /**
-     * Sets the current step of the board
-     *
-     * @param step to set the current step
-     */
     public void setStep(int step) {
         if (step != this.step) {
             this.step = step;
@@ -256,21 +143,10 @@ public class Board extends Subject {
         }
     }
 
-    /**
-     * checks if the board is in step mode
-     *
-     * @return ture if the board is in step mode, false if not
-     */
     public boolean isStepMode() {
         return stepMode;
     }
 
-    /**
-     * Sets the step mode of the board
-     *
-     * @param stepMode if true, enable step mode
-     *                 if false, disable step mode
-     */
     public void setStepMode(boolean stepMode) {
         if (stepMode != this.stepMode) {
             this.stepMode = stepMode;
@@ -278,14 +154,12 @@ public class Board extends Subject {
         }
     }
 
-    /**
-     * Gets the player on the boards number
-     *
-     * @param player for the player to get the number
-     * @return the players number, or -1 if player are not on the board
-     */
     public int getPlayerNumber(@NotNull Player player) {
-        return players.indexOf(player);
+        if (player.board == this) {
+            return players.indexOf(player);
+        } else {
+            return -1;
+        }
     }
 
     /**
@@ -294,64 +168,46 @@ public class Board extends Subject {
      * (no walls or obstacles in either of the involved spaces); otherwise,
      * null will be returned.
      *
-     * @param space   the space for which the neighbour should be computed
+     * @param space the space for which the neighbour should be computed
      * @param heading the heading of the neighbour
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
+        if (space.getWalls().contains(heading)) {
+            return null;
+        }
+        // TODO needs to be implemented based on the actual spaces
+        //      and obstacles and walls placed there. For now it,
+        //      just calculates the next space in the respective
+        //      direction in a cyclic way.
+
+        // XXX an other option (not for now) would be that null represents a hole
+        //     or the edge of the board in which the players can fall
+
         int x = space.x;
         int y = space.y;
-
-        // TODO this will loop the players around to the other side of the board
         switch (heading) {
-            case SOUTH -> y = (y + 1) % height;
-            case WEST -> x = (x + width - 1) % width;
-            case NORTH -> y = (y + height - 1) % height;
-            case EAST -> x = (x + 1) % width;
+            case SOUTH:
+                y = (y + 1) % height;
+                break;
+            case WEST:
+                x = (x + width - 1) % width;
+                break;
+            case NORTH:
+                y = (y + height - 1) % height;
+                break;
+            case EAST:
+                x = (x + 1) % width;
+                break;
         }
-
-        return getSpace(x, y);
+        Heading reverse = Heading.values()[(heading.ordinal() + 2)% Heading.values().length];
+        Space result = getSpace(x, y);
+        if (result != null) {
+            if (result.getWalls().contains(reverse)) {
+                return null;
+            }
+        }
+        return result;
     }
 
-    /**
-     * Gives the current move counter
-     *
-     * @return the current move counter
-     */
-    public int getMoveCounter() {
-        return moveCounter;
-    }
-
-    /**
-     * increasing the move counter by 1
-     */
-    public void increaseMoveCounter() {
-        this.moveCounter++;
-    }
-
-    /**
-     * Returns a string of the current status of the game
-     * (returns phase, player and step of the game)
-     *
-     * @return the current status of the game
-     */
-    public String getStatusMessage() {
-        // this is actually a view aspect, but for making assignment V1 easy for
-        // the students, this method gives a string representation of the current
-        // status of the game
-
-        // XXX: V2 changed the status so that it shows the phase, the player and the step
-        return "Phase: " + getPhase().name() +
-                ", Player = " + getCurrentPlayer().getName() +
-                ", Step: " + getMoveCounter();
-    }
-
-    /**
-     * Checks if the given space got a player on it
-     * @param space the space to check
-     * @return true if there is a plaer on the space, else false
-     */
-    public boolean hasPlayer(Space space) {
-        return space.getPlayer() != null;
-    }
 }

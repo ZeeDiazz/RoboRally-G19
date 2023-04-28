@@ -33,31 +33,22 @@ import javafx.stage.Stage;
 
 /**
  * ...
- * This class instantiates the AppController then creates a new menu bar and an empty board.
- * It also contains the main method to launch a game.
+ *
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
 public class RoboRally extends Application {
 
-    private static final int MIN_APP_WIDTH = 480;
+    private static final int MIN_APP_WIDTH = 600;
 
     private Stage stage;
     private BorderPane boardRoot;
-    // private RoboRallyMenuBar menuBar;
-
-    // private AppController appController;
 
     @Override
     public void init() throws Exception {
         super.init();
     }
 
-    /**
-     * This method instantiates the AppController then creates a new menu bar and an empty board,
-     * sets the stage window and displays it.
-     * @param primaryStage is the initial stage of the game
-     */
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
@@ -84,10 +75,6 @@ public class RoboRally extends Application {
         stage.show();
     }
 
-    /**
-     *This method creates and add view for a new board
-     * @param gameController controller of the game
-     */
     public void createBoardView(GameController gameController) {
         // if present, remove old BoardView
         boardRoot.getChildren().clear();
@@ -111,11 +98,6 @@ public class RoboRally extends Application {
         //     so that the AppController can take care of that.
     }
 
-    /**
-     * Main method to launch a new application.
-     * Does not currently work with the current version of JavaFX
-     * @param args
-     */
     public static void main(String[] args) {
         launch(args);
     }

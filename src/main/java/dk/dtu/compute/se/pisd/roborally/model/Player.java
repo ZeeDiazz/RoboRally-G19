@@ -27,9 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
 /**
- * Player class represent a player in the board game, that extends Subject.
- * The class got information about the player
- * (name, color, position on the board heading direction, and command card fields.)
+ * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  *
@@ -40,24 +38,16 @@ public class Player extends Subject {
     final public static int NO_CARDS = 8;
 
     final public Board board;
-    public int checkpointGoal = 0;
 
     private String name;
     private String color;
 
     private Space space;
-    private Space rebootSpace;
     private Heading heading = SOUTH;
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
 
-    /**
-     * Constructor to create a Player object with the given board, color, and name.
-     * @param board The board that the player belong to.
-     * @param color The color of the player.
-     * @param name The name of the player.
-     */
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
         this.name = name;
@@ -76,18 +66,10 @@ public class Player extends Subject {
         }
     }
 
-    /**
-     * Gets the name of the player
-     * @return players name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Set the name of the player
-     * @param name Sets the players name
-     */
     public void setName(String name) {
         if (name != null && !name.equals(this.name)) {
             this.name = name;
@@ -98,18 +80,10 @@ public class Player extends Subject {
         }
     }
 
-    /**
-     * Gets the color of the player
-     * @return the color of the player
-     */
     public String getColor() {
         return color;
     }
 
-    /**
-     * Sets color of the player
-     * @param color Sets the players color
-     */
     public void setColor(String color) {
         this.color = color;
         notifyChange();
@@ -118,18 +92,10 @@ public class Player extends Subject {
         }
     }
 
-    /**
-     * Gets the position of the player on the board.
-     * @return position of the player.
-     */
     public Space getSpace() {
         return space;
     }
 
-    /**
-     * Sets the space where the player is positioned.
-     * @param space the space to set the players position.
-     */
     public void setSpace(Space space) {
         Space oldSpace = this.space;
         if (space != oldSpace &&
@@ -145,18 +111,10 @@ public class Player extends Subject {
         }
     }
 
-    /**
-     * Gets the heading direction of the player
-     * @return the heading direction of the player
-     */
     public Heading getHeading() {
         return heading;
     }
 
-    /**
-     * Sets the absalute direction of the player.
-     * @param heading the new direction (heading) to be set.
-     */
     public void setHeading(@NotNull Heading heading) {
         if (heading != this.heading) {
             this.heading = heading;
@@ -167,39 +125,12 @@ public class Player extends Subject {
         }
     }
 
-    /**
-     * Gets the program field at the specific index
-     * @param index index og the program field
-     * @return  the command card field at the specific index
-     */
-    public CommandCardField getProgramField(int index) {
-        return program[index];
+    public CommandCardField getProgramField(int i) {
+        return program[i];
     }
 
-    /**
-     * Gets the program field at the specific index
-     * @param index index og the program field
-     * @return the command card field at the specific index
-     */
-    public CommandCardField getCardField(int index) {
-        return cards[index];
+    public CommandCardField getCardField(int i) {
+        return cards[i];
     }
 
-    /**
-     * @author Daniel Jensen
-     * Set the reboot space of a player, used when the player has to reboot
-     * @param space The space the player will reboot on
-     */
-    public void setRebootSpace(Space space) {
-        this.rebootSpace = space;
-    }
-
-    /**
-     * @author Daniel Jensen
-     * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
-     */
-    public void reboot() {
-        setSpace(this.rebootSpace);
-        notifyChange();
-    }
 }

@@ -28,44 +28,14 @@ package dk.dtu.compute.se.pisd.roborally.model;
  *
  */
 public enum Heading {
-    SOUTH,
-    WEST,
-    NORTH,
-    EAST;
 
-    public static Heading turnRight(Heading heading) {
-        Heading newDirection;
-        switch (heading) {
-            case SOUTH -> newDirection = WEST;
-            case WEST -> newDirection = NORTH;
-            case NORTH -> newDirection = EAST;
-            case EAST -> newDirection = SOUTH;
-            default -> newDirection = heading;
-        }
-        return newDirection;
+    SOUTH, WEST, NORTH, EAST;
+
+    public Heading next() {
+        return values()[(this.ordinal() + 1) % values().length];
     }
 
-    public static Heading turnLeft(Heading heading) {
-        Heading newDirection;
-        switch (heading) {
-            case SOUTH -> newDirection = EAST;
-            case WEST -> newDirection = SOUTH;
-            case NORTH -> newDirection = WEST;
-            case EAST -> newDirection = NORTH;
-            default -> newDirection = heading;
-        }
-        return newDirection;
-    }
-
-    public static Heading turnAround(Heading heading) {
-        Heading newDirection;
-        switch (heading) {
-            case SOUTH -> newDirection = NORTH;
-            case WEST -> newDirection = EAST;
-            case NORTH -> newDirection = SOUTH;
-            case EAST -> newDirection = WEST;
-            default -> newDirection = heading;
-        }
-        return newDirection;
+    public Heading prev() {
+        return values()[(this.ordinal() + values().length - 1) % values().length];
     }
 }
