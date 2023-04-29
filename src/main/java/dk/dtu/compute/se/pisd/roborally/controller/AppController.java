@@ -135,6 +135,7 @@ public class AppController implements Observer {
         if (file != null) {
             try {
                 file.createNewFile();
+                saveToJsonFile(file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -218,6 +219,12 @@ public class AppController implements Observer {
     @Override
     public void update(Subject subject) {
         // XXX do nothing for now
+    }
+
+    private void saveToJsonFile(File file) {
+        LoadBoard.saveBoard(this.gameController.board, file);
+
+
     }
 
 
