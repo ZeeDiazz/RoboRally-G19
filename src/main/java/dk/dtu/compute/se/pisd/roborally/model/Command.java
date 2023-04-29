@@ -40,7 +40,11 @@ public enum Command {
     RIGHT("Turn Right"),
     LEFT("Turn Left"),
     MOVE_2("Move 2"),
-    MOVE_3("MOVE 3"),
+    MOVE_3("Move 3"),
+    U_TURN("U-Turn"),
+    BACK_UP("Back Up"),
+    POWER_UP("Power Up"),
+    AGAIN("Again"),
 
     // XXX Assignment P3
     OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
