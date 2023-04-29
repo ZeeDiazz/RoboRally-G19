@@ -24,6 +24,9 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+
 /**
  * ...
  *This class is responsible for the users interaction with:
@@ -274,48 +277,137 @@ public class GameController {
 
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
-        move(player, player.getHeading(), 1);
+        performMove(Move.fromPlayer(player, 1));
     }
 
+    // From 1.4.0
+    /*public void moveForward(@NotNull Player player) {
+        if (player.board == board) {
+            Space space = player.getSpace();
+            Heading heading = player.getHeading();
+
+            Space target = board.getNeighbour(space, heading);
+            if (target != null) {
+                try {
+                    moveToSpace(player, target, heading);
+                } catch (ImpossibleMoveException e) {
+                    // we don't do anything here  for now; we just catch the
+                    // exception so that we do no pass it on to the caller
+                    // (which would be very bad style).
+                }
+            }
+        }
+    }*/
+    
+    // From 1.4.0
+    /*void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
+        assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
+        Player other = space.getPlayer();
+        if (other != null){
+            Space target = board.getNeighbour(space, heading);
+            if (target != null) {
+                // XXX Note that there might be additional problems with
+                //     infinite recursion here (in some special cases)!
+                //     We will come back to that!
+                moveToSpace(other, target, heading);
+
+                // Note that we do NOT embed the above statement in a try catch block, since
+                // the thrown exception is supposed to be passed on to the caller
+
+                assert target.getPlayer() == null : target; // make sure target is free now
+            } else {
+                throw new ImpossibleMoveException(player, space, heading);
+            }
+        }
+        player.setSpace(space);
+    }
+
+    class ImpossibleMoveException extends Exception {
+
+        private Player player;
+        private Space space;
+        private Heading heading;
+
+        public ImpossibleMoveException(Player player, Space space, Heading heading) {
+            super("Move impossible");
+            this.player = player;
+            this.space = space;
+            this.heading = heading;
+        }
+    }
+
+}*/
+    
+    
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
-        move(player, player.getHeading(), 2);
+        performMove(Move.fromPlayer(player, 2));
     }
 
-    private void move(@NotNull Player player, Heading playerDirection, int amount) {
-        Space currentSpace = player.getSpace();
-
-        for (int i = 0; i < amount; i++) {
-            if (!currentSpace.canMove(playerDirection)){
+    private void performSimultaneousMoves(Move... moves) {
+        Hashtable<Position, Move> validMoves = new Hashtable<>();
+        ArrayList<Position> colliding = new ArrayList<>();
+        for (Move move : moves) {
+            if (move == null) {
                 continue;
             }
-            currentSpace = player.board.getNeighbour(currentSpace, playerDirection);
-            if (currentSpace.getPlayer() != null) {
-                move(currentSpace.getPlayer(), playerDirection, 1);
+
+            Position endingPos = move.getEndingPosition();
+            if (colliding.contains(endingPos)) {
+                continue;
+            }
+
+            if (validMoves.containsKey(endingPos)) {
+                colliding.add(endingPos);
+                validMoves.remove(endingPos);
+            }
+            else {
+                validMoves.put(endingPos, move);
             }
         }
 
+        validMoves.values().forEach(this::performMove);
+    }
 
+    private void performMove(Move move) {
+        Player player = move.Moving;
+        Heading direction = move.Direction;
+
+        Space currentSpace = player.getSpace();
+
+        for (int i = 0; i < move.Amount; i++) {
+            if (!currentSpace.canMove(direction)) {
+                continue;
+            }
+            currentSpace = player.board.getNeighbour(currentSpace, direction);
+            if (currentSpace == null) {
+                break;
+            }
+            if (currentSpace.hasPlayer()) {
+                Move otherPlayerMove = new Move(currentSpace.Position, direction, 1, currentSpace.getPlayer());
+                performMove(otherPlayerMove);
+            }
+        }
+
+        if (currentSpace == null) {
+            player.reboot();
+        }
+        else {
+            player.setSpace(currentSpace);
+        }
+
+        // Is this still required?
+        /*
         if (spaceIsOccupied(currentSpace)) {
             return;
         }
-
-
-        player.setSpace(currentSpace);
+         */
     }
 
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
-
-        Heading newDirection;
-        switch (playerDirection) {
-            case SOUTH -> newDirection = Heading.WEST;
-            case NORTH -> newDirection = Heading.EAST;
-            case WEST -> newDirection = Heading.NORTH;
-            case EAST -> newDirection = Heading.SOUTH;
-            default -> newDirection = playerDirection;
-        }
+        Heading newDirection = Heading.turnRight(playerDirection);
 
         player.setHeading(newDirection);
     }
@@ -323,15 +415,7 @@ public class GameController {
     // TODO Assignment V2
     public void turnLeft(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
-
-        Heading newDirection;
-        switch (playerDirection) {
-            case SOUTH -> newDirection = Heading.EAST;
-            case NORTH -> newDirection = Heading.WEST;
-            case WEST -> newDirection = Heading.SOUTH;
-            case EAST -> newDirection = Heading.NORTH;
-            default -> newDirection = playerDirection;
-        }
+        Heading newDirection = Heading.turnLeft(playerDirection);
 
         player.setHeading(newDirection);
     }
@@ -415,19 +499,20 @@ public class GameController {
      * @param currentPlayer
      */
     public void obstacleAction(Player currentPlayer) {
+        Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
             if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
                 switch (obstacle.getType()) {
                     case BLUE_CONVEYOR_BELT:
-                        move(board.getPlayer(i), obstacle.getDirection(), 2);
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 2, board.getPlayer(i));
                         break;
                     case GREEN_CONVEYOR_BELT:
-                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
                         break;
                     case PUSH_PANEL:
                         //move the player according to its register
                         //The code below is just for now
-                        move(board.getPlayer(i), obstacle.getDirection(), 1);
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
                         break;
                     case BOARD_LASER:
                         break;
@@ -436,5 +521,6 @@ public class GameController {
                 }
             }
         }
+        performSimultaneousMoves(moves);
     }
 }
