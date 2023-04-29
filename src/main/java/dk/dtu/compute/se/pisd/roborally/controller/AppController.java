@@ -33,13 +33,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -120,7 +115,7 @@ public class AppController implements Observer {
         // XXX needs to be implemented eventually
 
 
-        // fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
 
 
         fileChooser.setTitle("Save Game"); // Description for action
@@ -141,6 +136,7 @@ public class AppController implements Observer {
         } else {
             return;
         }
+
 
         fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
 
