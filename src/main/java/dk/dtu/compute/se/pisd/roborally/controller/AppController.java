@@ -26,16 +26,24 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
+import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +52,8 @@ import java.util.Optional;
  * ...
  * This class is responsible for the users interaction with; staring new game, saving game, load game, stop game
  * and exit game.
- * @author Ekkart Kindler, ekki@dtu.dk
  *
+ * @author Ekkart Kindler, ekki@dtu.dk
  */
 
 
@@ -57,6 +65,7 @@ public class AppController implements Observer {
     final private RoboRally roboRally;
 
     private GameController gameController;
+
 
     /**
      * @param roboRally The Roborally game being played
@@ -87,7 +96,7 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = new Board(8,8);
+            Board board = new Board(8, 8);
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
@@ -104,16 +113,40 @@ public class AppController implements Observer {
         }
     }
 
+    @FXML
     public void saveGame() {
+
+
         // XXX needs to be implemented eventually
+
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+
+        fileChooser.setTitle("Save Game"); // Description for action
+        fileChooser.setInitialFileName("mysave"); // Initial name of saveFile
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
+        File file = fileChooser.showSaveDialog(null);
+
+        // If the user opts out of saving
+        if (file == null) {
+            return;
+        }
+
+        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory (maybe)
+
     }
 
     public void loadGame() {
         // XXX needs to be implemented eventually
         // for now, we just create a new game
-        if (gameController == null) {
+       /* if (gameController == null) {
             newGame();
-        }
+        }*/
+
+        LoadBoard loadBoard = new LoadBoard();
+
     }
 
     /**
@@ -129,7 +162,7 @@ public class AppController implements Observer {
         if (gameController != null) {
 
             // here we save the game (without asking the user).
-            saveGame();
+            // saveGame();
 
             gameController = null;
             roboRally.createBoardView(null);
@@ -154,6 +187,7 @@ public class AppController implements Observer {
             }
         }
 
+
         // If the user did not cancel, the RoboRally application will exit
         // after the option to save the game
         if (gameController == null || stopGame()) {
@@ -163,6 +197,7 @@ public class AppController implements Observer {
 
     /**
      * This method checks if the game is running
+     *
      * @return True if the current state/instance of game controller is not NULL.
      */
     public boolean isGameRunning() {
@@ -174,5 +209,6 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
+
 
 }
