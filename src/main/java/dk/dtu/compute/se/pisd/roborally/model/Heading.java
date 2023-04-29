@@ -25,13 +25,21 @@ package dk.dtu.compute.se.pisd.roborally.model;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public enum Heading {
     SOUTH,
     WEST,
     NORTH,
     EAST;
+
+    // From 1.4.0
+    /* public Heading next() {
+        return values()[(this.ordinal() + 1) % values().length];
+    }
+
+    public Heading prev() {
+        return values()[(this.ordinal() + values().length - 1) % values().length];
+    }*/
 
     public static Heading turnRight(Heading heading) {
         Heading newDirection;
