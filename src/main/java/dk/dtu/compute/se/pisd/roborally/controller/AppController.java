@@ -44,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +67,8 @@ public class AppController implements Observer {
 
     private GameController gameController;
 
+    @FXML
+    FileChooser fileChooser = new FileChooser();
 
     /**
      * @param roboRally The Roborally game being played
@@ -119,9 +122,8 @@ public class AppController implements Observer {
 
         // XXX needs to be implemented eventually
 
-        FileChooser fileChooser = new FileChooser();
 
-        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+        // fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
 
 
         fileChooser.setTitle("Save Game"); // Description for action
@@ -129,12 +131,20 @@ public class AppController implements Observer {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
         File file = fileChooser.showSaveDialog(null);
 
-        // If the user opts out of saving
-        if (file == null) {
+
+        if (file != null) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // If the user opts out of saving
+        } else {
             return;
         }
 
-        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory (maybe)
+        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
 
     }
 
