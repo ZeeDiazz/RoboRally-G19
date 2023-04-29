@@ -105,8 +105,8 @@ public class LoadBoard {
                 Space space = board.getSpace(i,j);
                 if (!space.getWalls().isEmpty() || !space.getActions().isEmpty()) {
                     SpaceTemplate spaceTemplate = new SpaceTemplate();
-                    spaceTemplate.x = space.x;
-                    spaceTemplate.y = space.y;
+                    spaceTemplate.x = space.Position.X;
+                    spaceTemplate.y = space.Position.Y;
                     spaceTemplate.actions.addAll(space.getActions());
                     spaceTemplate.walls.addAll(space.getWalls());
                     template.spaces.add(spaceTemplate);
