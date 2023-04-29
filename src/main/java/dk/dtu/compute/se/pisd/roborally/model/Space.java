@@ -22,7 +22,11 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+
 import javafx.geometry.Pos;
+
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction; // From 1.4.0
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,9 +37,9 @@ import java.util.List;
  * Represent the Space of the board, and extends Subject
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class Space extends Subject {
+
     public final Board board;
 
     public final Position Position;
@@ -44,24 +48,28 @@ public class Space extends Subject {
 
     private final ArrayList<Heading> walls;
 
+    // From 1.4.0
+
+    private List<FieldAction> actions = new ArrayList<>();
 
     /**
      * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
+     *
      * @param board the game board the space belong to.
-     * @param x x-coordinate of the space on the board.
-     * @param y y-coordinate of the space on the board.
+     * @param x     x-coordinate of the space on the board.
+     * @param y     y-coordinate of the space on the board.
      */
     public Space(Board board, int x, int y) {
         this(board, x, y, new Heading[0]);
     }
 
     /**
+     * @param board the game board the space belong to.
+     * @param x     x-coordinate of the space on the board.
+     * @param y     y-coordinate of the space on the board.
+     * @param walls The walls on this space
      * @author Daniel Jensen
      * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
-     * @param board the game board the space belong to.
-     * @param x x-coordinate of the space on the board.
-     * @param y y-coordinate of the space on the board.
-     * @param walls The walls on this space
      */
     public Space(Board board, int x, int y, Heading... walls) {
         this.board = board;
@@ -72,6 +80,7 @@ public class Space extends Subject {
 
     /**
      * Gets the player currently occupying this space.
+     *
      * @return The player on the space, and null if the space is unoccupied
      */
     public Player getPlayer() {
@@ -80,6 +89,7 @@ public class Space extends Subject {
 
     /**
      * Sets the player currently occupying this space.
+     *
      * @param player The player to set as occupying this space.
      */
     public void setPlayer(Player player) {
@@ -100,6 +110,7 @@ public class Space extends Subject {
 
     /**
      * Whether this space currently has a player occupying it
+     *
      * @return True if there is a player on this space, else false.
      */
     public boolean hasPlayer() {
@@ -107,9 +118,9 @@ public class Space extends Subject {
     }
 
     /**
+     * @param direction The direction to place the wall
      * @author Daniel Jensen
      * Add a wall to this space
-     * @param direction The direction to place the wall
      */
     public void addWall(Heading direction) {
         if (!hasWall(direction)) {
@@ -119,20 +130,20 @@ public class Space extends Subject {
     }
 
     /**
-     * @author Zahedullah Wafa
-     * Indicating whether this space has a wall in the given direction
      * @param direction The direction to check
      * @return True if this space has a wall that way
+     * @author Zahedullah Wafa
+     * Indicating whether this space has a wall in the given direction
      */
     public boolean hasWall(Heading direction) {
         return walls.contains(direction);
     }
 
     /**
-     * @author Zahed Wafa
-     * This method checks whether it's possible to make a legal move
      * @param heading The direction in which way the player wants to move in
      * @return Returns true if the move is legal and false if not
+     * @author Zahed Wafa
+     * This method checks whether it's possible to make a legal move
      */
     public boolean canMove(Heading heading) {
         if (hasWall(heading)) {
@@ -154,6 +165,16 @@ public class Space extends Subject {
         // If there is a player on neighboring square, you can only move if they can move
         return neighbour.canMove(heading);
     }
+
+    // From 1.4.0
+    public List<Heading> getWalls() {
+        return walls;
+    }
+
+    public List<FieldAction> getActions() {
+        return actions;
+    }
+
 
     /**
      * HACK
