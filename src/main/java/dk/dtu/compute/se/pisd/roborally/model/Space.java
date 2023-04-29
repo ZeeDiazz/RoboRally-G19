@@ -22,8 +22,12 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+
+import javafx.geometry.Pos;
+
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction; // From 1.4.0
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,8 +42,7 @@ public class Space extends Subject {
 
     public final Board board;
 
-    public final int x;
-    public final int y;
+    public final Position Position;
 
     private Player player;
 
@@ -70,8 +73,7 @@ public class Space extends Subject {
      */
     public Space(Board board, int x, int y, Heading... walls) {
         this.board = board;
-        this.x = x;
-        this.y = y;
+        this.Position = new Position(x, y);
         player = null;
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
@@ -143,18 +145,24 @@ public class Space extends Subject {
      * @author Zahed Wafa
      * This method checks whether it's possible to make a legal move
      */
-
     public boolean canMove(Heading heading) {
         if (hasWall(heading)) {
             return false;
         }
         Space neighbour = board.getNeighbour(this, heading);
+        // No neighbor means going off the board, which is always allowed
+        if (neighbour == null) {
+            return true;
+        }
+        // If the neighbor has a wall towards this space, it's equivalent to having a wall from this space towards the neighbor
         if (neighbour.hasWall(Heading.turnAround(heading))) {
             return false;
         }
-        if (neighbour.getPlayer() == null) {
+        // If the neighbor has no players, you can always move to it
+        if (!neighbour.hasPlayer()) {
             return true;
         }
+        // If there is a player on neighboring square, you can only move if they can move
         return neighbour.canMove(heading);
     }
 

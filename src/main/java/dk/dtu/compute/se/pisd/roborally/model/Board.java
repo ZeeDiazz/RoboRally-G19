@@ -157,6 +157,10 @@ public class Board extends Subject {
         }
     }
 
+    public Space getSpace(Position position) {
+        return getSpace(position.X, position.Y);
+    }
+
     /**
      * Gets the correct number of the player in the game
      *
@@ -308,7 +312,9 @@ public class Board extends Subject {
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
-        int x = space.x;
+        return getSpace(Position.move(space.Position, heading));
+        /*
+        int x = space.Position.X;
         int y = space.y;
 
         // TODO this will loop the players around to the other side of the board
@@ -320,6 +326,7 @@ public class Board extends Subject {
         }
 
         return getSpace(x, y);
+         */
     }
     
     // From 1.4.0
