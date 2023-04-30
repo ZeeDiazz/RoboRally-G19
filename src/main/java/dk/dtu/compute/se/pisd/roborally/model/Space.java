@@ -78,6 +78,7 @@ public class Space extends Subject {
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
 
+
     /**
      * Gets the player currently occupying this space.
      *
@@ -184,6 +185,12 @@ public class Space extends Subject {
         // also need to update when some player attributes change, the player can
         // notify the space of these changes by calling this method.
         notifyChange();
+    }
+    public int getXValueOfSpace(){
+        return this.Position.X;
+    }
+    public int getYValueOfSpace(){
+        return this.Position.Y;
     }
 
 }

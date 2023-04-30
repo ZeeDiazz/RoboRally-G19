@@ -41,6 +41,8 @@ public class Player extends Subject {
 
     final public Board board;
     public int checkpointGoal = 0;
+    public double distanceToAntenna = 0.0;
+    public double slopeBetweenAntennaAndPlayer = 0.0;
 
     private String name;
     private String color;
@@ -201,5 +203,25 @@ public class Player extends Subject {
     public void reboot() {
         setSpace(this.rebootSpace);
         notifyChange();
+    }
+
+    public double getDistanceToAntenna(Player player, PriorityAntenna priorityAntenna){
+        // (x1,y1) = priorityantenna
+        // (x2,y2) = player
+        player.distanceToAntenna =
+                Math.sqrt(( priorityAntenna.getXValueOfSpace() - player.getSpace().getXValueOfSpace())
+                        * (priorityAntenna.getXValueOfSpace() - player.getSpace().getXValueOfSpace()
+                        + (priorityAntenna.getYValueOfSpace() - player.getSpace().getYValueOfSpace())
+                        * (priorityAntenna.getYValueOfSpace() - player.getSpace().getYValueOfSpace())));
+        return player.distanceToAntenna;
+
+    }
+    public double getSlopeBetweenAntennaAndPlayer(Player player, PriorityAntenna priorityAntenna){
+        // (x1,y1) = priorityantenna
+        // (x2,y2) = player
+        slopeBetweenAntennaAndPlayer =
+                Math.sqrt((player.getSpace().getXValueOfSpace() - priorityAntenna.getXValueOfSpace())
+                        / (player.getSpace().getYValueOfSpace() - priorityAntenna.getYValueOfSpace()));
+        return  slopeBetweenAntennaAndPlayer;
     }
 }
