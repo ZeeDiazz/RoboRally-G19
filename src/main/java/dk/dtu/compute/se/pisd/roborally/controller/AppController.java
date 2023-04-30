@@ -24,7 +24,6 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Transformer;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -156,7 +155,7 @@ public class AppController implements Observer {
             newGame();
         }*/
 
-        LoadBoard loadBoard = new LoadBoard();
+        //LoadBoard loadBoard = new LoadBoard();
 
     }
 
