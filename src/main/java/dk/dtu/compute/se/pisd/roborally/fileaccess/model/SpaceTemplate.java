@@ -38,9 +38,9 @@ public class SpaceTemplate {
 
     public List<Heading> walls = new ArrayList<>();
 
-    public ObstacleType obstacleType;
+    public Obstacle obstacle;
 
-    public boolean checkPoint;
+    public CheckPoint checkPoint;
 
     //public int playerNumber;
 

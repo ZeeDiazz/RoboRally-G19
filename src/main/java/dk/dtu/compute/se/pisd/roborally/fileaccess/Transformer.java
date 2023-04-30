@@ -45,11 +45,14 @@ public class Transformer {
                 if (space instanceof Obstacle) {
                     Obstacle obstacle = (Obstacle) space;
 
-                    spaceTemplate.obstacleType = obstacle.getType();
+                    spaceTemplate.obstacle = obstacle;
                     include = true;
                 }
                 if (space instanceof CheckPoint) {
-                    spaceTemplate.checkPoint = true;
+
+                    CheckPoint checkPoint = (CheckPoint) space;
+
+                    spaceTemplate.checkPoint = checkPoint;
                     include = true;
                 }
                 if (include) {

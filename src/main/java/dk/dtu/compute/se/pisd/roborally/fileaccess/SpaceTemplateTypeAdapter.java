@@ -6,9 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
-import dk.dtu.compute.se.pisd.roborally.model.CheckPoint;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.ObstacleType;
 
 import java.io.IOException;
@@ -30,17 +28,19 @@ public class SpaceTemplateTypeAdapter extends TypeAdapter<SpaceTemplate> {
             writer.endArray();
         }
         // Write obstacle
-        if (spaceTemplate.obstacleType != null) {
+        if (spaceTemplate.obstacle != null) {
             writer.name("obstacle");
-            Gson gson = new GsonBuilder().create();
-            gson.toJson(spaceTemplate.obstacleType, ObstacleType.class, writer);
+            writer.beginArray();
+            writer.value(spaceTemplate.obstacle.getType().toString());
+            writer.value(spaceTemplate.obstacle.getDirection().toString());
+            writer.endArray();
         }
 
         // Write checkpoint
-        if (spaceTemplate.checkPoint) {
+        if (spaceTemplate.checkPoint != null) {
             writer.name("checkPoint");
-            Gson gson = new GsonBuilder().create();
-            gson.toJson(spaceTemplate.checkPoint, Boolean.class, writer);
+            writer.value(spaceTemplate.checkPoint.Id);
+
         }
 
         // Write player
