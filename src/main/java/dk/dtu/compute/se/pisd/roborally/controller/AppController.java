@@ -25,6 +25,7 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.Transformer;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
@@ -38,6 +39,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
 import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -220,8 +222,12 @@ public class AppController implements Observer {
     }
 
     private void saveToJsonFile(File file) {
-        LoadBoard.saveBoard(this.gameController.board, file);
 
+        Transformer.saveBoard(this.gameController.board, file);
+
+        //   LoadBoard.saveBoard(this.gameController.board, file);
+
+        
 
     }
 
