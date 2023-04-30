@@ -269,6 +269,7 @@ public class GameController {
                     this.backUp(player);
                     break;
                 case POWER_UP:
+                    player.addEnergyCube(1);
                     break;
                 case AGAIN:
                     break;
