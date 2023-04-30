@@ -248,30 +248,41 @@ public class GameController {
             switch (command) {
                 case MOVE_1:
                     this.moveForward(player);
+                    player.setPrevProgramming(command);
                     break;
                 case RIGHT:
                     this.turnRight(player);
+                    player.setPrevProgramming(command);
                     break;
                 case LEFT:
                     this.turnLeft(player);
+                    player.setPrevProgramming(command);
                     break;
                 case MOVE_2:
                     this.fastForward(player);
+                    player.setPrevProgramming(command);
                     break;
                     //ZeeDiazz (Zaid) {
                 case MOVE_3:
                     this.moveThree(player);
+                    player.setPrevProgramming(command);
                     break;
                 case U_TURN:
                     this.turnAround(player);
+                    player.setPrevProgramming(command);
                     break;
                 case BACK_UP:
                     this.backUp(player);
+                    player.setPrevProgramming(command);
                     break;
                 case POWER_UP:
                     player.addEnergyCube(1);
+                    player.setPrevProgramming(command);
                     break;
                 case AGAIN:
+                    //TODO: update AGAIN after the implementation of damage card and upgrade
+                    this.repeatPrevProgramming(player);
+                    //player.setPrevProgramming(command);
                     break;
                     //}ZeeDiazz (Zaid)
                 default:
@@ -476,6 +487,18 @@ public class GameController {
 
         //move player by one the opposite side
         performMove(new Move(player.getSpace().Position, oppositeDirection, 1, player));
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * This method is for the command Again, and repeat the programming from previous register
+     * @param player
+     */
+    public void repeatPrevProgramming(@NotNull Player player){
+        Command previousCommand = player.getPrevProgramming();
+        //if(previousCommand != Command.AGAIN) {
+        executeCommand(player, previousCommand);
+        //}
     }
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
