@@ -233,6 +233,12 @@ public class GameController {
     }
 
     // XXX: V2
+
+    /**
+     * @author Daniel, ZeeDiazz (Zaid)
+     * @param player
+     * @param command
+     */
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == board && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
@@ -240,7 +246,7 @@ public class GameController {
             //     (this concerns the way cards are modelled as well as the way they are executed).
 
             switch (command) {
-                case FORWARD:
+                case MOVE_1:
                     this.moveForward(player);
                     break;
                 case RIGHT:
@@ -249,9 +255,19 @@ public class GameController {
                 case LEFT:
                     this.turnLeft(player);
                     break;
-                case FAST_FORWARD:
+                case MOVE_2:
                     this.fastForward(player);
                     break;
+                    //ZeeDiazz (Zaid) {
+                case MOVE_3:
+                    this.moveThree(player);
+                    break;
+                case U_TURN:
+                    this.turnAround(player);
+                    break;
+                case BACK_UP:
+                    break;
+                    //}ZeeDiazz (Zaid)
                 default:
                     // DO NOTHING (for now)
             }
@@ -420,6 +436,26 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
+    /**
+     * This method turns players to the opposite direction, and the robot still remains in the current space.
+     * @author ZeeDiazz (Zaid)
+     * @param player
+     */
+    public void turnAround(@NotNull Player player){
+        Heading playerDirection = player.getHeading();
+        Heading newDirection = Heading.turnAround(playerDirection);
+
+        player.setHeading(newDirection);
+    }
+
+    /**
+     * This method moves the player by three amount
+     * @author ZeeDiazz (Zaid)
+     * @param player
+     */
+    public void moveThree(@NotNull Player player) {
+        performMove(Move.fromPlayer(player, 3));
+    }
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
