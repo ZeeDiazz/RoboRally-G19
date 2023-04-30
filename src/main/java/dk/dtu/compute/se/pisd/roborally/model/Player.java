@@ -52,6 +52,7 @@ public class Player extends Subject {
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
+    private Command prevProgramming;
 
     /**
      * Constructor to create a Player object with the given board, color, and name.
@@ -237,5 +238,23 @@ public class Player extends Subject {
             energyCube -= amount;
             notifyChange();
         }
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * Get the programming from previous register
+     * @return
+     */
+    public Command getPrevProgramming() {
+        return prevProgramming;
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * Set a programming as previous programming
+     * @param programming
+     */
+    public void setPrevProgramming(Command programming) {
+       prevProgramming = programming;
     }
 }
