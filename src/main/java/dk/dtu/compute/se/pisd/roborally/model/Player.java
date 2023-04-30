@@ -41,6 +41,7 @@ public class Player extends Subject {
 
     final public Board board;
     public int checkpointGoal = 0;
+    private int energyCube;
 
     private String name;
     private String color;
@@ -62,6 +63,7 @@ public class Player extends Subject {
         this.board = board;
         this.name = name;
         this.color = color;
+        this.energyCube = 5;
 
         this.space = null;
 

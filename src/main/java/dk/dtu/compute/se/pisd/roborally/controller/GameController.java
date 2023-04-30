@@ -268,6 +268,10 @@ public class GameController {
                 case BACK_UP:
                     this.backUp(player);
                     break;
+                case POWER_UP:
+                    break;
+                case AGAIN:
+                    break;
                     //}ZeeDiazz (Zaid)
                 default:
                     // DO NOTHING (for now)
