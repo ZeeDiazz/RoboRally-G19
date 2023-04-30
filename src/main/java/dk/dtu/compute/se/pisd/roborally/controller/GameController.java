@@ -266,6 +266,7 @@ public class GameController {
                     this.turnAround(player);
                     break;
                 case BACK_UP:
+                    this.backUp(player);
                     break;
                     //}ZeeDiazz (Zaid)
                 default:
@@ -455,6 +456,21 @@ public class GameController {
      */
     public void moveThree(@NotNull Player player) {
         performMove(Move.fromPlayer(player, 3));
+    }
+
+    /**
+     * This method moves the player one space back, and doesn't change players direction.
+     * @author ZeeDiazz (Zaid)
+     * @param player
+     */
+    public void backUp(@NotNull Player player){
+        Heading playerDirection = player.getHeading();
+
+        //get the opposite direction of the player
+        Heading oppositeDirection = Heading.turnAround(playerDirection);
+
+        //move player by one the opposite side
+        performMove(new Move(player.getSpace().Position, oppositeDirection, 1, player));
     }
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
