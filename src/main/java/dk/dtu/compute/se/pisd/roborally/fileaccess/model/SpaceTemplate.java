@@ -21,8 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally.fileaccess.model;
 
-import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +30,22 @@ import java.util.List;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class SpaceTemplate {
 
+    public SpaceTemplate() {
+    }
+
     public List<Heading> walls = new ArrayList<>();
-    public List<FieldAction> actions = new ArrayList<>();
+
+    public ObstacleType obstacleType;
+
+    public boolean checkPoint;
+
+    //public int playerNumber;
 
     public int x;
     public int y;
 
-    public SpaceTemplate(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
+
 }
