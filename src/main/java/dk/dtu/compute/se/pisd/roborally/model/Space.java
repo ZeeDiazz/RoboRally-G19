@@ -36,8 +36,6 @@ import java.util.List;
  *
  */
 public class Space extends Subject {
-    public final Board board;
-
     public final Position Position;
 
     private Player player;
@@ -46,25 +44,22 @@ public class Space extends Subject {
 
 
     /**
-     * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
-     * @param board the game board the space belong to.
+     * Construct a new Space object at the specified x-coordinate and y-coordinate.
      * @param x x-coordinate of the space on the board.
      * @param y y-coordinate of the space on the board.
      */
-    public Space(Board board, int x, int y) {
-        this(board, x, y, new Heading[0]);
+    public Space(int x, int y) {
+        this(x, y, new Heading[0]);
     }
 
     /**
      * @author Daniel Jensen
-     * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
-     * @param board the game board the space belong to.
+     * Construct a new Space object at the specified x-coordinate and y-coordinate.
      * @param x x-coordinate of the space on the board.
      * @param y y-coordinate of the space on the board.
      * @param walls The walls on this space
      */
-    public Space(Board board, int x, int y, Heading... walls) {
-        this.board = board;
+    public Space(int x, int y, Heading... walls) {
         this.Position = new Position(x, y);
         player = null;
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
@@ -84,16 +79,13 @@ public class Space extends Subject {
      */
     public void setPlayer(Player player) {
         Player oldPlayer = this.player;
-        if (player != oldPlayer &&
-                (player == null || board == player.board)) {
+        if (player != oldPlayer && player != null) {
             this.player = player;
             if (oldPlayer != null) {
                 // this should actually not happen
                 oldPlayer.setSpace(null);
             }
-            if (player != null) {
-                player.setSpace(this);
-            }
+            player.setSpace(this);
             notifyChange();
         }
     }
@@ -134,6 +126,9 @@ public class Space extends Subject {
      * @param heading The direction in which way the player wants to move in
      * @return Returns true if the move is legal and false if not
      */
+
+    // TODO move
+    /*
     public boolean canMove(Heading heading) {
         if (hasWall(heading)) {
             return false;
@@ -154,6 +149,7 @@ public class Space extends Subject {
         // If there is a player on neighboring square, you can only move if they can move
         return neighbour.canMove(heading);
     }
+     */
 
     /**
      * HACK

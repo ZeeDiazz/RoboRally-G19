@@ -63,47 +63,14 @@ public class Board extends Subject {
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
      *
-     * @param boardName the name of the board
+     * @param name the name of the board
      * @param width     the width of the board
      * @param height    the height of the board
      * @author ZeeDiazz (Zaid)
      */
 
-    public Board(int width, int height, @NotNull String boardName) {
-        this.boardName = boardName;
-        this.width = width;
-        this.height = height;
-        spaces = new Space[width][height];
-        for (int x = 0; x < width; x++) {
-
-            for (int y = 0; y < height; y++) {
-                Space space;
-
-                //ZeeDiazz (Zaid) {
-                if (x == 0 && y == 1 || x == 2 && y == 3) {
-                    space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
-                } else if (x == 1 && y == 5) {
-                    space = new Obstacle(this, x, y, GREEN_CONVEYOR_BELT, Heading.NORTH);
-                }
-
-                //   }
-                else if (x == 3 && y == 4) {
-                    space = new CheckPoint(this, x, y, 0);
-                } else if (x == 6 && y == 2) {
-                    space = new CheckPoint(this, x, y, 1);
-                } else {
-                    space = new Space(this, x, y);
-                }
-
-
-                if (x == 1 && y == 1) {
-                    space.addWall(Heading.SOUTH);
-                }
-
-                spaces[x][y] = space;
-            }
-        }
-        this.stepMode = false;
+    public Board(int width, int height, @NotNull String name) {
+        this(new Space[width][height], name);
     }
 
     /**
@@ -114,6 +81,15 @@ public class Board extends Subject {
      */
     public Board(int width, int height) {
         this(width, height, "defaultboard");
+    }
+
+    public Board(Space[][] spaces, String name) {
+        this.boardName = name;
+        this.height = spaces.length;
+        this.width = spaces[0].length;
+        this.spaces = spaces;
+
+        this.stepMode = false;
     }
 
     /**
@@ -149,8 +125,7 @@ public class Board extends Subject {
      * @return the given coordinates, or null if out of bounds
      */
     public Space getSpace(int x, int y) {
-        if (x >= 0 && x < width &&
-                y >= 0 && y < height) {
+        if (x >= 0 && x < width && y >= 0 && y < height) {
             return spaces[x][y];
         } else {
             return null;
