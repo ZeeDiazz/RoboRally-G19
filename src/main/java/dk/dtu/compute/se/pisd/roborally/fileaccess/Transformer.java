@@ -11,6 +11,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
