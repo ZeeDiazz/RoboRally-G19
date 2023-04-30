@@ -63,6 +63,7 @@ public class Player extends Subject {
         this.board = board;
         this.name = name;
         this.color = color;
+        //Player starts with 5 energy cube
         this.energyCube = 5;
 
         this.space = null;
@@ -211,4 +212,30 @@ public class Player extends Subject {
      * @return the amount of energy cubes
      */
     public int getEnergyCube(){return energyCube;}
+
+    /**
+     * @author Zeediazz (Zaid)
+     * Takes an amount of energy cube and adds to Players energy cubes
+     * If amount is less or equal to 0 it does nothing
+     * @param amount of energy cube
+     */
+    public void addEnergyCube(int amount){
+        if(amount > 0) {
+            energyCube += amount;
+            notifyChange();
+        }
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * Takes an amount of energy cube and removes X amount of Players energy cubes
+     * If amount is less or equal to 0 it does nothing
+     * @param amount
+     */
+    public void removeEnergyCube(int amount){
+        if(amount > 0) {
+            energyCube -= amount;
+            notifyChange();
+        }
+    }
 }
