@@ -197,6 +197,10 @@ public class Board extends Subject {
         }
     }
 
+    public List<Player> getPlayers() {
+        return this.players;
+    }
+
     /**
      * Gets the current player on the board
      *
@@ -328,7 +332,7 @@ public class Board extends Subject {
         return getSpace(x, y);
          */
     }
-    
+
     // From 1.4.0
     /*public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         if (space.getWalls().contains(heading)) {

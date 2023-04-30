@@ -194,6 +194,18 @@ public class Player extends Subject {
         this.rebootSpace = space;
     }
 
+    public Space getRebootSpace() {
+        return rebootSpace;
+    }
+
+    public CommandCardField[] getCards() {
+        return cards;
+    }
+
+    public CommandCardField[] getProgram() {
+        return program;
+    }
+
     /**
      * @author Daniel Jensen
      * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
