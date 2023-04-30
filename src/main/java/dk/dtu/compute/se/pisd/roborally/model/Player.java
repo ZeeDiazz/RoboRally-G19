@@ -204,4 +204,11 @@ public class Player extends Subject {
         setSpace(this.rebootSpace);
         notifyChange();
     }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * gets the amount of energy cubes a player has
+     * @return the amount of energy cubes
+     */
+    public int getEnergyCube(){return energyCube;}
 }
