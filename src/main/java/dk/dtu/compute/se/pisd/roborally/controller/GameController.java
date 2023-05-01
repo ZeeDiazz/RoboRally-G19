@@ -451,7 +451,7 @@ public class GameController {
                             checkPoint.playerPassed(checkingPlayer);
                         }
 
-                        if (checkingPlayer.checkpointGoal == Board.checkpointCount) {
+                        if (checkingPlayer.checkpointGoal == board.getCheckpointCount()) {
                             checkingPlayer.setColor("purple");
                         }
                     }

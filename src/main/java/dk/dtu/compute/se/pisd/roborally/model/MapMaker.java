@@ -33,7 +33,7 @@ public final class MapMaker {
         return new Board(spaces, name);
     }
 
-    private static HashMap<Position, Space> makeStartASpaces() {
+    public static Board makeStartA() {
         HashMap<Position, Space> spaces = new HashMap<>();
         // Making special spaces
         // The spawn points
@@ -48,50 +48,116 @@ public final class MapMaker {
         addSpace(spaces, new Obstacle(new Position(2, 0), GREEN_CONVEYOR_BELT, EAST));
         addSpace(spaces, new Obstacle(new Position(2, 9), GREEN_CONVEYOR_BELT, EAST));
 
-        return spaces;
-    }
-
-    private static HashMap<Position, Heading[]> makeStartAWalls() {
         HashMap<Position, Heading[]> walls = new HashMap<>();
         walls.put(new Position(1, 2), new Heading[] {NORTH});
         walls.put(new Position(1, 7), new Heading[] {SOUTH});
         walls.put(new Position(2, 4), new Heading[] {EAST});
         walls.put(new Position(2, 5), new Heading[] {EAST});
-        return walls;
+
+        return makeCustomBoard(spaces, walls, 3, 10, "Start A");
     }
 
-    public static Board makeDizzyHighway() {
-        HashMap<Position, Space> special = makeStartASpaces();
+    public static Board make5A() {
+        HashMap<Position, Space> spaces = new HashMap<>();
+        // Making special spaces
+        Position[] startingAt = new Position[] {new Position(1, 0), new Position(0, 8), new Position(9, 1), new Position(8, 9)};
+        Heading[] startHeading = new Heading[] {SOUTH, EAST, WEST, NORTH};
+        for (int i = 0; i < 4; i++) {
+            Position position = startingAt[i];
+            Heading direction = startHeading[i];
+            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+            position = Position.move(position, direction);
+            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+            position = Position.move(position, direction);
+            direction = Heading.turnRight(direction);
+            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+            position = Position.move(position, direction);
+            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+        }
+
+        addSpace(spaces, new Obstacle(new Position(5, 1), GREEN_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(4, 1), GREEN_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(3, 1), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(3, 2), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(3, 3), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(2, 3), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(2, 4), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(1, 4), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(1, 5), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(1, 6), GREEN_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(2, 6), GREEN_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(3, 6), GREEN_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(4, 6), GREEN_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(4, 7), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(4, 8), GREEN_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(5, 8), GREEN_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(6, 8), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(6, 7), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(6, 6), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(7, 6), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(7, 5), GREEN_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new Obstacle(new Position(8, 5), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(8, 4), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(8, 3), GREEN_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(7, 3), GREEN_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(6, 3), GREEN_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(5, 3), GREEN_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(5, 2), GREEN_CONVEYOR_BELT, NORTH));
+
+        HashMap<Position, Heading[]> walls = new HashMap<>();
+
+        return makeCustomBoard(spaces, walls, 10, 10, "5A");
+    }
+
+    public static Board make5B() {
+        HashMap<Position, Space> spaces = new HashMap<>();
 
         // Making special spaces
         // The blue conveyor ring
         for (int y = 0; y < 8; y++) {
-            addSpace(special, new Obstacle(new Position(4, y), BLUE_CONVEYOR_BELT, SOUTH));
+            addSpace(spaces, new Obstacle(new Position(1, y), BLUE_CONVEYOR_BELT, SOUTH));
         }
-        addSpace(special, new Obstacle(new Position(5, 0), BLUE_CONVEYOR_BELT, SOUTH));
-        for (int x = 5; x < 13; x++) {
-            addSpace(special, new Obstacle(new Position(x, 1), BLUE_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(2, 0), BLUE_CONVEYOR_BELT, SOUTH));
+        for (int x = 2; x < 10; x++) {
+            addSpace(spaces, new Obstacle(new Position(x, 1), BLUE_CONVEYOR_BELT, WEST));
         }
-        addSpace(special, new Obstacle(new Position(12, 2), BLUE_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new Obstacle(new Position(9, 2), BLUE_CONVEYOR_BELT, WEST));
         for (int y = 2; y < 10; y++) {
-            addSpace(special, new Obstacle(new Position(11, y), BLUE_CONVEYOR_BELT, NORTH));
+            addSpace(spaces, new Obstacle(new Position(8, y), BLUE_CONVEYOR_BELT, NORTH));
         }
-        addSpace(special, new Obstacle(new Position(5, 0), BLUE_CONVEYOR_BELT, NORTH));
-        for (int x = 3; x < 11; x++) {
-            addSpace(special, new Obstacle(new Position(x, 8), BLUE_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(2, 0), BLUE_CONVEYOR_BELT, NORTH));
+        for (int x = 0; x < 8; x++) {
+            addSpace(spaces, new Obstacle(new Position(x, 8), BLUE_CONVEYOR_BELT, EAST));
         }
-        addSpace(special, new Obstacle(new Position(3, 7), BLUE_CONVEYOR_BELT, EAST));
-        addSpace(special, new CheckPoint(new Position(12, 3), 0));
+        addSpace(spaces, new Obstacle(new Position(0, 7), BLUE_CONVEYOR_BELT, EAST));
 
-        HashMap<Position, Heading[]> walls = makeStartAWalls();
-        walls.put(new Position(6, 3), new Heading[] {NORTH});
-        walls.put(new Position(6, 6), new Heading[] {WEST});
-        walls.put(new Position(9, 3), new Heading[] {EAST});
-        walls.put(new Position(9, 6), new Heading[] {SOUTH});
+        HashMap<Position, Heading[]> walls = new HashMap<>();
+        walls.put(new Position(3, 3), new Heading[] {NORTH});
+        walls.put(new Position(3, 6), new Heading[] {WEST});
+        walls.put(new Position(6, 3), new Heading[] {EAST});
+        walls.put(new Position(6, 6), new Heading[] {SOUTH});
 
-        return makeCustomBoard(special, walls, 13, 10, "Dizzy Highway");
+        return makeCustomBoard(spaces, walls, 10, 10, "5B");
     }
 
+    public static Board makeDizzyHighway() {
+        Board startA = makeStartA();
+        Board fiveB = make5B();
+        Board dizzyHighway = Board.add(startA, fiveB, new Position(3, 0), "Dizzy Highway");
+        dizzyHighway.addCheckpoint(new Position(12, 3));
+        return dizzyHighway;
+    }
+
+    public static Board makeRiskyCrossing() {
+        Board startA = makeStartA();
+        Board fiveA = make5A();
+        Board riskyCrossing = Board.add(startA, fiveA, new Position(3, 0), "Risky Crossing");
+        riskyCrossing.addCheckpoint(new Position(8, 7));
+        riskyCrossing.addCheckpoint(new Position(11, 0));
+        return riskyCrossing;
+    }
+
+    /*
     public static Board makeRiskyCrossing() {
         HashMap<Position, Space> special = makeStartASpaces();
         // Making special spaces
@@ -145,6 +211,7 @@ public final class MapMaker {
 
         return makeCustomBoard(special, walls, 13, 10, "Risky Crossing");
     }
+    */
 
     private static void addSpace(HashMap<Position, Space> spaces, Space space) {
         spaces.put(space.Position, space);

@@ -49,16 +49,11 @@ public class Board extends Subject {
     private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
-
     private Player current;
-
     private Phase phase = INITIALISATION;
-
     private int step = 0;
-
     private boolean stepMode;
-
-    static public final int checkpointCount = 2;
+    private int checkpointCount;
 
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
@@ -90,6 +85,7 @@ public class Board extends Subject {
         this.spaces = spaces;
 
         this.stepMode = false;
+        this.checkpointCount = 0;
     }
 
     /**
@@ -411,6 +407,14 @@ public class Board extends Subject {
 
         moves.add(new Move(move.Start, move.Direction, moveAmount, move.Moving));
         return moves;
+    }
+
+    public void addCheckpoint(Position position) {
+        this.spaces[position.X][position.Y] = new CheckPoint(position, checkpointCount++);
+    }
+
+    public int getCheckpointCount() {
+        return checkpointCount;
     }
 
     public static Board rotateLeft(Board board) {
