@@ -8,7 +8,10 @@ package dk.dtu.compute.se.pisd.roborally.model;
 public enum ObstacleType {
     BLUE_CONVEYOR_BELT,
     GREEN_CONVEYOR_BELT,
-    PUSH_PANEL,
+    PUSH_PANEL, //mangler
     GEAR,
-    BOARD_LASER
+    RED_GEAR,
+    GREEN_GEAR,
+    PITS,
+    BOARD_LASER //mangler
 }

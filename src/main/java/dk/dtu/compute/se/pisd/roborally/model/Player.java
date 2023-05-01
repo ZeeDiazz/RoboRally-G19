@@ -41,6 +41,7 @@ public class Player extends Subject {
 
     final public Board board;
     public int checkpointGoal = 0;
+    public int direction;
 
     private String name;
     private String color;
@@ -49,14 +50,16 @@ public class Player extends Subject {
     private Space rebootSpace;
     private Heading heading = SOUTH;
 
+
     private CommandCardField[] program;
     private CommandCardField[] cards;
 
     /**
      * Constructor to create a Player object with the given board, color, and name.
+     *
      * @param board The board that the player belong to.
      * @param color The color of the player.
-     * @param name The name of the player.
+     * @param name  The name of the player.
      */
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
@@ -78,6 +81,7 @@ public class Player extends Subject {
 
     /**
      * Gets the name of the player
+     *
      * @return players name
      */
     public String getName() {
@@ -86,6 +90,7 @@ public class Player extends Subject {
 
     /**
      * Set the name of the player
+     *
      * @param name Sets the players name
      */
     public void setName(String name) {
@@ -100,6 +105,7 @@ public class Player extends Subject {
 
     /**
      * Gets the color of the player
+     *
      * @return the color of the player
      */
     public String getColor() {
@@ -108,6 +114,7 @@ public class Player extends Subject {
 
     /**
      * Sets color of the player
+     *
      * @param color Sets the players color
      */
     public void setColor(String color) {
@@ -120,6 +127,7 @@ public class Player extends Subject {
 
     /**
      * Gets the position of the player on the board.
+     *
      * @return position of the player.
      */
     public Space getSpace() {
@@ -128,6 +136,7 @@ public class Player extends Subject {
 
     /**
      * Sets the space where the player is positioned.
+     *
      * @param space the space to set the players position.
      */
     public void setSpace(Space space) {
@@ -147,6 +156,7 @@ public class Player extends Subject {
 
     /**
      * Gets the heading direction of the player
+     *
      * @return the heading direction of the player
      */
     public Heading getHeading() {
@@ -155,6 +165,7 @@ public class Player extends Subject {
 
     /**
      * Sets the absalute direction of the player.
+     *
      * @param heading the new direction (heading) to be set.
      */
     public void setHeading(@NotNull Heading heading) {
@@ -169,8 +180,9 @@ public class Player extends Subject {
 
     /**
      * Gets the program field at the specific index
+     *
      * @param index index og the program field
-     * @return  the command card field at the specific index
+     * @return the command card field at the specific index
      */
     public CommandCardField getProgramField(int index) {
         return program[index];
@@ -178,6 +190,7 @@ public class Player extends Subject {
 
     /**
      * Gets the program field at the specific index
+     *
      * @param index index og the program field
      * @return the command card field at the specific index
      */
@@ -186,9 +199,9 @@ public class Player extends Subject {
     }
 
     /**
+     * @param space The space the player will reboot on
      * @author Daniel Jensen
      * Set the reboot space of a player, used when the player has to reboot
-     * @param space The space the player will reboot on
      */
     public void setRebootSpace(Space space) {
         this.rebootSpace = space;

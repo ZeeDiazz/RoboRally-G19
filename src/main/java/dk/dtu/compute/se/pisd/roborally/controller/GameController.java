@@ -374,13 +374,15 @@ public class GameController {
         Heading direction = move.Direction;
 
         Space currentSpace = player.getSpace();
+        boolean rebootRobot = false;
 
         for (int i = 0; i < move.Amount; i++) {
             if (!currentSpace.canMove(direction)) {
                 continue;
             }
             currentSpace = player.board.getNeighbour(currentSpace, direction);
-            if (currentSpace == null) {
+            if (currentSpace == null || (currentSpace instanceof Obstacle obstacle && obstacle.getType() == ObstacleType.PITS)) {
+                rebootRobot = true;
                 break;
             }
             if (currentSpace.hasPlayer()) {
@@ -389,7 +391,7 @@ public class GameController {
             }
         }
 
-        if (currentSpace == null) {
+        if(rebootRobot) {
             player.reboot();
         }
         else {
@@ -501,24 +503,33 @@ public class GameController {
     public void obstacleAction(Player currentPlayer) {
         Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
-            if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
+            Player player =  board.getPlayer(i);
+            if (player.getSpace() instanceof Obstacle obstacle) {
                 switch (obstacle.getType()) {
                     case BLUE_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 2, board.getPlayer(i));
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 2, player);
                         break;
                     case GREEN_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, player);
                         break;
                     case PUSH_PANEL:
                         //move the player according to its register
                         //The code below is just for now
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
+                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, player);
                         break;
                     case BOARD_LASER:
                         break;
                     case GEAR:
                         break;
+                    case RED_GEAR:
+                        turnLeft(player);
+                        break;
+                    case GREEN_GEAR:
+                        turnRight(player);
+                        break;
+
                 }
+
             }
         }
         performSimultaneousMoves(moves);
