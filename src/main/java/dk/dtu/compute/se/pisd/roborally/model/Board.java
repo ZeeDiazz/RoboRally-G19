@@ -91,7 +91,10 @@ public class Board extends Subject {
                     space = new CheckPoint(this, x, y, 0);
                 } else if (x == 6 && y == 2) {
                     space = new CheckPoint(this, x, y, 1);
-                } else {
+                } else if(x == 7 && y == 7){
+                    space = new PriorityAntenna(this,x,y);
+                }
+                else {
                     space = new Space(this, x, y);
                 }
 

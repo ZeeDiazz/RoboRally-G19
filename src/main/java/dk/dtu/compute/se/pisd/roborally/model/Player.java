@@ -208,6 +208,7 @@ public class Player extends Subject {
     public double getDistanceToAntenna(Player player, PriorityAntenna priorityAntenna){
         // (x1,y1) = priorityantenna
         // (x2,y2) = player
+        // d = sqrt((x1-x2)^2 * (y1-y2)^2
         player.distanceToAntenna =
                 Math.sqrt(( priorityAntenna.getXValueOfSpace() - player.getSpace().getXValueOfSpace())
                         * (priorityAntenna.getXValueOfSpace() - player.getSpace().getXValueOfSpace()

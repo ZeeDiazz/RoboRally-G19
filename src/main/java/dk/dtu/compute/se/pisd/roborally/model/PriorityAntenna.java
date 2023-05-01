@@ -9,15 +9,20 @@ public class PriorityAntenna extends Space{
         super(board,x,y);
     }
 
+    /**
+     * this method set the priority player from a list of players
+     * @param players
+     * @param priorityAntenna
+     */
     public void  setPriorityPlayer(List<Player> players, PriorityAntenna priorityAntenna) {
         Player closestPlayer = null;
         double closestDistance = 0.0;
         double smallestSlope = 0.0;
         for (Player player: players){
-            double currentPlayersDistance = player.getDistanceToAntenna(player, priorityAntenna);
-            if(currentPlayersDistance < closestDistance){
+            double checkingPlayerDistance = player.getDistanceToAntenna(player, priorityAntenna);
+            if(checkingPlayerDistance < closestDistance){
                 closestPlayer = player;
-                closestDistance = currentPlayersDistance;
+                closestDistance = checkingPlayerDistance;
             }
         }
 
