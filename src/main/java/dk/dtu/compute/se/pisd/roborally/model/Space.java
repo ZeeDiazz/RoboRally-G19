@@ -142,4 +142,16 @@ public class Space extends Subject {
         notifyChange();
     }
 
+    public Space copy(Position newPosition) {
+        return new Space(newPosition, this.IsSpawnSpace, this.walls.toArray(new Heading[0]));
+    }
+
+    public void rotateLeft() {
+        int wallCount = walls.size();
+        for (int i = 0; i < wallCount; i++) {
+            Heading wall = walls.remove(0);
+            wall = Heading.turnLeft(wall);
+            walls.add(wall);
+        }
+    }
 }

@@ -36,4 +36,9 @@ public class CheckPoint extends Space {
             player.setRebootSpace(this);
         }
     }
+
+    @Override
+    public Space copy(Position newPosition) {
+        return new CheckPoint(newPosition, this.Id);
+    }
 }

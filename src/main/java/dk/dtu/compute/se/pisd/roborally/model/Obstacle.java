@@ -7,7 +7,7 @@ import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
  * Obstacle is a kind of Space, which has a type and direction
  *Extends Space class
  */
-public class Obstacle extends Space{
+public class Obstacle extends Space {
     private ObstacleType type;
     private Heading direction;
 
@@ -30,5 +30,16 @@ public class Obstacle extends Space{
 
     public Heading getDirection() {
         return direction;
+    }
+
+    @Override
+    public Space copy(Position newPosition) {
+        return new Obstacle(newPosition, this.type, this.direction);
+    }
+
+    @Override
+    public void rotateLeft() {
+        super.rotateLeft();
+        this.direction = Heading.turnLeft(this.direction);
     }
 }

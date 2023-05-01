@@ -412,4 +412,22 @@ public class Board extends Subject {
         moves.add(new Move(move.Start, move.Direction, moveAmount, move.Moving));
         return moves;
     }
+
+    public static Board rotateLeft(Board board) {
+        Space[][] newSpaces = new Space[board.height][board.width];
+        for (int x = 0; x < board.width; x++) {
+            for (int y = 0; y < board.height; y++) {
+                Position newPosition = new Position(y, board.width - x - 1);
+                Space newSpace = board.spaces[x][y].copy(newPosition);
+                newSpace.rotateLeft();
+                newSpaces[newPosition.X][newPosition.Y] = newSpace;
+            }
+        }
+
+        return new Board(newSpaces, board.boardName);
+    }
+
+    public static Board rotateRight(Board board) {
+        return rotateLeft(rotateLeft(rotateLeft(board)));
+    }
 }
