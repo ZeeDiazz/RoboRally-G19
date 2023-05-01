@@ -22,7 +22,11 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+
 import javafx.geometry.Pos;
+
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction; // From 1.4.0
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,12 +37,12 @@ import java.util.List;
  * Represent the Space of the board, and extends Subject
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class Space extends Subject {
     public final Position Position;
     private Player player;
     private final ArrayList<Heading> walls;
+    private List<FieldAction> actions;
     public final boolean IsSpawnSpace;
 
     /**
@@ -53,12 +57,14 @@ public class Space extends Subject {
     public Space(Position position, boolean isSpawnSpace, Heading... walls) {
         this.Position = position;
         this.IsSpawnSpace = isSpawnSpace;
+        this.actions = new ArrayList<>();
         this.player = null;
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
 
     /**
      * Gets the player currently occupying this space.
+     *
      * @return The player on the space, and null if the space is unoccupied
      */
     public Player getPlayer() {
@@ -67,6 +73,7 @@ public class Space extends Subject {
 
     /**
      * Sets the player currently occupying this space.
+     *
      * @param player The player to set as occupying this space.
      */
     public void setPlayer(Player player) {
@@ -86,6 +93,7 @@ public class Space extends Subject {
 
     /**
      * Whether this space currently has a player occupying it
+     *
      * @return True if there is a player on this space, else false.
      */
     public boolean hasPlayer() {
@@ -93,9 +101,9 @@ public class Space extends Subject {
     }
 
     /**
+     * @param direction The direction to place the wall
      * @author Daniel Jensen
      * Add a wall to this space
-     * @param direction The direction to place the wall
      */
     public void addWall(Heading direction) {
         if (!hasWall(direction)) {
@@ -105,14 +113,24 @@ public class Space extends Subject {
     }
 
     /**
-     * @author Zahedullah Wafa
-     * Indicating whether this space has a wall in the given direction
      * @param direction The direction to check
      * @return True if this space has a wall that way
+     * @author Zahedullah Wafa
+     * Indicating whether this space has a wall in the given direction
      */
     public boolean hasWall(Heading direction) {
         return walls.contains(direction);
     }
+
+    // From 1.4.0
+    public List<Heading> getWalls() {
+        return walls;
+    }
+
+    public List<FieldAction> getActions() {
+        return actions;
+    }
+
 
     /**
      * HACK
