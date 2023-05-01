@@ -38,23 +38,23 @@ public final class MapMaker {
         // Making special spaces
         // The spawn points
         addSpace(spaces, new Space(new Position(1, 1), true));
-        addSpace(spaces, new Space(new Position(0, 3), true));
-        addSpace(spaces, new Space(new Position(1, 4), true));
-        addSpace(spaces, new Space(new Position(1, 5), true));
-        addSpace(spaces, new Space(new Position(0, 6), true));
-        addSpace(spaces, new Space(new Position(1, 8), true));
+        addSpace(spaces, new Space(new Position(3, 2), true));
+        addSpace(spaces, new Space(new Position(4, 1), true));
+        addSpace(spaces, new Space(new Position(5, 1), true));
+        addSpace(spaces, new Space(new Position(6, 2), true));
+        addSpace(spaces, new Space(new Position(8, 1), true));
 
         // The two green conveyors
-        addSpace(spaces, new Obstacle(new Position(2, 0), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(spaces, new Obstacle(new Position(2, 9), GREEN_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new Obstacle(new Position(0, 0), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new Obstacle(new Position(9, 0), GREEN_CONVEYOR_BELT, NORTH));
 
         HashMap<Position, Heading[]> walls = new HashMap<>();
-        walls.put(new Position(1, 2), new Heading[] {NORTH});
-        walls.put(new Position(1, 7), new Heading[] {SOUTH});
-        walls.put(new Position(2, 4), new Heading[] {EAST});
-        walls.put(new Position(2, 5), new Heading[] {EAST});
+        walls.put(new Position(2, 1), new Heading[] {WEST});
+        walls.put(new Position(4, 0), new Heading[] {NORTH});
+        walls.put(new Position(5, 0), new Heading[] {NORTH});
+        walls.put(new Position(7, 1), new Heading[] {EAST});
 
-        return makeCustomBoard(spaces, walls, 3, 10, "Start A");
+        return makeCustomBoard(spaces, walls, 10, 3, "Start A");
     }
 
     public static Board make5A() {
@@ -143,7 +143,7 @@ public final class MapMaker {
     public static Board makeDizzyHighway() {
         Board startA = makeStartA();
         Board fiveB = make5B();
-        Board dizzyHighway = Board.add(startA, fiveB, new Position(3, 0), "Dizzy Highway");
+        Board dizzyHighway = Board.add(Board.rotateRight(startA), fiveB, new Position(3, 0), "Dizzy Highway");
         dizzyHighway.addCheckpoint(new Position(12, 3));
         return dizzyHighway;
     }
@@ -151,7 +151,7 @@ public final class MapMaker {
     public static Board makeRiskyCrossing() {
         Board startA = makeStartA();
         Board fiveA = make5A();
-        Board riskyCrossing = Board.add(startA, fiveA, new Position(3, 0), "Risky Crossing");
+        Board riskyCrossing = Board.add(Board.rotateRight(startA), fiveA, new Position(3, 0), "Risky Crossing");
         riskyCrossing.addCheckpoint(new Position(8, 7));
         riskyCrossing.addCheckpoint(new Position(11, 0));
         return riskyCrossing;
