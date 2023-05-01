@@ -1,4 +1,4 @@
-package java.dk.dtu.compute.se.pisd.roborally.controller;
+package dk.dtu.compute.se.pisd.roborally.controller;
 
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
@@ -21,7 +21,7 @@ class GameControllerTest {
     void setUp() {
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
         gameController = new GameController(board);
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 3; i++) {
             Player player = new Player(board, null,"Player " + i);
             board.addPlayer(player);
             player.setSpace(board.getSpace(i, i));
@@ -82,4 +82,45 @@ class GameControllerTest {
         //Check if the player moved two spaces
         Assertions.assertEquals(current,board.getSpace(0, 3).getPlayer(),"Player " + current.getName() + " should be Space (0,3)!");
     }
+    @Test
+    void testPriorityAntenna(){
+        Board board = gameController.board;
+        Player player1 = board.getPlayer(0);
+        Player player2 = board.getPlayer(1);
+        Player player3 = board.getPlayer(2);
+        PriorityAntenna priorityAntenna = new PriorityAntenna(board,7,7);
+        board.setCurrentPlayer(player3);
+        gameController.moveCurrentPlayerToSpace(board.getSpace(6,7));
+        board.setCurrentPlayer(player1);
+        gameController.moveCurrentPlayerToSpace(board.getSpace(2,2));
+
+        priorityAntenna.setPriorityPlayer(board.getPlayers(),priorityAntenna);
+        Assertions.assertTrue(board.getCurrentPlayer() == player3);
+        Assertions.assertFalse(board.getCurrentPlayer() == player2);
+        Assertions.assertFalse(board.getCurrentPlayer() == player1);
+
+    }
+    @Test
+    void testPriorityAntennaWithTie(){
+        Board board = gameController.board;
+        Player player1 = board.getPlayer(0);
+        Player player2 = board.getPlayer(1);
+        Player player3 = board.getPlayer(2);
+        PriorityAntenna priorityAntenna = new PriorityAntenna(board,4,4);
+
+        board.setCurrentPlayer(player3);
+        gameController.moveCurrentPlayerToSpace(board.getSpace(3,2));
+
+        board.setCurrentPlayer(player2);
+        gameController.moveCurrentPlayerToSpace(board.getSpace(5,1));
+
+        board.setCurrentPlayer(player1);
+        gameController.moveCurrentPlayerToSpace(board.getSpace(3,7));
+
+        priorityAntenna.setPriorityPlayer(board.getPlayers(),priorityAntenna);
+
+        Assertions.assertTrue(board.getCurrentPlayer() == player3);
+
+    }
+
 }

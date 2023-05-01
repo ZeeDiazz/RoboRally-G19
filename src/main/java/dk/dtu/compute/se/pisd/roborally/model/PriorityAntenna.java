@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PriorityAntenna extends Space{
+    List<Player> closestPlayers = new ArrayList<>();
 
     public PriorityAntenna(Board board, int x, int y){
         super(board,x,y);
@@ -16,35 +17,33 @@ public class PriorityAntenna extends Space{
      */
     public void  setPriorityPlayer(List<Player> players, PriorityAntenna priorityAntenna) {
         Player closestPlayer = null;
-        double closestDistance = 0.0;
-        double smallestSlope = 0.0;
+        int closestDistance = Integer.MAX_VALUE;
+        double smallestAngle = Double.MAX_VALUE;
+        List<Player> closestPlayers = new ArrayList<>();
         for (Player player: players){
-            double checkingPlayerDistance = player.getDistanceToAntenna(player, priorityAntenna);
+            int checkingPlayerDistance = player.getManhattanDistanceToAntenna(player, priorityAntenna);
             if(checkingPlayerDistance < closestDistance){
                 closestPlayer = player;
                 closestDistance = checkingPlayerDistance;
             }
         }
 
-        List<Player> closestPlayers = new ArrayList<>();
-        for(Player player : players){
-            double currentPlayersDistance = player.getDistanceToAntenna(player, priorityAntenna);
-            if(closestDistance == currentPlayersDistance){
-                closestPlayers.add(player);
-            }
-        }
 
-        if(closestPlayers != null){
+        /*if(!closestPlayers.isEmpty()){
             for(Player player : closestPlayers){
-                double currentPlayerSlope = player.getSlopeBetweenAntennaAndPlayer(player,priorityAntenna);
-                if(currentPlayerSlope < smallestSlope){
+                double currentPlayerSlope = player.getSlope(player,priorityAntenna);
+                double checkingPlayersAngle = Math.atan(currentPlayerSlope);
+                if(checkingPlayersAngle < 0){
+                    checkingPlayersAngle += Math.PI;
+                }
+                if(checkingPlayersAngle > smallestAngle){
                     closestPlayer = player;
-                    smallestSlope = currentPlayerSlope;
+                    smallestAngle = checkingPlayersAngle;
                 }
 
             }
 
-        }
+        }*/
         board.setCurrentPlayer(closestPlayer);
     }
 

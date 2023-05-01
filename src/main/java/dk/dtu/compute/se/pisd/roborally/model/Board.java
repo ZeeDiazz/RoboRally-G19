@@ -220,6 +220,43 @@ public class Board extends Subject {
             notifyChange();
         }
     }
+    public void  setPriorityPlayer(List<Player> players, PriorityAntenna priorityAntenna) {
+        Player closestPlayer = null;
+        double closestDistance = 0.0;
+        double smallestAngle = 0.0;
+        for (Player player: players){
+            double checkingPlayerDistance = player.getDistanceToAntenna(player, priorityAntenna);
+            if(checkingPlayerDistance < closestDistance){
+                closestPlayer = player;
+                closestDistance = checkingPlayerDistance;
+            }
+        }
+
+        List<Player> closestPlayers = new ArrayList<>();
+        for(Player player : players){
+            double checkingPlayersDistance = player.getDistanceToAntenna(player, priorityAntenna);
+            if(closestDistance == checkingPlayersDistance){
+                closestPlayers.add(player);
+            }
+        }
+
+        if(closestPlayers != null){
+            for(Player player : closestPlayers){
+                double currentPlayerSlope = player.getSlope(player,priorityAntenna);
+                double checkingPlayersAngle = Math.atan(currentPlayerSlope);
+                if(checkingPlayersAngle < 0){
+                    checkingPlayersAngle *= 2 * 3.14;
+                }
+                if(checkingPlayersAngle < smallestAngle){
+                    closestPlayer = player;
+                    smallestAngle = checkingPlayersAngle;
+                }
+
+            }
+
+        }
+        setCurrentPlayer(closestPlayer);
+    }
 
     /**
      * Gets the current phase of the board.
@@ -414,5 +451,8 @@ public class Board extends Subject {
      */
     public boolean hasPlayer(Space space) {
         return space.getPlayer() != null;
+    }
+    public List<Player> getPlayers() {
+        return players;
     }
 }

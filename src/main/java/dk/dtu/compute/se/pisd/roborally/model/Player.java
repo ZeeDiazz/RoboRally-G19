@@ -41,9 +41,11 @@ public class Player extends Subject {
 
     final public Board board;
     public int checkpointGoal = 0;
+    // stuff for antenna
     public double distanceToAntenna = 0.0;
     public double slopeBetweenAntennaAndPlayer = 0.0;
-
+    public int manhattanToAntenna = 0;
+    //stuff for antenna end
     private String name;
     private String color;
 
@@ -204,25 +206,42 @@ public class Player extends Subject {
         setSpace(this.rebootSpace);
         notifyChange();
     }
+    public int getManhattanDistanceToAntenna(Player player, PriorityAntenna priorityAntenna){
+        int xAntenna = priorityAntenna.getXValueOfSpace();
+        int yAntenna = priorityAntenna.getYValueOfSpace();
+        int xPlayer = player.getSpace().getXValueOfSpace();
+        int yPlayer = player.getSpace().getYValueOfSpace();
+        player.manhattanToAntenna = Math.abs(xPlayer-xAntenna) + Math.abs(yPlayer-yAntenna);
+        return player.manhattanToAntenna;
+    }
 
     public double getDistanceToAntenna(Player player, PriorityAntenna priorityAntenna){
+        double xAntenna = priorityAntenna.getXValueOfSpace();
+        double yAntenna = priorityAntenna.getYValueOfSpace();
+        double xPlayer = player.getSpace().getXValueOfSpace();
+        double yPlayer = player.getSpace().getYValueOfSpace();
         // (x1,y1) = priorityantenna
         // (x2,y2) = player
         // d = sqrt((x1-x2)^2 * (y1-y2)^2
         player.distanceToAntenna =
-                Math.sqrt(( priorityAntenna.getXValueOfSpace() - player.getSpace().getXValueOfSpace())
-                        * (priorityAntenna.getXValueOfSpace() - player.getSpace().getXValueOfSpace()
-                        + (priorityAntenna.getYValueOfSpace() - player.getSpace().getYValueOfSpace())
-                        * (priorityAntenna.getYValueOfSpace() - player.getSpace().getYValueOfSpace())));
+                Math.sqrt(
+                        ((xAntenna - xPlayer)*(xAntenna - xPlayer))
+                        *((yAntenna - yPlayer)*(yAntenna - yPlayer)));
         return player.distanceToAntenna;
 
     }
-    public double getSlopeBetweenAntennaAndPlayer(Player player, PriorityAntenna priorityAntenna){
+    public double getSlope(Player player, PriorityAntenna priorityAntenna){
         // (x1,y1) = priorityantenna
         // (x2,y2) = player
+        // s = sqrt((y2-y1)/(x2-x1)
+        double xAntenna = priorityAntenna.getXValueOfSpace();
+        double yAntenna = priorityAntenna.getYValueOfSpace();
+        double xPlayer = player.getSpace().getXValueOfSpace();
+        double yPlayer = player.getSpace().getYValueOfSpace();
+
         slopeBetweenAntennaAndPlayer =
-                Math.sqrt((player.getSpace().getXValueOfSpace() - priorityAntenna.getXValueOfSpace())
-                        / (player.getSpace().getYValueOfSpace() - priorityAntenna.getYValueOfSpace()));
-        return  slopeBetweenAntennaAndPlayer;
+                    Math.sqrt((yPlayer - yAntenna)
+                            / (xPlayer - xAntenna));
+        return slopeBetweenAntennaAndPlayer;
     }
 }
