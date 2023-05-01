@@ -430,4 +430,34 @@ public class Board extends Subject {
     public static Board rotateRight(Board board) {
         return rotateLeft(rotateLeft(rotateLeft(board)));
     }
+
+    public static Board add(Board board, Board adding, Position offset, String newName) {
+        Position currentTopLeft = board.spaces[0][0].Position;
+        Position currentBottomRight = board.spaces[board.width - 1][board.height - 1].Position;
+        Position addingTopLeft = Position.add(adding.spaces[0][0].Position, offset);
+        Position addingBottomRight = Position.add(adding.spaces[adding.width - 1][adding.height - 1].Position, offset);
+
+        int newWidth = Math.max(Math.abs(currentTopLeft.X - addingBottomRight.X), Math.abs(addingTopLeft.X - currentBottomRight.X)) + 1;
+        int newHeight = Math.max(Math.abs(currentTopLeft.Y - addingBottomRight.Y), Math.abs(addingTopLeft.Y - currentBottomRight.Y)) + 1;
+
+        Space[][] newSpaces = new Space[newWidth][newHeight];
+        // Add all the "board" spaces
+        for (int x = 0; x < board.width; x++) {
+            for (int y = 0; y < board.height; y++) {
+                newSpaces[x][y] = board.spaces[x][y].copy(new Position(x, y));
+            }
+        }
+        // Add all the "adding" spaces
+        for (int x = 0; x < adding.width; x++) {
+            for (int y = 0; y < adding.height; y++) {
+                newSpaces[x + offset.X][y + offset.Y] = adding.spaces[x][y].copy(new Position(x + offset.X, y + offset.Y));
+            }
+        }
+
+        return new Board(newSpaces, newName);
+    }
+
+    public static Board add(Board board, Board adding, Position offset) {
+        return add(board, adding, offset, board.boardName);
+    }
 }

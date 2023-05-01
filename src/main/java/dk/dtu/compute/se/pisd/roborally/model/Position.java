@@ -40,4 +40,8 @@ public final class Position {
         }
         return new Position(position.X + deltaX * amount, position.Y + deltaY * amount);
     }
+
+    public static Position add(Position p1, Position p2) {
+        return new Position(p1.X + p2.X, p1.Y + p2.Y);
+    }
 }
