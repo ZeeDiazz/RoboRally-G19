@@ -37,35 +37,23 @@ import java.util.List;
  */
 public class Space extends Subject {
     public final Position Position;
-
     private Player player;
-
     private final ArrayList<Heading> walls;
-
-
-    /**
-     * Construct a new Space object at the specified x-coordinate and y-coordinate.
-     * @param x x-coordinate of the space on the board.
-     * @param y y-coordinate of the space on the board.
-     */
-    public Space(int x, int y) {
-        this(x, y, new Heading[0]);
-    }
-
-    public Space(Position position) {
-        this(position.X, position.Y);
-    }
+    public final boolean IsSpawnSpace;
 
     /**
-     * @author Daniel Jensen
-     * Construct a new Space object at the specified x-coordinate and y-coordinate.
-     * @param x x-coordinate of the space on the board.
-     * @param y y-coordinate of the space on the board.
-     * @param walls The walls on this space
+     * Construct a new Space object at the specified position.
+     * @param position the position of the new space
+     * @param isSpawnSpace whether this space is one of the original spawn points
      */
-    public Space(int x, int y, Heading... walls) {
-        this.Position = new Position(x, y);
-        player = null;
+    public Space(Position position, boolean isSpawnSpace) {
+        this(position, isSpawnSpace, new Heading[0]);
+    }
+
+    public Space(Position position, boolean isSpawnSpace, Heading... walls) {
+        this.Position = position;
+        this.IsSpawnSpace = isSpawnSpace;
+        this.player = null;
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
 

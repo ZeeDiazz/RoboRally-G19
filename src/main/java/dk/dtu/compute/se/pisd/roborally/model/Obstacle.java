@@ -18,8 +18,8 @@ public class Obstacle extends Space{
      * @param type
      * @param direction
      */
-    public Obstacle(int x, int y, ObstacleType type, Heading direction){
-        super(x,y);
+    public Obstacle(Position position, ObstacleType type, Heading direction){
+        super(position, false);
         this.type = type;
         this.direction = direction;
     }
