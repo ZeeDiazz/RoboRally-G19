@@ -85,8 +85,8 @@ public class Board extends Subject {
 
     public Board(Space[][] spaces, String name) {
         this.boardName = name;
-        this.height = spaces.length;
-        this.width = spaces[0].length;
+        this.width = spaces.length;
+        this.height = spaces[0].length;
         this.spaces = spaces;
 
         this.stepMode = false;
@@ -328,12 +328,40 @@ public class Board extends Subject {
                 ", Step: " + getMoveCounter();
     }
 
-    /**
-     * Checks if the given space got a player on it
-     * @param space the space to check
-     * @return true if there is a plaer on the space, else false
-     */
-    public boolean hasPlayer(Space space) {
-        return space.getPlayer() != null;
+    public ArrayList<Move> resultingMoves(Move move) {
+        int moveAmount = 0;
+        ArrayList<Move> moves = new ArrayList<>();
+
+        Space space = getSpace(move.Start);
+        for (int i = 0; i < move.Amount; i++) {
+            if (space.hasWall(move.Direction)) {
+                break;
+            }
+
+            space = getNeighbour(space, move.Direction);
+            if (space == null) {
+                moveAmount++;
+                break;
+            }
+            else if (space.hasWall(Heading.turnAround(move.Direction))) {
+                break;
+            }
+            else if (space.hasPlayer()) {
+                // Can maximally move the full amount, minus the part already moved
+                int moveOtherAmount = move.Amount - moveAmount;
+                Move otherPlayerMove = new Move(space.Position, move.Direction, moveOtherAmount, space.getPlayer());
+
+                for (Move resultingMove : resultingMoves(otherPlayerMove)) {
+                    moves.add(resultingMove);
+                    moveAmount = Math.max(moveAmount, resultingMove.Amount);
+                }
+
+                break;
+            }
+            moveAmount++;
+        }
+
+        moves.add(new Move(move.Start, move.Direction, moveAmount, move.Moving));
+        return moves;
     }
 }

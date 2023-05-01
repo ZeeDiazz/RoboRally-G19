@@ -9,6 +9,22 @@ public final class Position {
         this.Y = y;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof Position otherPos) {
+            return this.X == otherPos.X && this.Y == otherPos.Y;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(this.X) * 3 + Integer.hashCode(this.Y) * 7;
+    }
+
     public static Position move(Position position, Heading heading) {
         return move(position, heading, 1);
     }

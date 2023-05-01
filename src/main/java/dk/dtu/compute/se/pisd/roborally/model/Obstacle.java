@@ -13,14 +13,13 @@ public class Obstacle extends Space{
 
     /**
      * The constructor uses super, because the class extends Space.
-     * @param board
      * @param x
      * @param y
      * @param type
      * @param direction
      */
-    public Obstacle(Board board, int x, int y, ObstacleType type, Heading direction){
-        super(board,x,y);
+    public Obstacle(int x, int y, ObstacleType type, Heading direction){
+        super(x,y);
         this.type = type;
         this.direction = direction;
     }

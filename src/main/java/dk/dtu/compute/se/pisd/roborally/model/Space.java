@@ -52,6 +52,10 @@ public class Space extends Subject {
         this(x, y, new Heading[0]);
     }
 
+    public Space(Position position) {
+        this(position.X, position.Y);
+    }
+
     /**
      * @author Daniel Jensen
      * Construct a new Space object at the specified x-coordinate and y-coordinate.
@@ -79,13 +83,15 @@ public class Space extends Subject {
      */
     public void setPlayer(Player player) {
         Player oldPlayer = this.player;
-        if (player != oldPlayer && player != null) {
+        if (player != oldPlayer) {
             this.player = player;
             if (oldPlayer != null) {
                 // this should actually not happen
                 oldPlayer.setSpace(null);
             }
-            player.setSpace(this);
+            if (player != null) {
+                player.setSpace(this);
+            }
             notifyChange();
         }
     }
@@ -119,37 +125,6 @@ public class Space extends Subject {
     public boolean hasWall(Heading direction) {
         return walls.contains(direction);
     }
-
-    /**
-     * @author Zahed Wafa
-     * This method checks whether it's possible to make a legal move
-     * @param heading The direction in which way the player wants to move in
-     * @return Returns true if the move is legal and false if not
-     */
-
-    // TODO move
-    /*
-    public boolean canMove(Heading heading) {
-        if (hasWall(heading)) {
-            return false;
-        }
-        Space neighbour = board.getNeighbour(this, heading);
-        // No neighbor means going off the board, which is always allowed
-        if (neighbour == null) {
-            return true;
-        }
-        // If the neighbor has a wall towards this space, it's equivalent to having a wall from this space towards the neighbor
-        if (neighbour.hasWall(Heading.turnAround(heading))) {
-            return false;
-        }
-        // If the neighbor has no players, you can always move to it
-        if (!neighbour.hasPlayer()) {
-            return true;
-        }
-        // If there is a player on neighboring square, you can only move if they can move
-        return neighbour.canMove(heading);
-    }
-     */
 
     /**
      * HACK
