@@ -29,7 +29,7 @@ import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -94,7 +94,7 @@ public class AppController implements Observer {
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
                 board.addPlayer(player);
-                Space startingSpace = board.getSpace(i % board.width, i);
+                EmptySpace startingSpace = board.getSpace(i % board.width, i);
                 player.setSpace(startingSpace);
                 player.setRebootSpace(startingSpace);
             }

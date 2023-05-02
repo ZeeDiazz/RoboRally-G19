@@ -10,6 +10,7 @@ public class EmptySpace extends Subject {
     public final Board board;
     public final Position position;
     protected final ArrayList<Heading> walls;
+    protected Player standingOn;
 
     public EmptySpace(Board board, Position position, Heading... walls) {
         this.board = board;
@@ -30,12 +31,16 @@ public class EmptySpace extends Subject {
         return null;
     }
 
+    public boolean hasWall(Heading direction) {
+        return walls.contains(direction);
+    }
+
     public boolean canEnterFrom(Heading from) {
-        return !walls.contains(from);
+        return !hasWall(from);
     }
 
     public boolean canExitBy(Heading going) {
-        return !walls.contains(going);
+        return !hasWall(going);
     }
 
     /**
@@ -44,7 +49,7 @@ public class EmptySpace extends Subject {
      * Add a wall to this space
      */
     public void addWall(Heading direction) {
-        if (!walls.contains(direction)) {
+        if (!hasWall(direction)) {
             walls.add(direction);
             changed();
         }
@@ -53,5 +58,13 @@ public class EmptySpace extends Subject {
     // Hack
     public void changed() {
         notifyChange();
+    }
+
+    // TODO refactor so these aren't necessary?
+    public void setPlayer(Player player) {
+        this.standingOn = player;
+    }
+    public Player getPlayer() {
+        return standingOn;
     }
 }

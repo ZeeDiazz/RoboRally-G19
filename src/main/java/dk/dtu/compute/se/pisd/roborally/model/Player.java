@@ -22,7 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
 import org.jetbrains.annotations.NotNull;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
@@ -47,8 +47,8 @@ public class Player extends Subject {
     private String name;
     private String color;
 
-    private Space space;
-    private Space rebootSpace;
+    private EmptySpace space;
+    private EmptySpace rebootSpace;
     private Heading heading = SOUTH;
 
 
@@ -99,7 +99,7 @@ public class Player extends Subject {
             this.name = name;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
@@ -122,7 +122,7 @@ public class Player extends Subject {
         this.color = color;
         notifyChange();
         if (space != null) {
-            space.playerChanged();
+            space.changed();
         }
     }
 
@@ -131,7 +131,7 @@ public class Player extends Subject {
      *
      * @return position of the player.
      */
-    public Space getSpace() {
+    public EmptySpace getSpace() {
         return space;
     }
 
@@ -140,8 +140,8 @@ public class Player extends Subject {
      *
      * @param space the space to set the players position.
      */
-    public void setSpace(Space space) {
-        Space oldSpace = this.space;
+    public void setSpace(EmptySpace space) {
+        EmptySpace oldSpace = this.space;
         if (space != oldSpace &&
                 (space == null || space.board == this.board)) {
             this.space = space;
@@ -174,7 +174,7 @@ public class Player extends Subject {
             this.heading = heading;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
@@ -204,7 +204,7 @@ public class Player extends Subject {
      * @author Daniel Jensen
      * Set the reboot space of a player, used when the player has to reboot
      */
-    public void setRebootSpace(Space space) {
+    public void setRebootSpace(EmptySpace space) {
         this.rebootSpace = space;
     }
 

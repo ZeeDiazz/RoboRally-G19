@@ -22,10 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.CheckPoint;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Obstacle;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.ObstacleType;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -69,7 +66,7 @@ public class GameController {
      * @param space The space which the player's robot is going to be moved to
      *
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space) {
+    public void moveCurrentPlayerToSpace(@NotNull EmptySpace space) {
         Player currentPlayer = board.getCurrentPlayer();
 
 
@@ -88,7 +85,7 @@ public class GameController {
      * @return Returns true if there is another robot on the space received as parameter
      */
 
-    public boolean spaceIsOccupied(Space space) {
+    public boolean spaceIsOccupied(EmptySpace space) {
         return space.getPlayer() != null;
     }
 
@@ -374,10 +371,12 @@ public class GameController {
     }
 
     private void performMove(Move move) {
+        return;
+        /*
         Player player = move.Moving;
         Heading direction = move.Direction;
 
-        Space currentSpace = player.getSpace();
+        EmptySpace currentSpace = player.getSpace();
         boolean rebootRobot = false;
 
         for (int i = 0; i < move.Amount; i++) {
@@ -471,6 +470,7 @@ public class GameController {
                 obstacleAction(currentPlayer);
                 //ZeeDiazz (Zaid)}
 
+                /*
                 //Felix723 (Felix Schmidt){
                 for (int i = 0; i < board.getPlayerCount(); i++) {
                     Player checkingPlayer = board.getPlayer(i);
@@ -485,6 +485,7 @@ public class GameController {
                     }
                 }
                 //Felix723 (Felix Schmidt)}
+                */
 
                 board.setStep(currentStep);
             } else {
@@ -508,33 +509,7 @@ public class GameController {
         Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
             Player player =  board.getPlayer(i);
-            if (player.getSpace() instanceof Obstacle obstacle) {
-                switch (obstacle.getType()) {
-                    case BLUE_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 2, player);
-                        break;
-                    case GREEN_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, player);
-                        break;
-                    case PUSH_PANEL:
-                        //move the player according to its register
-                        //The code below is just for now
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, player);
-                        break;
-                    case BOARD_LASER:
-                        break;
-                    case GEAR:
-                        break;
-                    case RED_GEAR:
-                        turnLeft(player);
-                        break;
-                    case GREEN_GEAR:
-                        turnRight(player);
-                        break;
-
-                }
-
-            }
+            moves[i] = player.getSpace().endedRegisterOn(player, 0);
         }
         performSimultaneousMoves(moves);
     }

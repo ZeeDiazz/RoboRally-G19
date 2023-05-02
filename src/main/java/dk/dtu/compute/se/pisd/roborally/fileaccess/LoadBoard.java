@@ -29,7 +29,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
 
 import java.io.*;
 
@@ -45,6 +45,8 @@ public class LoadBoard {
     private static final String JSON_EXT = "json";
 
     public static Board loadBoard(String boardname) {
+        return null;
+        /*
         if (boardname == null) {
             boardname = DEFAULTBOARD;
         }
@@ -93,16 +95,19 @@ public class LoadBoard {
             }
         }
         return null;
+         */
     }
 
     public static void saveBoard(Board board, String name) {
+        return;
+        /*
         BoardTemplate template = new BoardTemplate();
         template.width = board.width;
         template.height = board.height;
 
         for (int i=0; i<board.width; i++) {
             for (int j=0; j<board.height; j++) {
-                Space space = board.getSpace(i,j);
+                EmptySpace space = board.getSpace(i,j);
                 if (!space.getWalls().isEmpty() || !space.getActions().isEmpty()) {
                     SpaceTemplate spaceTemplate = new SpaceTemplate();
                     spaceTemplate.x = space.Position.X;
@@ -152,7 +157,7 @@ public class LoadBoard {
                     fileWriter.close();
                 } catch (IOException e2) {}
             }
-        }
+        }*/
     }
 
 }

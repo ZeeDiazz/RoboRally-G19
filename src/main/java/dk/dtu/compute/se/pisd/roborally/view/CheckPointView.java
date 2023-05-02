@@ -1,7 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.CheckPointSpace;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,11 +10,11 @@ public class CheckPointView extends StackPane implements ViewObserver {
     public final static int CHECKPOINT_HEIGHT = 25;
     public final static int CHECKPOINT_WIDTH = 10;
 
-    public final CheckPoint checkPoint;
+    public final CheckPointSpace checkPoint;
 
 
 
-    public CheckPointView(@NotNull CheckPoint checkPoint){
+    public CheckPointView(@NotNull CheckPointSpace checkPoint){
         this.checkPoint = checkPoint;
 
         this.setPrefWidth(CHECKPOINT_WIDTH);

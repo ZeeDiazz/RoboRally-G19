@@ -18,6 +18,6 @@ public final class Move {
     }
 
     public static Move fromPlayer(Player player, int amount) {
-        return new Move(player.getSpace().Position, player.getHeading(), amount, player);
+        return new Move(player.getSpace().position, player.getHeading(), amount, player);
     }
 }

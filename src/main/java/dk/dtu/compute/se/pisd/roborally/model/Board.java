@@ -22,15 +22,12 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.CheckPoint;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Obstacle;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -49,7 +46,7 @@ public class Board extends Subject {
 
     private Integer gameId;
 
-    private final Space[][] spaces;
+    private final EmptySpace[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
 
@@ -76,34 +73,10 @@ public class Board extends Subject {
         this.boardName = boardName;
         this.width = width;
         this.height = height;
-        spaces = new Space[width][height];
+        spaces = new EmptySpace[width][height];
         for (int x = 0; x < width; x++) {
-
             for (int y = 0; y < height; y++) {
-                Space space;
-
-                //ZeeDiazz (Zaid) {
-                if (x == 0 && y == 1 || x == 2 && y == 3) {
-                    space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
-                } else if (x == 1 && y == 5) {
-                    space = new Obstacle(this, x, y, GREEN_CONVEYOR_BELT, Heading.NORTH);
-                }
-
-                //   }
-                else if (x == 3 && y == 4) {
-                    space = new CheckPoint(this, x, y, 0);
-                } else if (x == 6 && y == 2) {
-                    space = new CheckPoint(this, x, y, 1);
-                } else {
-                    space = new Space(this, x, y);
-                }
-
-
-                if (x == 1 && y == 1) {
-                    space.addWall(Heading.SOUTH);
-                }
-
-                spaces[x][y] = space;
+                spaces[x][y] = new EmptySpace(this, new Position(x, y));
             }
         }
         this.stepMode = false;
@@ -151,7 +124,7 @@ public class Board extends Subject {
      * @param y the y-coordinate
      * @return the given coordinates, or null if out of bounds
      */
-    public Space getSpace(int x, int y) {
+    public EmptySpace getSpace(int x, int y) {
         if (x >= 0 && x < width &&
                 y >= 0 && y < height) {
             return spaces[x][y];
@@ -160,7 +133,7 @@ public class Board extends Subject {
         }
     }
 
-    public Space getSpace(Position position) {
+    public EmptySpace getSpace(Position position) {
         return getSpace(position.X, position.Y);
     }
 
@@ -314,8 +287,8 @@ public class Board extends Subject {
      * @param heading the heading of the neighbour
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
-    public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
-        return getSpace(Position.move(space.Position, heading));
+    public EmptySpace getNeighbour(@NotNull EmptySpace space, @NotNull Heading heading) {
+        return getSpace(Position.move(space.position, heading));
         /*
         int x = space.Position.X;
         int y = space.y;
@@ -412,7 +385,7 @@ public class Board extends Subject {
      * @param space the space to check
      * @return true if there is a plaer on the space, else false
      */
-    public boolean hasPlayer(Space space) {
+    public boolean hasPlayer(EmptySpace space) {
         return space.getPlayer() != null;
     }
 }

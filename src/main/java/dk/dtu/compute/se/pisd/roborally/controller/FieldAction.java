@@ -21,7 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
 
 /**
  * ...
@@ -39,6 +39,6 @@ public abstract class FieldAction {
      * @param space the space this action should be executed for
      * @return whether the action was successfully executed
      */
-    public abstract boolean doAction(GameController gameController, Space space);
+    public abstract boolean doAction(GameController gameController, EmptySpace space);
 
 }
