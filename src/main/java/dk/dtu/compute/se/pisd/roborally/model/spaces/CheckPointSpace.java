@@ -1,9 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Position;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public class CheckPointSpace extends EmptySpace {
     public final int id;
@@ -29,11 +26,12 @@ public class CheckPointSpace extends EmptySpace {
     }
 
     @Override
-    public void endedRegisterOn(Player player, int registerIndex) {
+    public Move endedRegisterOn(Player player, int registerIndex) {
         if (!hasPassed(player)) {
             player.checkpointGoal = this.id + 1;
             // player.setRebootSpace(this);
             changed();
         }
+        return null;
     }
 }

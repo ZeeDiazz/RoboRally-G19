@@ -1,10 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Position;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +25,9 @@ public class EmptySpace extends Subject {
         // do nothing
     }
 
-    public void endedRegisterOn(Player player, int registerIndex) {
+    public Move endedRegisterOn(Player player, int registerIndex) {
         // do nothing
+        return null;
     }
 
     public boolean canEnterFrom(Heading from) {

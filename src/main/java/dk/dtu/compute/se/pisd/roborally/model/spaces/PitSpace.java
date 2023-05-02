@@ -1,9 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Position;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public class PitSpace extends EmptySpace {
     public PitSpace(Board board, Position position, Heading... walls) {
@@ -22,8 +19,9 @@ public class PitSpace extends EmptySpace {
     }
 
     @Override
-    public void endedRegisterOn(Player player, int registerIndex) {
+    public Move endedRegisterOn(Player player, int registerIndex) {
         player.reboot();
         changed();
+        return null;
     }
 }

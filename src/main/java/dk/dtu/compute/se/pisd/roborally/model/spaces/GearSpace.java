@@ -1,9 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Position;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public abstract class GearSpace extends EmptySpace {
 
@@ -18,8 +15,9 @@ public abstract class GearSpace extends EmptySpace {
     protected abstract void turnPlayer(Player player);
 
     @Override
-    public void endedRegisterOn(Player player, int registerIndex) {
+    public Move endedRegisterOn(Player player, int registerIndex) {
         turnPlayer(player);
         changed();
+        return null;
     }
 }
