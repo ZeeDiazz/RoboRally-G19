@@ -25,6 +25,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class GameController implements ISerializable {
         if (spaceIsOccupied(space)) {
             return;
         } else {
-            space.setPlayer(currentPlayer);
+            currentPlayer.setSpace(space);
         }
         nextPlayer(currentPlayer);
     }
@@ -359,7 +360,8 @@ public class GameController implements ISerializable {
             if (validMoves.containsKey(endingPos)) {
                 colliding.add(endingPos);
                 validMoves.remove(endingPos);
-            } else {
+            }
+            else {
                 validMoves.put(endingPos, move);
             }
         }
@@ -368,37 +370,16 @@ public class GameController implements ISerializable {
     }
 
     private void performMove(Move move) {
-        Player player = move.Moving;
-        Heading direction = move.Direction;
-
-        Space currentSpace = player.getSpace();
-
-        for (int i = 0; i < move.Amount; i++) {
-            if (!currentSpace.canMove(direction)) {
-                continue;
+        for (Move m : board.resultingMoves(move)) {
+            Space endingSpace = board.getSpace(m.getEndingPosition());
+            // If going out of bounds
+            if (endingSpace == null) {
+                m.Moving.reboot();
             }
-            currentSpace = player.board.getNeighbour(currentSpace, direction);
-            if (currentSpace == null) {
-                break;
-            }
-            if (currentSpace.hasPlayer()) {
-                Move otherPlayerMove = new Move(currentSpace.Position, direction, 1, currentSpace.getPlayer());
-                performMove(otherPlayerMove);
+            else {
+                m.Moving.setSpace(endingSpace);
             }
         }
-
-        if (currentSpace == null) {
-            player.reboot();
-        } else {
-            player.setSpace(currentSpace);
-        }
-
-        // Is this still required?
-        /*
-        if (spaceIsOccupied(currentSpace)) {
-            return;
-        }
-         */
     }
 
     // TODO Assignment V2
@@ -460,6 +441,7 @@ public class GameController implements ISerializable {
                 obstacleAction(currentPlayer);
                 //ZeeDiazz (Zaid)}
 
+                /*
                 //Felix723 (Felix Schmidt){
                 for (int i = 0; i < board.getPlayerCount(); i++) {
                     Player checkingPlayer = board.getPlayer(i);
@@ -468,12 +450,13 @@ public class GameController implements ISerializable {
                             checkPoint.playerPassed(checkingPlayer);
                         }
 
-                        if (checkingPlayer.checkpointGoal == Board.checkpointCount) {
+                        if (checkingPlayer.checkpointGoal == board.getCheckpointCount()) {
                             checkingPlayer.setColor("purple");
                         }
                     }
                 }
                 //Felix723 (Felix Schmidt)}
+                */
 
                 board.setStep(currentStep);
             } else {
@@ -495,29 +478,11 @@ public class GameController implements ISerializable {
     public void obstacleAction(Player currentPlayer) {
         Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
-            if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
-                switch (obstacle.getType()) {
-                    case BLUE_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 2, board.getPlayer(i));
-                        break;
-                    case GREEN_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
-                        break;
-                    case PUSH_PANEL:
-                        //move the player according to its register
-                        //The code below is just for now
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
-                        break;
-                    case BOARD_LASER:
-                        break;
-                    case GEAR:
-                        break;
-                }
-            }
+            Player player =  board.getPlayer(i);
+            moves[i] = player.getSpace().endedRegisterOn(player, 0);
         }
         performSimultaneousMoves(moves);
     }
-
 
     @Override
     public JsonElement serialize() {
@@ -530,7 +495,6 @@ public class GameController implements ISerializable {
         }
         return jsonObject;
     }
-
 
     @Override
     public ISerializable deserialize(JsonElement element) {

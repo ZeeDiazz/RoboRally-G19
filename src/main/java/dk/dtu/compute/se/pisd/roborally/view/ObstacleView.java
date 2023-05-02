@@ -1,7 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -12,10 +12,10 @@ public class ObstacleView extends StackPane implements ViewObserver{
         final public static int Obstacle_HEIGHT = 75; // 60; // 75;
         final public static int Obstacle_WIDTH = 75;  // 60; // 75;
 
-    private final Obstacle obstacle;
+    private final Space obstacle;
 
 
-    public ObstacleView(Obstacle obstacle) {
+    public ObstacleView(Space obstacle) {
         this.obstacle = obstacle;
     }
 
