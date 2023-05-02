@@ -7,19 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Space extends Subject {
-    public final Board board;
     public final Position position;
     protected final ArrayList<Heading> walls;
     protected Player standingOn;
 
-    public Space(Board board, Position position, Heading... walls) {
-        this.board = board;
+    public Space(Position position, Heading... walls) {
         this.position = position;
         this.walls = new ArrayList<>(List.of(walls));
-    }
-
-    public Space(Board board, Position position) {
-        this(board, position, new Heading[0]);
     }
 
     public void landedOn(Player player) {
@@ -52,6 +46,17 @@ public class Space extends Subject {
         if (!hasWall(direction)) {
             walls.add(direction);
             changed();
+        }
+    }
+
+    public Space copy(Position newPosition) {
+        return new Space(newPosition, this.walls.toArray(new Heading[0]));
+    }
+
+    public void rotateLeft() {
+        int wallCount = walls.size();
+        for (int i = 0; i < wallCount; i++) {
+            walls.add(Heading.turnLeft(walls.remove(0)));
         }
     }
 

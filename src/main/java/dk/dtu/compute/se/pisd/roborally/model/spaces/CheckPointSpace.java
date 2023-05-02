@@ -5,14 +5,10 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 public class CheckPointSpace extends Space {
     public final int id;
 
-    public CheckPointSpace(Board board, Position position, int id, Heading... walls) {
-        super(board, position, walls);
+    public CheckPointSpace(Position position, int id, Heading... walls) {
+        super(position, walls);
 
         this.id = id;
-    }
-
-    public CheckPointSpace(Board board, Position position, int id) {
-        this(board, position, id, new Heading[0]);
     }
 
     /**
@@ -33,5 +29,10 @@ public class CheckPointSpace extends Space {
             changed();
         }
         return null;
+    }
+
+    @Override
+    public Space copy(Position newPosition) {
+        return new CheckPointSpace(newPosition, this.id, this.walls.toArray(new Heading[0]));
     }
 }

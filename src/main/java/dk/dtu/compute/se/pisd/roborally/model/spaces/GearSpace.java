@@ -4,12 +4,8 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public abstract class GearSpace extends Space {
 
-    public GearSpace(Board board, Position position, Heading... walls) {
-        super(board, position, walls);
-    }
-
-    public GearSpace(Board board, Position position) {
-        super(board, position);
+    public GearSpace(Position position, Heading... walls) {
+        super(position, walls);
     }
 
     protected abstract void turnPlayer(Player player);

@@ -1,18 +1,14 @@
-package java.dk.dtu.compute.se.pisd.roborally.controller;
+package dk.dtu.compute.se.pisd.roborally.controller;
 
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.BlueConveyorSpace;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Obstacle;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.ObstacleType.BLUE_CONVEYOR_BELT;
 
 class GameControllerTest {
 
@@ -75,7 +71,7 @@ class GameControllerTest {
         Assertions.assertEquals(current,board.getSpace(0, 0).getPlayer(),"Player " + current.getName() + " should be Space (0,0)!");
 
         //Space 0,1 is now a Blue Conveyor belt
-        Space space = new BlueConveyorSpace(board, new Position(0, 1), Heading.SOUTH);
+        Space space = new BlueConveyorSpace(new Position(0, 1), Heading.SOUTH);
 
         //Set players place at Blue Conveyor belt.
         current.setSpace(space);

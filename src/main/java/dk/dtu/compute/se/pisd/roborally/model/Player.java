@@ -21,9 +21,15 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
@@ -33,9 +39,8 @@ import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
  * (name, color, position on the board heading direction, and command card fields.)
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
-public class Player extends Subject {
+public class Player extends Subject implements ISerializable {
 
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
@@ -142,8 +147,9 @@ public class Player extends Subject {
      */
     public void setSpace(Space space) {
         Space oldSpace = this.space;
-        if (space != oldSpace &&
-                (space == null || space.board == this.board)) {
+
+        if (space != oldSpace) {
+
             this.space = space;
             if (oldSpace != null) {
                 oldSpace.setPlayer(null);
@@ -208,6 +214,18 @@ public class Player extends Subject {
         this.rebootSpace = space;
     }
 
+    public Space getRebootSpace() {
+        return rebootSpace;
+    }
+
+    public CommandCardField[] getCards() {
+        return cards;
+    }
+
+    public CommandCardField[] getProgram() {
+        return program;
+    }
+
     /**
      * @author Daniel Jensen
      * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
@@ -215,5 +233,40 @@ public class Player extends Subject {
     public void reboot() {
         setSpace(this.rebootSpace);
         notifyChange();
+    }
+
+    @Override
+    public JsonElement serialize() {
+
+
+        JsonObject jsonObject = new JsonObject();
+
+
+        jsonObject.addProperty("checkpointGoal", this.checkpointGoal);
+        jsonObject.addProperty("name", this.name);
+        jsonObject.add("space", this.space.position.serialize());
+        jsonObject.add("rebootSpace", this.rebootSpace.position.serialize());
+        jsonObject.addProperty("heading", this.heading.toString());
+
+
+        JsonArray jsonArrayProgram = new JsonArray();
+        for (CommandCardField cardField : program) {
+            jsonArrayProgram.add(cardField.serialize());
+        }
+        jsonObject.add("program", jsonArrayProgram);
+
+        JsonArray jsonArrayCards = new JsonArray();
+        for (CommandCardField card : cards) {
+            jsonArrayCards.add(card.serialize());
+        }
+        jsonObject.add("cards", jsonArrayCards);
+
+        return jsonObject;
+
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return null;
     }
 }

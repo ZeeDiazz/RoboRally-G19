@@ -3,12 +3,8 @@ package dk.dtu.compute.se.pisd.roborally.model.spaces;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public class PitSpace extends Space {
-    public PitSpace(Board board, Position position, Heading... walls) {
-        super(board, position, walls);
-    }
-
-    public PitSpace(Board board, Position position) {
-        super(board, position);
+    public PitSpace(Position position, Heading... walls) {
+        super(position, walls);
     }
 
     @Override
@@ -23,5 +19,10 @@ public class PitSpace extends Space {
         player.reboot();
         changed();
         return null;
+    }
+
+    @Override
+    public Space copy(Position newPosition) {
+        return new PitSpace(newPosition, walls.toArray(new Heading[0]));
     }
 }

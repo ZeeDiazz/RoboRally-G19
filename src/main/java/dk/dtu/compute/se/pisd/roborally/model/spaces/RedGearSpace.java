@@ -6,16 +6,17 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Position;
 
 public class RedGearSpace extends GearSpace {
-    public RedGearSpace(Board board, Position position, Heading... walls) {
-        super(board, position, walls);
-    }
-
-    public RedGearSpace(Board board, Position position) {
-        super(board, position);
+    public RedGearSpace(Position position, Heading... walls) {
+        super(position, walls);
     }
 
     @Override
     protected void turnPlayer(Player player) {
         player.setHeading(Heading.turnLeft(player.getHeading()));
+    }
+
+    @Override
+    public Space copy(Position newPosition) {
+        return new RedGearSpace(newPosition, this.walls.toArray(new Heading[0]));
     }
 }
