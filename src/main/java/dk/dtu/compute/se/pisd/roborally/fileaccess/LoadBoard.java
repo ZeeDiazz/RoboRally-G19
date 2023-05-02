@@ -18,7 +18,8 @@
  *  along with this project; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- */
+ *//*
+
 package dk.dtu.compute.se.pisd.roborally.fileaccess;
 
 import com.google.gson.Gson;
@@ -27,17 +28,19 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
-import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 
 import java.io.*;
 
+*/
 /**
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- */
+ *//*
+
 public class LoadBoard {
 
     private static final String BOARDSFOLDER = "boards";
@@ -57,7 +60,7 @@ public class LoadBoard {
         }
 
         // In simple cases, we can create a Gson object with new Gson():
-        GsonBuilder simpleBuilder = new GsonBuilder().registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>());
+        GsonBuilder simpleBuilder = new GsonBuilder().registerTypeAdapter(Obstacle.class, new Adapter<Obstacle>());
         Gson gson = simpleBuilder.create();
 
         Board result;
@@ -72,7 +75,7 @@ public class LoadBoard {
             for (SpaceTemplate spaceTemplate : template.spaces) {
                 Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
                 if (space != null) {
-                    space.getActions().addAll(spaceTemplate.actions);
+                    //space.getObstacles().addAll(spaceTemplate.obstacles);
                     space.getWalls().addAll(spaceTemplate.walls);
                 }
             }
@@ -97,31 +100,16 @@ public class LoadBoard {
     }
 
     public static void saveBoard(Board board, File file) {
-        BoardTemplate template = new BoardTemplate(board.width, board.height);
-        template.width = board.width;
-        template.height = board.height;
-
-        for (int i = 0; i < board.width; i++) {
-            for (int j = 0; j < board.height; j++) {
-                Space space = board.getSpace(i, j);
-                if (!space.getWalls().isEmpty() || !space.getActions().isEmpty()) {
-                    SpaceTemplate spaceTemplate = new SpaceTemplate();
-
-                    spaceTemplate.x = space.Position.X;
-                    spaceTemplate.y = space.Position.Y;
-                    spaceTemplate.actions.addAll(space.getActions());
-                    spaceTemplate.walls.addAll(space.getWalls());
-                    template.spaces.add(spaceTemplate);
-                }
-            }
-        }
+    
 
         //  ClassLoader classLoader = LoadBoard.class.getClassLoader();
         // TODO: this is not very defensive, and will result in a NullPointerException
         //       when the folder "resources" does not exist! But, it does not need
         //       the file "simpleCards.json" to exist!
-     /*   String filename =
-                classLoader.getResource(BOARDSFOLDER).getPath() + "/" + name + "." + JSON_EXT;*/
+     */
+/*   String filename =
+                classLoader.getResource(BOARDSFOLDER).getPath() + "/" + name + "." + JSON_EXT;*//*
+
 
         // In simple cases, we can create a Gson object with new:
         //
@@ -130,7 +118,7 @@ public class LoadBoard {
         // But, if you need to configure it, it is better to create it from
         // a builder (here, we want to configure the JSON serialisation with
         // a pretty printer):
-        GsonBuilder simpleBuilder = new GsonBuilder().registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).setPrettyPrinting();
+        GsonBuilder simpleBuilder = new GsonBuilder().registerTypeAdapter(Obstacle.class, new Adapter<Obstacle>()).setPrettyPrinting();
         Gson gson = simpleBuilder.create();
 
         FileWriter fileWriter = null;
@@ -158,3 +146,4 @@ public class LoadBoard {
     }
 
 }
+*/

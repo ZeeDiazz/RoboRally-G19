@@ -21,7 +21,14 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+
+
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
+
 
 import javafx.geometry.Pos;
 
@@ -38,7 +45,8 @@ import java.util.List;
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
-public class Space extends Subject {
+public class Space extends Subject implements ISerializable {
+
 
     public final Position Position;
 
@@ -57,11 +65,14 @@ public class Space extends Subject {
     }
 
 
+
+
     public Space(Position position, boolean isSpawnSpace, Heading... walls) {
         this.Position = position;
         this.IsSpawnSpace = isSpawnSpace;
         this.actions = new ArrayList<>();
         this.player = null;
+
 
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
@@ -127,6 +138,7 @@ public class Space extends Subject {
     }
 
 
+
     // From 1.4.0
     public List<Heading> getWalls() {
         return walls;
@@ -147,6 +159,37 @@ public class Space extends Subject {
         notifyChange();
     }
 
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+
+        jsonObject.addProperty("spaceType", (this instanceof Obstacle) ? "obstacle"
+                : (this instanceof CheckPoint) ? "checkPoint" : "regularType");
+
+
+        jsonObject.add("boardPosition", this.Position.serialize());
+
+        if (!this.walls.isEmpty()) {
+            JsonArray jsonArrayWalls = new JsonArray();
+            for (Heading wall : walls) {
+                jsonArrayWalls.add(wall.toString());
+            }
+            jsonObject.add("wall", jsonArrayWalls);
+        }
+        if (this.player != null) {
+            jsonObject.addProperty("playerOccupyingSpace", this.player.getName());
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return null;
+        }
+
     public Space copy(Position newPosition) {
         return new Space(newPosition, this.IsSpawnSpace, this.walls.toArray(new Heading[0]));
     }
@@ -158,5 +201,6 @@ public class Space extends Subject {
             wall = Heading.turnLeft(wall);
             walls.add(wall);
         }
+
     }
 }

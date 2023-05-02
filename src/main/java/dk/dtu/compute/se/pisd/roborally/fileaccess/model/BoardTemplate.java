@@ -29,17 +29,12 @@ import java.util.List;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class BoardTemplate {
 
     public int width;
     public int height;
 
-    public BoardTemplate(int width, int height) {
-        this.width = width;
-        this.height = height;
-    }
 
     public List<SpaceTemplate> spaces = new ArrayList<>();
 
