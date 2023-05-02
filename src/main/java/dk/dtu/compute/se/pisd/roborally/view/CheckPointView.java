@@ -1,7 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.CheckPoint;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 

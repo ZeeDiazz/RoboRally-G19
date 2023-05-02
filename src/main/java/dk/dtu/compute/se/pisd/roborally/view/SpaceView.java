@@ -22,11 +22,11 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.CheckPoint;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.legacy.Space;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;

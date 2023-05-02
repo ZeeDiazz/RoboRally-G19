@@ -1,4 +1,4 @@
-package dk.dtu.compute.se.pisd.roborally.model.spaces;
+package dk.dtu.compute.se.pisd.roborally.model.spaces.legacy;
 
 /**
  * @author ZeeDiazz (Zaid)
