@@ -9,6 +9,7 @@ public final class Position {
         this.Y = y;
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -44,4 +45,5 @@ public final class Position {
     public static Position add(Position p1, Position p2) {
         return new Position(p1.X + p2.X, p1.Y + p2.Y);
     }
+
 }

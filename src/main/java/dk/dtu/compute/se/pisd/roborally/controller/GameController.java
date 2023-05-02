@@ -352,6 +352,7 @@ public class GameController {
                 continue;
             }
 
+
             Position endingPos = move.getEndingPosition();
             if (colliding.contains(endingPos)) {
                 continue;
@@ -380,6 +381,7 @@ public class GameController {
                 m.Moving.setSpace(endingSpace);
             }
         }
+
     }
 
     // TODO Assignment V2

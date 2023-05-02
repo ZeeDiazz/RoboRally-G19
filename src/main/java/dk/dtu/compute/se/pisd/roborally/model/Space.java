@@ -39,7 +39,9 @@ import java.util.List;
  * @author Ekkart Kindler, ekki@dtu.dk
  */
 public class Space extends Subject {
+
     public final Position Position;
+
     private Player player;
     private final ArrayList<Heading> walls;
     private List<FieldAction> actions;
@@ -54,11 +56,13 @@ public class Space extends Subject {
         this(position, isSpawnSpace, new Heading[0]);
     }
 
+
     public Space(Position position, boolean isSpawnSpace, Heading... walls) {
         this.Position = position;
         this.IsSpawnSpace = isSpawnSpace;
         this.actions = new ArrayList<>();
         this.player = null;
+
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
 
@@ -121,6 +125,7 @@ public class Space extends Subject {
     public boolean hasWall(Heading direction) {
         return walls.contains(direction);
     }
+
 
     // From 1.4.0
     public List<Heading> getWalls() {
