@@ -1,12 +1,16 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Space extends Subject {
+public class Space extends Subject implements ISerializable {
     public final Position position;
     protected final ArrayList<Heading> walls;
     protected Player standingOn;
@@ -58,6 +62,38 @@ public class Space extends Subject {
         for (int i = 0; i < wallCount; i++) {
             walls.add(Heading.turnLeft(walls.remove(0)));
         }
+    }
+
+    protected JsonElement serializeCommon(String type) {
+        JsonObject json = new JsonObject();
+
+        json.addProperty("type", type);
+        json.add("position", position.serialize());
+
+        if (walls.size() > 0) {
+            JsonArray jsonWalls = new JsonArray();
+            for (Heading wall : walls) {
+                jsonWalls.add(wall.toString());
+            }
+            json.add("walls", jsonWalls);
+        }
+
+        if (standingOn != null) {
+            json.addProperty("player", standingOn.getName());
+        }
+
+        return json;
+    }
+
+    @Override
+    public JsonElement serialize() {
+        return serializeCommon("normal");
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        // TODO
+        return null;
     }
 
     // Hack
