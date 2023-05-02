@@ -22,7 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class Board extends Subject {
 
     private Integer gameId;
 
-    private final EmptySpace[][] spaces;
+    private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
 
@@ -73,10 +73,10 @@ public class Board extends Subject {
         this.boardName = boardName;
         this.width = width;
         this.height = height;
-        spaces = new EmptySpace[width][height];
+        spaces = new Space[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                spaces[x][y] = new EmptySpace(this, new Position(x, y));
+                spaces[x][y] = new Space(this, new Position(x, y));
             }
         }
         this.stepMode = false;
@@ -124,7 +124,7 @@ public class Board extends Subject {
      * @param y the y-coordinate
      * @return the given coordinates, or null if out of bounds
      */
-    public EmptySpace getSpace(int x, int y) {
+    public Space getSpace(int x, int y) {
         if (x >= 0 && x < width &&
                 y >= 0 && y < height) {
             return spaces[x][y];
@@ -133,7 +133,7 @@ public class Board extends Subject {
         }
     }
 
-    public EmptySpace getSpace(Position position) {
+    public Space getSpace(Position position) {
         return getSpace(position.X, position.Y);
     }
 
@@ -287,7 +287,7 @@ public class Board extends Subject {
      * @param heading the heading of the neighbour
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
-    public EmptySpace getNeighbour(@NotNull EmptySpace space, @NotNull Heading heading) {
+    public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         return getSpace(Position.move(space.position, heading));
         /*
         int x = space.Position.X;
@@ -385,7 +385,7 @@ public class Board extends Subject {
      * @param space the space to check
      * @return true if there is a plaer on the space, else false
      */
-    public boolean hasPlayer(EmptySpace space) {
+    public boolean hasPlayer(Space space) {
         return space.getPlayer() != null;
     }
 }

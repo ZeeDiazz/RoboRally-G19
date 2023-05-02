@@ -22,7 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class GameController {
      * @param space The space which the player's robot is going to be moved to
      *
      */
-    public void moveCurrentPlayerToSpace(@NotNull EmptySpace space) {
+    public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
 
 
@@ -85,7 +85,7 @@ public class GameController {
      * @return Returns true if there is another robot on the space received as parameter
      */
 
-    public boolean spaceIsOccupied(EmptySpace space) {
+    public boolean spaceIsOccupied(Space space) {
         return space.getPlayer() != null;
     }
 

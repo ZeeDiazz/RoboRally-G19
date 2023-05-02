@@ -44,7 +44,7 @@ public class SpaceView extends StackPane implements ViewObserver {
     final public static double wallThickness = 3;
     final public static Color wallColor = Color.RED;
 
-    public final EmptySpace space;
+    public final Space space;
 
     /**
      * This method creates a new singular space
@@ -53,7 +53,7 @@ public class SpaceView extends StackPane implements ViewObserver {
      * @author ZeeDiazz (Zaid), Felix723, Zahed Wafa
      * Assigning different colors to different types of Obstacle
      */
-    public SpaceView(@NotNull EmptySpace space) {
+    public SpaceView(@NotNull Space space) {
         this.space = space;
 
         // XXX the following styling should better be done with styles

@@ -25,7 +25,7 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.EmptySpace;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -74,7 +74,7 @@ public class BoardView extends VBox implements ViewObserver {
 
         for (int x = 0; x < board.width; x++) {
             for (int y = 0; y < board.height; y++) {
-                EmptySpace space = board.getSpace(x, y);
+                Space space = board.getSpace(x, y);
                 SpaceView spaceView = new SpaceView(space);
                 spaces[x][y] = spaceView;
                 mainBoardPane.add(spaceView, x, y);
@@ -113,7 +113,7 @@ public class BoardView extends VBox implements ViewObserver {
             Object source = event.getSource();
             if (source instanceof SpaceView) {
                 SpaceView spaceView = (SpaceView) source;
-                EmptySpace space = spaceView.space;
+                Space space = spaceView.space;
                 Board board = space.board;
 
                 if (board == gameController.board) {

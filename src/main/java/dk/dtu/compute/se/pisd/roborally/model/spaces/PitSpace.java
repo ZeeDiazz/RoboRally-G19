@@ -2,7 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
-public class PitSpace extends EmptySpace {
+public class PitSpace extends Space {
     public PitSpace(Board board, Position position, Heading... walls) {
         super(board, position, walls);
     }

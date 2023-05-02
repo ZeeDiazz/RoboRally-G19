@@ -6,19 +6,19 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmptySpace extends Subject {
+public class Space extends Subject {
     public final Board board;
     public final Position position;
     protected final ArrayList<Heading> walls;
     protected Player standingOn;
 
-    public EmptySpace(Board board, Position position, Heading... walls) {
+    public Space(Board board, Position position, Heading... walls) {
         this.board = board;
         this.position = position;
         this.walls = new ArrayList<>(List.of(walls));
     }
 
-    public EmptySpace(Board board, Position position) {
+    public Space(Board board, Position position) {
         this(board, position, new Heading[0]);
     }
 
