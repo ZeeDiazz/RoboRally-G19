@@ -212,7 +212,7 @@ public class Space extends Subject implements ISerializable {
             jsonObject.addProperty("playerOccupyingSpace", this.player.getName());
         }
 
-        return null;
+        return jsonObject;
     }
 
     @Override

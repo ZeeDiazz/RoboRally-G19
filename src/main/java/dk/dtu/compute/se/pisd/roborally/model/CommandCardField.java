@@ -108,9 +108,10 @@ public class CommandCardField extends Subject implements ISerializable {
         JsonObject jsonObject = new JsonObject();
 
         //jsonObject.add("player", this.player.serialize());
-        jsonObject.add("commandCardField", this.card.serialize());
-        jsonObject.addProperty("isVisible", this.visible);
-
+        if(this.card != null) {
+            jsonObject.add("commandCardField", this.card.serialize());
+            jsonObject.addProperty("isVisible", this.visible);
+        }
 
         return jsonObject;
     }
