@@ -403,10 +403,12 @@ public class Board extends Subject implements ISerializable {
                 int moveOtherAmount = move.Amount - moveAmount;
                 Move otherPlayerMove = new Move(space.position, move.Direction, moveOtherAmount, space.getPlayer());
 
+                int leftToMove = 0;
                 for (Move resultingMove : resultingMoves(otherPlayerMove)) {
                     moves.add(resultingMove);
-                    moveAmount = Math.max(moveAmount, resultingMove.Amount);
+                    leftToMove = Math.max(leftToMove, resultingMove.Amount);
                 }
+                moveAmount += leftToMove;
 
                 break;
             }
