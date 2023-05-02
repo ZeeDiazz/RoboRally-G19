@@ -1,16 +1,36 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 
 public final class Position implements ISerializable {
+
     public final int X;
     public final int Y;
 
     public Position(int x, int y) {
         this.X = x;
         this.Y = y;
+    }
+
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof Position otherPos) {
+            return this.X == otherPos.X && this.Y == otherPos.Y;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(this.X) * 3 + Integer.hashCode(this.Y) * 7;
     }
 
     public static Position move(Position position, Heading heading) {
@@ -29,6 +49,7 @@ public final class Position implements ISerializable {
         return new Position(position.X + deltaX * amount, position.Y + deltaY * amount);
     }
 
+
     @Override
     public JsonElement serialize() {
 
@@ -46,4 +67,10 @@ public final class Position implements ISerializable {
     public ISerializable deserialize(JsonElement element) {
         return null;
     }
+
+    public static Position add(Position p1, Position p2) {
+        return new Position(p1.X + p2.X, p1.Y + p2.Y);
+    }
+
+
 }

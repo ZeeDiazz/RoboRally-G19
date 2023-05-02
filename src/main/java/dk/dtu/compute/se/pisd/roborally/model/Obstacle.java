@@ -16,15 +16,15 @@ public class Obstacle extends Space {
 
     /**
      * The constructor uses super, because the class extends Space.
-     *
-     * @param board
      * @param x
      * @param y
      * @param type
      * @param direction
      */
-    public Obstacle(Board board, int x, int y, ObstacleType type, Heading direction) {
-        super(board, x, y);
+
+    public Obstacle(Position position, ObstacleType type, Heading direction){
+        super(position, false);
+
         this.type = type;
         this.direction = direction;
     }
@@ -38,12 +38,24 @@ public class Obstacle extends Space {
     }
 
     @Override
+
     public JsonElement serialize() {
         JsonObject jsonObject = super.serialize().getAsJsonObject();
 
         jsonObject.addProperty(this.type.toString(), this.direction.toString());
 
         return jsonObject;
+        }
+
+    public Space copy(Position newPosition) {
+        return new Obstacle(newPosition, this.type, this.direction);
+    }
+
+    @Override
+    public void rotateLeft() {
+        super.rotateLeft();
+        this.direction = Heading.turnLeft(this.direction);
+
     }
 }
 

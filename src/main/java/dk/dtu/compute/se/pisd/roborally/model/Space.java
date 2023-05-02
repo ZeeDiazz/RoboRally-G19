@@ -26,7 +26,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
+
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
+
+
 import javafx.geometry.Pos;
 
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
@@ -44,41 +47,33 @@ import java.util.List;
  */
 public class Space extends Subject implements ISerializable {
 
-    public final Board board;
 
     public final Position Position;
 
     private Player player;
-
     private final ArrayList<Heading> walls;
-
-    // From 1.4.0
-
-    private List<FieldAction> actions = new ArrayList<>();
+    private List<FieldAction> actions;
+    public final boolean IsSpawnSpace;
 
     /**
-     * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
-     *
-     * @param board the game board the space belong to.
-     * @param x     x-coordinate of the space on the board.
-     * @param y     y-coordinate of the space on the board.
+     * Construct a new Space object at the specified position.
+     * @param position the position of the new space
+     * @param isSpawnSpace whether this space is one of the original spawn points
      */
-    public Space(Board board, int x, int y) {
-        this(board, x, y, new Heading[0]);
+    public Space(Position position, boolean isSpawnSpace) {
+        this(position, isSpawnSpace, new Heading[0]);
     }
 
-    /**
-     * @param board the game board the space belong to.
-     * @param x     x-coordinate of the space on the board.
-     * @param y     y-coordinate of the space on the board.
-     * @param walls The walls on this space
-     * @author Daniel Jensen
-     * Construct a new Space object at the specified board, x-coordinate and y-coordinate.
-     */
-    public Space(Board board, int x, int y, Heading... walls) {
-        this.board = board;
-        this.Position = new Position(x, y);
-        player = null;
+
+
+
+    public Space(Position position, boolean isSpawnSpace, Heading... walls) {
+        this.Position = position;
+        this.IsSpawnSpace = isSpawnSpace;
+        this.actions = new ArrayList<>();
+        this.player = null;
+
+
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
 
@@ -98,8 +93,7 @@ public class Space extends Subject implements ISerializable {
      */
     public void setPlayer(Player player) {
         Player oldPlayer = this.player;
-        if (player != oldPlayer &&
-                (player == null || board == player.board)) {
+        if (player != oldPlayer) {
             this.player = player;
             if (oldPlayer != null) {
                 // this should actually not happen
@@ -143,32 +137,7 @@ public class Space extends Subject implements ISerializable {
         return walls.contains(direction);
     }
 
-    /**
-     * @param heading The direction in which way the player wants to move in
-     * @return Returns true if the move is legal and false if not
-     * @author Zahed Wafa
-     * This method checks whether it's possible to make a legal move
-     */
-    public boolean canMove(Heading heading) {
-        if (hasWall(heading)) {
-            return false;
-        }
-        Space neighbour = board.getNeighbour(this, heading);
-        // No neighbor means going off the board, which is always allowed
-        if (neighbour == null) {
-            return true;
-        }
-        // If the neighbor has a wall towards this space, it's equivalent to having a wall from this space towards the neighbor
-        if (neighbour.hasWall(Heading.turnAround(heading))) {
-            return false;
-        }
-        // If the neighbor has no players, you can always move to it
-        if (!neighbour.hasPlayer()) {
-            return true;
-        }
-        // If there is a player on neighboring square, you can only move if they can move
-        return neighbour.canMove(heading);
-    }
+
 
     // From 1.4.0
     public List<Heading> getWalls() {
@@ -189,6 +158,7 @@ public class Space extends Subject implements ISerializable {
         // notify the space of these changes by calling this method.
         notifyChange();
     }
+
 
     @Override
     public JsonElement serialize() {
@@ -218,5 +188,19 @@ public class Space extends Subject implements ISerializable {
     @Override
     public ISerializable deserialize(JsonElement element) {
         return null;
+        }
+
+    public Space copy(Position newPosition) {
+        return new Space(newPosition, this.IsSpawnSpace, this.walls.toArray(new Heading[0]));
+    }
+
+    public void rotateLeft() {
+        int wallCount = walls.size();
+        for (int i = 0; i < wallCount; i++) {
+            Heading wall = walls.remove(0);
+            wall = Heading.turnLeft(wall);
+            walls.add(wall);
+        }
+
     }
 }

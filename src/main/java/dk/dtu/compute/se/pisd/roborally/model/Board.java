@@ -53,61 +53,23 @@ public class Board extends Subject implements ISerializable {
     private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
-
     private Player current;
-
     private Phase phase = INITIALISATION;
-
     private int step = 0;
-
     private boolean stepMode;
-
-    static public final int checkpointCount = 2;
+    private int checkpointCount;
 
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
      *
-     * @param boardName the name of the board
+     * @param name the name of the board
      * @param width     the width of the board
      * @param height    the height of the board
      * @author ZeeDiazz (Zaid)
      */
 
-    public Board(int width, int height, @NotNull String boardName) {
-        this.boardName = boardName;
-        this.width = width;
-        this.height = height;
-        spaces = new Space[width][height];
-        for (int x = 0; x < width; x++) {
-
-            for (int y = 0; y < height; y++) {
-                Space space;
-
-                //ZeeDiazz (Zaid) {
-                if (x == 0 && y == 1 || x == 2 && y == 3) {
-                    space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
-                } else if (x == 1 && y == 5) {
-                    space = new Obstacle(this, x, y, GREEN_CONVEYOR_BELT, Heading.NORTH);
-                }
-
-                //   }
-                else if (x == 3 && y == 4) {
-                    space = new CheckPoint(this, x, y, 0);
-                } else if (x == 6 && y == 2) {
-                    space = new CheckPoint(this, x, y, 1);
-                } else {
-                    space = new Space(this, x, y);
-                }
-
-
-                if (x == 1 && y == 1) {
-                    space.addWall(Heading.SOUTH);
-                }
-
-                spaces[x][y] = space;
-            }
-        }
-        this.stepMode = false;
+    public Board(int width, int height, @NotNull String name) {
+        this(new Space[width][height], name);
     }
 
     /**
@@ -118,6 +80,16 @@ public class Board extends Subject implements ISerializable {
      */
     public Board(int width, int height) {
         this(width, height, "defaultboard");
+    }
+
+    public Board(Space[][] spaces, String name) {
+        this.boardName = name;
+        this.width = spaces.length;
+        this.height = spaces[0].length;
+        this.spaces = spaces;
+
+        this.stepMode = false;
+        this.checkpointCount = 0;
     }
 
     /**
@@ -153,8 +125,7 @@ public class Board extends Subject implements ISerializable {
      * @return the given coordinates, or null if out of bounds
      */
     public Space getSpace(int x, int y) {
-        if (x >= 0 && x < width &&
-                y >= 0 && y < height) {
+        if (x >= 0 && x < width && y >= 0 && y < height) {
             return spaces[x][y];
         } else {
             return null;
@@ -411,14 +382,95 @@ public class Board extends Subject implements ISerializable {
                 ", Step: " + getMoveCounter();
     }
 
-    /**
-     * Checks if the given space got a player on it
-     *
-     * @param space the space to check
-     * @return true if there is a plaer on the space, else false
-     */
-    public boolean hasPlayer(Space space) {
-        return space.getPlayer() != null;
+    public ArrayList<Move> resultingMoves(Move move) {
+        int moveAmount = 0;
+        ArrayList<Move> moves = new ArrayList<>();
+
+        Space space = getSpace(move.Start);
+        for (int i = 0; i < move.Amount; i++) {
+            if (space.hasWall(move.Direction)) {
+                break;
+            }
+
+            space = getNeighbour(space, move.Direction);
+            if (space == null) {
+                moveAmount++;
+                break;
+            } else if (space.hasWall(Heading.turnAround(move.Direction))) {
+                break;
+            } else if (space.hasPlayer()) {
+                // Can maximally move the full amount, minus the part already moved
+                int moveOtherAmount = move.Amount - moveAmount;
+                Move otherPlayerMove = new Move(space.Position, move.Direction, moveOtherAmount, space.getPlayer());
+
+                for (Move resultingMove : resultingMoves(otherPlayerMove)) {
+                    moves.add(resultingMove);
+                    moveAmount = Math.max(moveAmount, resultingMove.Amount);
+                }
+
+                break;
+            }
+            moveAmount++;
+        }
+
+        moves.add(new Move(move.Start, move.Direction, moveAmount, move.Moving));
+        return moves;
+    }
+
+    public void addCheckpoint(Position position) {
+        this.spaces[position.X][position.Y] = new CheckPoint(position, checkpointCount++);
+    }
+
+    public int getCheckpointCount() {
+        return checkpointCount;
+    }
+
+    public static Board rotateLeft(Board board) {
+        Space[][] newSpaces = new Space[board.height][board.width];
+        for (int x = 0; x < board.width; x++) {
+            for (int y = 0; y < board.height; y++) {
+                Position newPosition = new Position(y, board.width - x - 1);
+                Space newSpace = board.spaces[x][y].copy(newPosition);
+                newSpace.rotateLeft();
+                newSpaces[newPosition.X][newPosition.Y] = newSpace;
+            }
+        }
+
+        return new Board(newSpaces, board.boardName);
+    }
+
+    public static Board rotateRight(Board board) {
+        return rotateLeft(rotateLeft(rotateLeft(board)));
+    }
+
+    public static Board add(Board board, Board adding, Position offset, String newName) {
+        Position currentTopLeft = board.spaces[0][0].Position;
+        Position currentBottomRight = board.spaces[board.width - 1][board.height - 1].Position;
+        Position addingTopLeft = Position.add(adding.spaces[0][0].Position, offset);
+        Position addingBottomRight = Position.add(adding.spaces[adding.width - 1][adding.height - 1].Position, offset);
+
+        int newWidth = Math.max(Math.abs(currentTopLeft.X - addingBottomRight.X), Math.abs(addingTopLeft.X - currentBottomRight.X)) + 1;
+        int newHeight = Math.max(Math.abs(currentTopLeft.Y - addingBottomRight.Y), Math.abs(addingTopLeft.Y - currentBottomRight.Y)) + 1;
+
+        Space[][] newSpaces = new Space[newWidth][newHeight];
+        // Add all the "board" spaces
+        for (int x = 0; x < board.width; x++) {
+            for (int y = 0; y < board.height; y++) {
+                newSpaces[x][y] = board.spaces[x][y].copy(new Position(x, y));
+            }
+        }
+        // Add all the "adding" spaces
+        for (int x = 0; x < adding.width; x++) {
+            for (int y = 0; y < adding.height; y++) {
+                newSpaces[x + offset.X][y + offset.Y] = adding.spaces[x][y].copy(new Position(x + offset.X, y + offset.Y));
+            }
+        }
+
+        return new Board(newSpaces, newName);
+    }
+
+    public static Board add(Board board, Board adding, Position offset) {
+        return add(board, adding, offset, board.boardName);
     }
 
     @Override

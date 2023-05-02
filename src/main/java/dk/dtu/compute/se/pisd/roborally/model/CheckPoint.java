@@ -9,16 +9,16 @@ public class CheckPoint extends Space {
     public final int Id;
 
     /**
-     * @param board the game board the space belong to.
-     * @param x     x-coordinate of the space on the board.
-     * @param y     y-coordinate of the space on the board.
-     * @param Id    counter for order of checkpoints
-     * @author Felix Schmidt, s224313@dtu.dk
-     * Constructor for CheckPoint
-     */
-    public CheckPoint(Board board, int x, int y, int Id) {
-        super(board, x, y);
-        this.Id = Id;
+
+    * @author Felix Schmidt, s224313@dtu.dk
+    * Constructor for CheckPoint
+    * @param position the position of the space on the board
+    * @param id counter for order of checkpoints
+    */
+    public CheckPoint(Position position, int id){
+        super(position, false);
+        this.Id = id;
+
     }
 
     /**
@@ -53,5 +53,9 @@ public class CheckPoint extends Space {
 
 
         return jsonObject;
+}
+    public Space copy(Position newPosition) {
+        return new CheckPoint(newPosition, this.Id);
+
     }
 }

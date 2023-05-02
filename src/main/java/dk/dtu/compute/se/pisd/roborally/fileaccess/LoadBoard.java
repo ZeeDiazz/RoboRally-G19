@@ -100,34 +100,7 @@ public class LoadBoard {
     }
 
     public static void saveBoard(Board board, File file) {
-        BoardTemplate template = new BoardTemplate();
-        template.width = board.width;
-        template.height = board.height;
-
-        for (int i = 0; i < board.width; i++) {
-            for (int j = 0; j < board.height; j++) {
-                Space space = board.getSpace(i, j);
-                if (!space.getWalls().isEmpty() || space instanceof Obstacle) {
-                    SpaceTemplate spaceTemplate = new SpaceTemplate();
-                    spaceTemplate.x = space.Position.X;
-                    spaceTemplate.y = space.Position.Y;
-                    //spaceTemplate.actions.addAll(space.getActions());
-
-                    if (!space.getWalls().isEmpty()) {
-                        spaceTemplate.walls.addAll(space.getWalls());
-                    }
-                    if (space instanceof Obstacle) {
-                        
-                        Obstacle obstacle = (Obstacle) space; 
-                        
-                        spaceTemplate.obstacle = obstacle.getType();
-
-                        //spaceTemplate.obstacles.addAll(space.getObstacles());
-                    }
-                    template.spaces.add(spaceTemplate);
-                }
-            }
-        }
+    
 
         //  ClassLoader classLoader = LoadBoard.class.getClassLoader();
         // TODO: this is not very defensive, and will result in a NullPointerException
