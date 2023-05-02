@@ -371,25 +371,25 @@ public class GameController {
     }
 
     private void performMove(Move move) {
-        return;
-        /*
         Player player = move.Moving;
         Heading direction = move.Direction;
 
-        EmptySpace currentSpace = player.getSpace();
+        Space currentSpace = player.getSpace();
         boolean rebootRobot = false;
 
         for (int i = 0; i < move.Amount; i++) {
-            if (!currentSpace.canMove(direction)) {
-                continue;
-            }
-            currentSpace = player.board.getNeighbour(currentSpace, direction);
-            if (currentSpace == null || (currentSpace instanceof Obstacle obstacle && obstacle.getType() == ObstacleType.PITS)) {
-                rebootRobot = true;
+            if (!currentSpace.canExitBy(direction)) {
                 break;
             }
-            if (currentSpace.hasPlayer()) {
-                Move otherPlayerMove = new Move(currentSpace.Position, direction, 1, currentSpace.getPlayer());
+            currentSpace = player.board.getNeighbour(currentSpace, direction);
+            if (currentSpace == null) {
+                rebootRobot = true;
+            }
+            if (!currentSpace.canEnterFrom(Heading.turnAround(direction))) {
+                break;
+            }
+            if (currentSpace.getPlayer() != null) {
+                Move otherPlayerMove = new Move(currentSpace.position, direction, 1, currentSpace.getPlayer());
                 performMove(otherPlayerMove);
             }
         }
@@ -402,11 +402,9 @@ public class GameController {
         }
 
         // Is this still required?
-        /*
         if (spaceIsOccupied(currentSpace)) {
             return;
         }
-         */
     }
 
     // TODO Assignment V2

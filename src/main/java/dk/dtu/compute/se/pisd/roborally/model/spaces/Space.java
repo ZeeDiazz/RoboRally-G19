@@ -63,7 +63,9 @@ public class Space extends Subject {
     // TODO refactor so these aren't necessary?
     public void setPlayer(Player player) {
         this.standingOn = player;
+        changed();
     }
+
     public Player getPlayer() {
         return standingOn;
     }

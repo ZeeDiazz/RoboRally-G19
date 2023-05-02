@@ -76,7 +76,7 @@ public class SpaceView extends StackPane implements ViewObserver {
             style = "-fx-background-color: red;";
         }
         else if (space instanceof GreenGearSpace) {
-            style = "-fx-background-color: light-green;";
+            style = "-fx-background-color: darkgreen;";
         }
         else if (space instanceof PitSpace) {
             style = "-fx-background-color: black;";
