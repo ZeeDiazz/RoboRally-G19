@@ -16,8 +16,7 @@ public class Obstacle extends Space {
 
     /**
      * The constructor uses super, because the class extends Space.
-     * @param x
-     * @param y
+
      * @param type
      * @param direction
      */

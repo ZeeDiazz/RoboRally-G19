@@ -28,14 +28,9 @@ import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Transformer;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-
-import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
-
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
-
 import dk.dtu.compute.se.pisd.roborally.model.Space;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;

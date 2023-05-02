@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.TypeAdapters.SpaceTemplateTypeAdapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
@@ -114,8 +113,9 @@ public class Transformer {
     }
 
     public static Board loadBoard(File file) {
-
-
+        // Todo implement
+        return null;
+/*
         // In simple cases, we can create a Gson object with new Gson():
         Gson gson = new GsonBuilder().registerTypeAdapter(SpaceTemplate.class, new SpaceTemplateTypeAdapter()).create();
 
@@ -156,7 +156,7 @@ public class Transformer {
                 }
             }
         }
-        return result;
+        return result;*/
     }
 
 
