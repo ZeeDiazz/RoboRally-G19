@@ -29,9 +29,9 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -62,9 +62,9 @@ public class Board extends Subject implements ISerializable {
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
      *
-     * @param name the name of the board
-     * @param width     the width of the board
-     * @param height    the height of the board
+     * @param name   the name of the board
+     * @param width  the width of the board
+     * @param height the height of the board
      * @author ZeeDiazz (Zaid)
      */
 
@@ -553,13 +553,102 @@ public class Board extends Subject implements ISerializable {
         }
 
 
-        jsonObject.addProperty("checkPointCount", checkpointCount);
-        jsonObject.addProperty("moveCounter", this.moveCounter);
-        jsonObject.addProperty("step", this.step);
-        jsonObject.addProperty("phase", this.phase.toString());
-        jsonObject.addProperty("stepMode", this.stepMode);
+        String phaseAsString = jsonObject.get("phase").getAsString();
+        for (Phase phase : Phase.values()) {
+
+            if (phaseAsString.equals(phase.toString())) {
+                board1.phase = phase;
+                break;
+            }
 
 
-        return null;
+        }
+
+        board1.stepMode = jsonObject.get("stepMode").getAsBoolean();
+
+
+        JsonArray jsonArrayOfSpaces = jsonObject.getAsJsonArray("spaces");
+
+
+        Space current = new Space(null, false);
+
+        int x;
+        int y;
+        String typeName;
+        JsonObject currentJsonObject;
+
+        Iterator<JsonElement> iterator = jsonArrayOfSpaces.iterator();
+
+        while (iterator.hasNext()) {
+            currentJsonObject = iterator.next().getAsJsonObject();
+            typeName = currentJsonObject.get("spaceType").getAsString();
+            CheckPoint placeHolderToGetPosition = new CheckPoint(null, 0);
+            Position globalPosition = (Position) placeHolderToGetPosition.Position.deserialize(currentJsonObject.get("boardPosition"));
+
+            if (typeName.equals("obstacle")) {
+
+                ObstacleType obstacleType = ObstacleType.getObstacleType(currentJsonObject.get("obstacleType").getAsString());
+
+               /* for (ObstacleType type : ObstacleType.values()) {
+                    if (type.toString().equals(currentJsonObject.get("obstacleType").getAsString())) {
+                        obstacleType = type;
+                        break;
+                    }
+                }*/
+                Heading headingToBeUsed = Heading.getHeading(currentJsonObject.get("heading").getAsString());
+               /* for (Heading heading : Heading.values()) {
+                    if (heading.toString().equals(currentJsonObject.get("heading").getAsString())) {
+                        headingToBeUsed = heading;
+                        break;
+                    }
+                }*/
+                Obstacle obstacle = new Obstacle(globalPosition, obstacleType, headingToBeUsed);
+
+                spaces[globalPosition.X][globalPosition.Y] = obstacle;
+
+
+            } else if (typeName.equals("checkPoint")) {
+
+                CheckPoint checkPoint = new CheckPoint(globalPosition, currentJsonObject.get("checkpointId").getAsInt());
+                spaces[globalPosition.X][globalPosition.Y] = checkPoint;
+
+            }
+
+            if (currentJsonObject.get("wall") != null) {
+
+                JsonArray jsonArrayOfWalls = currentJsonObject.get("wall").getAsJsonArray();
+
+
+                // For adding walls
+                Iterator<JsonElement> wallsIterator = jsonArrayOfWalls.iterator();
+
+                while (iterator.hasNext()) {
+                    String headingNameOfWall = iterator.next().toString();
+                    Heading wallToBeAdded = Heading.getHeading(headingNameOfWall);
+                    board1.spaces[globalPosition.X][globalPosition.Y].addWall(wallToBeAdded);
+                }
+
+
+            }
+            if (currentJsonObject.get("playerOccupyingSpace") != null) {
+
+                Space spacePlaceholder = new Space(null, false);
+
+                String playerNameOccupyingSpace = spacePlaceholder.deserialize(currentJsonObject.get("playerOccupyingSpace").getAsJsonPrimitive()).toString();
+
+                for (Player player : board1.players) {
+                    if (playerNameOccupyingSpace.equals(player.getName())) {
+                        spaces[globalPosition.X][globalPosition.Y].setPlayer(player);
+                    }
+                }
+            }
+
+        }
+
+        return board1;
     }
 }
+
+    
+
+

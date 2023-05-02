@@ -31,6 +31,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -50,14 +51,13 @@ public class Space extends Subject implements ISerializable {
 
     /**
      * Construct a new Space object at the specified position.
-     * @param position the position of the new space
+     *
+     * @param position     the position of the new space
      * @param isSpawnSpace whether this space is one of the original spawn points
      */
     public Space(Position position, boolean isSpawnSpace) {
         this(position, isSpawnSpace, new Heading[0]);
     }
-
-
 
 
     public Space(Position position, boolean isSpawnSpace, Heading... walls) {
@@ -128,13 +128,10 @@ public class Space extends Subject implements ISerializable {
     }
 
 
-
     // From 1.4.0
     public List<Heading> getWalls() {
         return walls;
     }
-
-
 
 
     /**
@@ -158,6 +155,7 @@ public class Space extends Subject implements ISerializable {
 
 
         jsonObject.add("boardPosition", this.Position.serialize());
+        jsonObject.addProperty("isSpawnSpace", this.IsSpawnSpace);
 
         if (!this.walls.isEmpty()) {
             JsonArray jsonArrayWalls = new JsonArray();
@@ -175,8 +173,45 @@ public class Space extends Subject implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+
+        jsonObject.addProperty("spaceType", (this instanceof Obstacle) ? "obstacle"
+                : (this instanceof CheckPoint) ? "checkPoint" : "regularType");
+
+
+        Space space1 = new Space((Position) Position.deserialize(jsonObject.get("boardPosition")), jsonObject.get("isSpawnSpace").getAsBoolean());
+
+        if (jsonObject.get("wall") != null) {
+
+            JsonArray jsonArrayOfWalls = jsonObject.get("wall").getAsJsonArray();
+
+
+            // For adding walls
+            Iterator<JsonElement> wallsIterator = jsonArrayOfWalls.iterator();
+
+            while (wallsIterator.hasNext()) {
+                String headingNameOfWall = wallsIterator.next().toString();
+                Heading wallToBeAdded = Heading.getHeading(headingNameOfWall);
+                space1.walls.add(wallToBeAdded);
+            }
+
+
+            if (!this.walls.isEmpty()) {
+                JsonArray jsonArrayWalls = new JsonArray();
+                for (Heading wall : walls) {
+                    jsonArrayWalls.add(wall.toString());
+                }
+                jsonObject.add("wall", jsonArrayWalls);
+            }
+            if (this.player != null) {
+                jsonObject.addProperty("playerOccupyingSpace", this.player.getName());
+            }
+
+
         }
+        return space1;
+    }
 
     public Space copy(Position newPosition) {
         return new Space(newPosition, this.IsSpawnSpace, this.walls.toArray(new Heading[0]));
@@ -191,4 +226,5 @@ public class Space extends Subject implements ISerializable {
         }
 
     }
+
 }

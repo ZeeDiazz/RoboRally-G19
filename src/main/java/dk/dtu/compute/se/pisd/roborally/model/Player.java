@@ -44,7 +44,7 @@ public class Player extends Subject implements ISerializable {
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
 
-    final public Board board;
+    public Board board;
     public int checkpointGoal = 0;
 
     private String name;
@@ -239,9 +239,10 @@ public class Player extends Subject implements ISerializable {
         JsonObject jsonObject = new JsonObject();
 
 
-        jsonObject.addProperty("checkpointGoal", this.checkpointGoal);
         jsonObject.addProperty("name", this.name);
-        jsonObject.add("space", this.space.Position.serialize());
+        jsonObject.addProperty("checkpointGoal", this.checkpointGoal);
+        jsonObject.addProperty("color", this.color);
+        jsonObject.add("space", this.space.serialize());
         jsonObject.add("rebootSpace", this.rebootSpace.Position.serialize());
         jsonObject.addProperty("heading", this.heading.toString());
 
@@ -264,6 +265,28 @@ public class Player extends Subject implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        Player player1 = new Player(null, jsonObject.get("color").getAsString(), jsonObject.get("name").getAsString());
+
+        player1.checkpointGoal = jsonObject.get("checkpointGoal").getAsInt();
+
+
+        player1.space = (Space) player1.space.deserialize(jsonObject.get("space"));
+
+        player1.rebootSpace = (Space) player1.space.deserialize(jsonObject.get("rebootSpace"));
+
+        
+        
+        
+        String headingAsString = jsonObject.get("heading").getAsString();
+        for (Heading heading : Heading.values()) {
+            if (headingAsString.equals(player1.heading.toString())) {
+                player1.heading = heading;
+                break;
+            }
+        }
+
+        return player1;
     }
 }

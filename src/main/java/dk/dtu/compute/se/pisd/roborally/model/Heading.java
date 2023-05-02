@@ -76,4 +76,15 @@ public enum Heading {
         }
         return newDirection;
     }
+
+    public static Heading getHeading(String name) {
+
+        for (Heading heading : Heading.values()) {
+            if (name.equals(heading.toString())) {
+                return heading;
+            }
+        }
+        return null;
+    }
+
 }

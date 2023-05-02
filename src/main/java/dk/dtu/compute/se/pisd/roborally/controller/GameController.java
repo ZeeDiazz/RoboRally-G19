@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.javafx.stage.PopupWindowPeerListener;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
@@ -361,8 +362,7 @@ public class GameController implements ISerializable {
             if (validMoves.containsKey(endingPos)) {
                 colliding.add(endingPos);
                 validMoves.remove(endingPos);
-            }
-            else {
+            } else {
                 validMoves.put(endingPos, move);
             }
         }
@@ -376,8 +376,7 @@ public class GameController implements ISerializable {
             // If going out of bounds
             if (endingSpace == null) {
                 m.Moving.reboot();
-            }
-            else {
+            } else {
                 m.Moving.setSpace(endingSpace);
             }
         }
@@ -510,16 +509,48 @@ public class GameController implements ISerializable {
 
         jsonObject.add("board", this.board.serialize());
 
-        if (currentInteractiveCard != null) {
-            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
-        }
+      
+            if (currentInteractiveCard != null) {
+                jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+            }
         return jsonObject;
     }
 
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+
+        Board board = new Board(0, 0);
+
+        board = (Board) board.deserialize(jsonObject.get("board"));
+
+
+        // For assigning board to players
+        for (Player player : board.getPlayers()) {
+            player.board = board;
+        }
+
+
+
+        String commandCardStringName = jsonObject.get("currentInteractiveCard").getAsString();
+
+        Command currentInteractiveCard = Command.LEFT;
+
+        for (Command command : Command.values()) {
+            if (commandCardStringName.equals(command.toString())) {
+                currentInteractiveCard = command;
+                break;
+            }
+        }
+
+        GameController gameController = new GameController(board);
+
+        gameController.currentInteractiveCard = currentInteractiveCard;
+
+
+        return gameController;
 
     }
 }

@@ -58,27 +58,8 @@ public class CheckPoint extends Space {
     public ISerializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
 
-        String commandString = jsonObject.get("currentInteractiveCard").getAsString();
-
-
-        Command currentInteractiveCards = Command.LEFT;
-
-        for (Command command : Command.values()) {
-            if (commandString.equals(command.toString())) {
-                currentInteractiveCards = command;
-                break;
-            }
-        }
-
-
-        Board board = new Board(0, 0);
-        board = (Board) board.deserialize(jsonObject.get("board"));
-
-
-        GameController gameController = new GameController(board);
-
-
-        return gameController;
+        return null;
+        
     }
 
     public Space copy(Position newPosition) {

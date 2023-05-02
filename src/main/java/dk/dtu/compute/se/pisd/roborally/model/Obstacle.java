@@ -2,6 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.model;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
@@ -37,7 +38,6 @@ public class Obstacle extends Space {
     }
 
     @Override
-
     public JsonElement serialize() {
         JsonObject jsonObject = super.serialize().getAsJsonObject();
 
@@ -46,6 +46,11 @@ public class Obstacle extends Space {
 
         return jsonObject;
         }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return super.deserialize(element);
+    }
 
     public Space copy(Position newPosition) {
         return new Obstacle(newPosition, this.type, this.direction);
@@ -56,6 +61,14 @@ public class Obstacle extends Space {
         super.rotateLeft();
         this.direction = Heading.turnLeft(this.direction);
 
+    }
+
+    public void setType(ObstacleType type) {
+        this.type = type;
+    }
+
+    public void setDirection(Heading direction) {
+        this.direction = direction;
     }
 }
 
