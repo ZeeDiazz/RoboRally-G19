@@ -1,4 +1,4 @@
-package java.dk.dtu.compute.se.pisd.roborally.controller;
+package dk.dtu.compute.se.pisd.roborally.controller;
 
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
@@ -71,7 +71,7 @@ class GameControllerTest {
         Assertions.assertEquals(current,board.getSpace(0, 0).getPlayer(),"Player " + current.getName() + " should be Space (0,0)!");
 
         //Space 0,1 is now a Blue Conveyor belt
-        Space space = new Obstacle(board,0,1, BLUE_CONVEYOR_BELT, Heading.SOUTH);
+        Space space = new Obstacle(new Position(0, 1), BLUE_CONVEYOR_BELT, Heading.SOUTH);
 
         //Set players place at Blue Conveyor belt.
         current.setSpace(space);

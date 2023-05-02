@@ -352,6 +352,7 @@ public class GameController {
                 continue;
             }
 
+
             Position endingPos = move.getEndingPosition();
             if (colliding.contains(endingPos)) {
                 continue;
@@ -370,38 +371,17 @@ public class GameController {
     }
 
     private void performMove(Move move) {
-        Player player = move.Moving;
-        Heading direction = move.Direction;
-
-        Space currentSpace = player.getSpace();
-
-        for (int i = 0; i < move.Amount; i++) {
-            if (!currentSpace.canMove(direction)) {
-                continue;
+        for (Move m : board.resultingMoves(move)) {
+            Space endingSpace = board.getSpace(m.getEndingPosition());
+            // If going out of bounds
+            if (endingSpace == null) {
+                m.Moving.reboot();
             }
-            currentSpace = player.board.getNeighbour(currentSpace, direction);
-            if (currentSpace == null) {
-                break;
-            }
-            if (currentSpace.hasPlayer()) {
-                Move otherPlayerMove = new Move(currentSpace.Position, direction, 1, currentSpace.getPlayer());
-                performMove(otherPlayerMove);
+            else {
+                m.Moving.setSpace(endingSpace);
             }
         }
 
-        if (currentSpace == null) {
-            player.reboot();
-        }
-        else {
-            player.setSpace(currentSpace);
-        }
-
-        // Is this still required?
-        /*
-        if (spaceIsOccupied(currentSpace)) {
-            return;
-        }
-         */
     }
 
     // TODO Assignment V2
@@ -473,7 +453,7 @@ public class GameController {
                             checkPoint.playerPassed(checkingPlayer);
                         }
 
-                        if (checkingPlayer.checkpointGoal == Board.checkpointCount) {
+                        if (checkingPlayer.checkpointGoal == board.getCheckpointCount()) {
                             checkingPlayer.setColor("purple");
                         }
                     }
