@@ -16,7 +16,6 @@ public final class Position implements ISerializable {
     }
 
 
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -54,18 +53,24 @@ public final class Position implements ISerializable {
     public JsonElement serialize() {
 
         JsonObject jsonObject = new JsonObject();
-        
-        
-        jsonObject.addProperty("x",this.X);
-        jsonObject.addProperty("y",this.Y);
-        
-        
+
+
+        jsonObject.addProperty("x", this.X);
+        jsonObject.addProperty("y", this.Y);
+
+
         return jsonObject;
     }
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        int x = jsonObject.get("x").getAsInt();
+        int y = jsonObject.get("y").getAsInt();
+
+
+        return new Position(x, y);
     }
 
     public static Position add(Position p1, Position p2) {

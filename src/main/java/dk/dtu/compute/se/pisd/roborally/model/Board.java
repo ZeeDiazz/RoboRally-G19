@@ -493,7 +493,7 @@ public class Board extends Subject implements ISerializable {
 
         jsonObject.addProperty("playerCount", this.getPlayerCount());
         jsonObject.addProperty("currentPlayer", this.current.getName());
-        jsonObject.addProperty("checkPoint", checkpointCount);
+        jsonObject.addProperty("checkPointCount", checkpointCount);
         jsonObject.addProperty("moveCounter", this.moveCounter);
         jsonObject.addProperty("step", this.step);
         jsonObject.addProperty("phase", this.phase.toString());
@@ -504,8 +504,7 @@ public class Board extends Subject implements ISerializable {
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
                 Space currentSpace = spaces[i][j];
-                if (currentSpace instanceof CheckPoint || currentSpace instanceof Obstacle ||
-                        !currentSpace.getWalls().isEmpty() || currentSpace.hasPlayer()) {
+                if (currentSpace instanceof CheckPoint || currentSpace instanceof Obstacle || !currentSpace.getWalls().isEmpty() || currentSpace.hasPlayer()) {
                     jsonArraySpaces.add(currentSpace.serialize());
                 }
             }
@@ -519,6 +518,48 @@ public class Board extends Subject implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
+        JsonObject jsonObject = new JsonObject();
+
+
+        int width = jsonObject.get("width").getAsInt();
+        int height = jsonObject.get("height").getAsInt();
+
+
+        String boardName = jsonObject.get("boardName").getAsString();
+        Board board1 = new Board(width, height, boardName);
+        board1.gameId = jsonObject.get("gameId").getAsInt();
+
+
+        int playerCount = jsonObject.get("playerCount").getAsInt();
+
+
+        // Adding players
+        Player playerToAdd = new Player(null, null, null);
+        for (int i = 0; i < playerCount; i++) {
+            playerToAdd = (Player) playerToAdd.deserialize(jsonObject.get("player"));
+            board1.players.add(playerToAdd);
+        }
+
+
+        // PlayerName of current player
+
+        String currentPlayerName = jsonObject.get("currentPlayer").getAsString();
+
+        for (Player player : board1.players) {
+            if (currentPlayerName.equals(player.getName())) {
+                board1.current = player;
+                break;
+            }
+        }
+
+
+        jsonObject.addProperty("checkPointCount", checkpointCount);
+        jsonObject.addProperty("moveCounter", this.moveCounter);
+        jsonObject.addProperty("step", this.step);
+        jsonObject.addProperty("phase", this.phase.toString());
+        jsonObject.addProperty("stepMode", this.stepMode);
+
+
         return null;
     }
 }

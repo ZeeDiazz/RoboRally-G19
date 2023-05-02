@@ -3,19 +3,19 @@ package dk.dtu.compute.se.pisd.roborally.model;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 
 public class CheckPoint extends Space {
     public final int Id;
 
     /**
-
-    * @author Felix Schmidt, s224313@dtu.dk
-    * Constructor for CheckPoint
-    * @param position the position of the space on the board
-    * @param id counter for order of checkpoints
-    */
-    public CheckPoint(Position position, int id){
+     * @param position the position of the space on the board
+     * @param id       counter for order of checkpoints
+     * @author Felix Schmidt, s224313@dtu.dk
+     * Constructor for CheckPoint
+     */
+    public CheckPoint(Position position, int id) {
         super(position, false);
         this.Id = id;
 
@@ -53,7 +53,34 @@ public class CheckPoint extends Space {
 
 
         return jsonObject;
-}
+    }
+
+    public ISerializable deserialize(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        String commandString = jsonObject.get("currentInteractiveCard").getAsString();
+
+
+        Command currentInteractiveCards = Command.LEFT;
+
+        for (Command command : Command.values()) {
+            if (commandString.equals(command.toString())) {
+                currentInteractiveCards = command;
+                break;
+            }
+        }
+
+
+        Board board = new Board(0, 0);
+        board = (Board) board.deserialize(jsonObject.get("board"));
+
+
+        GameController gameController = new GameController(board);
+
+
+        return gameController;
+    }
+
     public Space copy(Position newPosition) {
         return new CheckPoint(newPosition, this.Id);
 

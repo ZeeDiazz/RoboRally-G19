@@ -41,7 +41,8 @@ public class Obstacle extends Space {
     public JsonElement serialize() {
         JsonObject jsonObject = super.serialize().getAsJsonObject();
 
-        jsonObject.addProperty(this.type.toString(), this.direction.toString());
+        jsonObject.addProperty("obstacleType", this.type.toString());
+        jsonObject.addProperty("heading", this.direction.toString());
 
         return jsonObject;
         }

@@ -256,7 +256,7 @@ public class Player extends Subject implements ISerializable {
         for (CommandCardField card : cards) {
             jsonArrayCards.add(card.serialize());
         }
-        jsonObject.add("cards", jsonArrayProgram);
+        jsonObject.add("cards", jsonArrayCards);
 
         return jsonObject;
 
