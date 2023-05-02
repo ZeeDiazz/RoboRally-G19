@@ -1,6 +1,10 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
-public final class Position {
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
+
+public final class Position implements ISerializable {
     public final int X;
     public final int Y;
 
@@ -23,5 +27,23 @@ public final class Position {
             case EAST -> deltaX = 1;
         }
         return new Position(position.X + deltaX * amount, position.Y + deltaY * amount);
+    }
+
+    @Override
+    public JsonElement serialize() {
+
+        JsonObject jsonObject = new JsonObject();
+        
+        
+        jsonObject.addProperty("x",this.X);
+        jsonObject.addProperty("y",this.Y);
+        
+        
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return null;
     }
 }

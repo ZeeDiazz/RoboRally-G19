@@ -21,7 +21,11 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -35,7 +39,7 @@ import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
-public class Board extends Subject {
+public class Board extends Subject implements ISerializable {
     private int moveCounter;
 
     public final int width;
@@ -415,5 +419,54 @@ public class Board extends Subject {
      */
     public boolean hasPlayer(Space space) {
         return space.getPlayer() != null;
+    }
+
+    @Override
+    public JsonElement serialize() {
+
+
+        JsonObject jsonObject = new JsonObject();
+
+
+        jsonObject.addProperty("width", this.width);
+        jsonObject.addProperty("height", this.height);
+        jsonObject.addProperty("boardName", this.boardName);
+        jsonObject.addProperty("gameId", this.gameId);
+        JsonArray jsonArrayPlayers = new JsonArray();
+
+        for (Player player : this.players) {
+            jsonArrayPlayers.add(player.serialize());
+        }
+        jsonObject.add("players", jsonArrayPlayers);
+
+        jsonObject.addProperty("playerCount", this.getPlayerCount());
+        jsonObject.addProperty("currentPlayer", this.current.getName());
+        jsonObject.addProperty("checkPoint", checkpointCount);
+        jsonObject.addProperty("moveCounter", this.moveCounter);
+        jsonObject.addProperty("step", this.step);
+        jsonObject.addProperty("phase", this.phase.toString());
+        jsonObject.addProperty("stepMode", this.stepMode);
+
+
+        JsonArray jsonArraySpaces = new JsonArray();
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                Space currentSpace = spaces[i][j];
+                if (currentSpace instanceof CheckPoint || currentSpace instanceof Obstacle ||
+                        !currentSpace.getWalls().isEmpty() || currentSpace.hasPlayer()) {
+                    jsonArraySpaces.add(currentSpace.serialize());
+                }
+            }
+        }
+
+        jsonObject.add("spaces", jsonArraySpaces);
+
+        return jsonObject;
+
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return null;
     }
 }
