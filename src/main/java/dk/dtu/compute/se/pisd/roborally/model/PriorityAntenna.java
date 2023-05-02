@@ -4,47 +4,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PriorityAntenna extends Space{
-    List<Player> closestPlayers = new ArrayList<>();
 
     public PriorityAntenna(Board board, int x, int y){
         super(board,x,y);
-    }
 
-    /**
-     * this method set the priority player from a list of players
-     * @param players
-     * @param priorityAntenna
-     */
-    public void  setPriorityPlayer(List<Player> players, PriorityAntenna priorityAntenna) {
-        Player closestPlayer = null;
-        int closestDistance = Integer.MAX_VALUE;
-        double smallestAngle = Double.MAX_VALUE;
-        List<Player> closestPlayers = new ArrayList<>();
-        for (Player player: players){
-            int checkingPlayerDistance = player.getManhattanDistanceToAntenna(player, priorityAntenna);
-            if(checkingPlayerDistance < closestDistance){
-                closestPlayer = player;
-                closestDistance = checkingPlayerDistance;
+    }
+    public List<Player> getPriority(List<Player> players){
+        List<Player> tied = new ArrayList<>();
+        List<Player> priority = new ArrayList<>();
+        int previousPlayerDistance = -1;
+        players.sort((a,b) -> (getDistanceTo(a) - getDistanceTo(b)));
+
+        for(int i = 0; i < players.size(); i++){
+            Player current = players.remove(0);
+            if(getDistanceTo(current) != previousPlayerDistance){
+                tied.sort((a, b) -> Double.compare(Math.atan(getSlope(a)), Math.atan(getSlope(b))));
+                priority.addAll(tied);
             }
+            previousPlayerDistance = getDistanceTo(current);
+            tied.add(current);
         }
+        tied.sort((a, b) -> Double.compare(Math.atan(getSlope(a)), Math.atan(getSlope(b))));
+        priority.addAll(tied);
+        return priority;
 
-
-        /*if(!closestPlayers.isEmpty()){
-            for(Player player : closestPlayers){
-                double currentPlayerSlope = player.getSlope(player,priorityAntenna);
-                double checkingPlayersAngle = Math.atan(currentPlayerSlope);
-                if(checkingPlayersAngle < 0){
-                    checkingPlayersAngle += Math.PI;
-                }
-                if(checkingPlayersAngle > smallestAngle){
-                    closestPlayer = player;
-                    smallestAngle = checkingPlayersAngle;
-                }
-
-            }
-
-        }*/
-        board.setCurrentPlayer(closestPlayer);
     }
+
+    protected int getDistanceTo(Player player){
+        int xAntenna = this.Position.X;
+        int yAntenna = this.Position.Y;
+        int xPlayer = player.getSpace().Position.X;
+        int yPlayer = player.getSpace().Position.Y;
+        return Math.abs(xPlayer-xAntenna) + Math.abs(yPlayer-yAntenna);
+    }
+    protected double getSlope(Player player){
+        // (x1,y1) = priorityantenna
+        // (x2,y2) = player
+        // s = sqrt((y2-y1)/(x2-x1)
+        int xAntenna = this.Position.X;
+        int yAntenna = this.Position.Y;
+        int xPlayer = player.getSpace().Position.X;
+        int yPlayer = player.getSpace().Position.Y;
+
+
+
+        return Math.sqrt((yPlayer - yAntenna) / (double)(xPlayer - xAntenna));
+    }
+
 
 }

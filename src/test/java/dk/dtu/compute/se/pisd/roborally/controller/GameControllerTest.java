@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.BLUE_CONVEYOR_BELT;
 
 class GameControllerTest {
@@ -84,21 +87,19 @@ class GameControllerTest {
     }
     @Test
     void testPriorityAntenna(){
-        Board board = gameController.board;
-        Player player1 = board.getPlayer(0);
-        Player player2 = board.getPlayer(1);
-        Player player3 = board.getPlayer(2);
-        PriorityAntenna priorityAntenna = new PriorityAntenna(board,7,7);
-        board.setCurrentPlayer(player3);
-        gameController.moveCurrentPlayerToSpace(board.getSpace(6,7));
-        board.setCurrentPlayer(player1);
-        gameController.moveCurrentPlayerToSpace(board.getSpace(2,2));
+        Board board = new Board(0,0);
+        PriorityAntenna  priorityAntenna = new PriorityAntenna(board,7,7);
+        Player player1 = new Player(board,"purple",  "Felix");
+        Player player2 = new Player(board,"blue",  "Daniel");
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        player1.setSpace(new Space(board,4,4));
+        player2.setSpace(new Space(board,7,6));
 
-        priorityAntenna.setPriorityPlayer(board.getPlayers(),priorityAntenna);
-        Assertions.assertTrue(board.getCurrentPlayer() == player3);
-        Assertions.assertFalse(board.getCurrentPlayer() == player2);
-        Assertions.assertFalse(board.getCurrentPlayer() == player1);
-
+        List<Player>  priotityPlayers = priorityAntenna.getPriority(players);
+        Player priorityPlayer = priotityPlayers.get(0);
+        Assertions.assertTrue(priorityPlayer.equals(player2));
     }
     @Test
     void testPriorityAntennaWithTie(){
@@ -117,7 +118,7 @@ class GameControllerTest {
         board.setCurrentPlayer(player1);
         gameController.moveCurrentPlayerToSpace(board.getSpace(3,7));
 
-        priorityAntenna.setPriorityPlayer(board.getPlayers(),priorityAntenna);
+
 
         Assertions.assertTrue(board.getCurrentPlayer() == player3);
 
