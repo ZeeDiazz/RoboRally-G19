@@ -1,19 +1,20 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Position;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public abstract class ConveyorSpace extends EmptySpace {
     public final Heading direction;
+    protected final int amount;
 
-    public ConveyorSpace(Board board, Position position, Heading direction, Heading... walls) {
+    protected ConveyorSpace(Board board, Position position, Heading direction, int amount, Heading... walls) {
         super(board, position, walls);
 
         this.direction = direction;
+        this.amount = amount;
     }
 
-    public ConveyorSpace(Board board, Position position, Heading direction) {
-        this(board, position, direction, new Heading[0]);
+    @Override
+    public Move endedRegisterOn(Player player, int registerIndex) {
+        return new Move(this.position, this.direction, this.amount, player);
     }
 }
