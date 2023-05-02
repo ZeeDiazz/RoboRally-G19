@@ -405,6 +405,11 @@ public class GameController {
         if (spaceIsOccupied(currentSpace)) {
             return;
         }
+        /*
+        if (spaceIsOccupied(currentSpace)) {
+            return;
+        }
+         */
     }
 
     // TODO Assignment V2

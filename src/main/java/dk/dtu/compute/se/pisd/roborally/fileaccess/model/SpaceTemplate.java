@@ -41,4 +41,8 @@ public class SpaceTemplate {
     public int x;
     public int y;
 
+    public SpaceTemplate(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }

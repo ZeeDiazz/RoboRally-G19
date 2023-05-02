@@ -73,12 +73,7 @@ public class Board extends Subject {
         this.boardName = boardName;
         this.width = width;
         this.height = height;
-        spaces = new Space[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                spaces[x][y] = new GreenGearSpace(this, new Position(x, y));
-            }
-        }
+        this.spaces = new Space[width][height];
         this.stepMode = false;
     }
 
