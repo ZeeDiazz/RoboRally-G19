@@ -30,6 +30,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
@@ -62,9 +63,9 @@ public class Board extends Subject implements ISerializable {
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
      *
-     * @param name the name of the board
-     * @param width     the width of the board
-     * @param height    the height of the board
+     * @param name   the name of the board
+     * @param width  the width of the board
+     * @param height the height of the board
      * @author ZeeDiazz (Zaid)
      */
 
@@ -477,10 +478,7 @@ public class Board extends Subject implements ISerializable {
 
     @Override
     public JsonElement serialize() {
-
-
         JsonObject jsonObject = new JsonObject();
-
 
         jsonObject.addProperty("width", this.width);
         jsonObject.addProperty("height", this.height);
@@ -501,7 +499,6 @@ public class Board extends Subject implements ISerializable {
         jsonObject.addProperty("phase", this.phase.toString());
         jsonObject.addProperty("stepMode", this.stepMode);
 
-
         JsonArray jsonArraySpaces = new JsonArray();
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
@@ -518,25 +515,20 @@ public class Board extends Subject implements ISerializable {
         jsonObject.add("spaces", jsonArraySpaces);
 
         return jsonObject;
-
     }
 
     @Override
     public ISerializable deserialize(JsonElement element) {
         JsonObject jsonObject = new JsonObject();
 
-
         int width = jsonObject.get("width").getAsInt();
         int height = jsonObject.get("height").getAsInt();
-
 
         String boardName = jsonObject.get("boardName").getAsString();
         Board board1 = new Board(width, height, boardName);
         board1.gameId = jsonObject.get("gameId").getAsInt();
 
-
         int playerCount = jsonObject.get("playerCount").getAsInt();
-
 
         // Adding players
         Player playerToAdd = new Player(null, null, null);
@@ -545,9 +537,7 @@ public class Board extends Subject implements ISerializable {
             board1.players.add(playerToAdd);
         }
 
-
         // PlayerName of current player
-
         String currentPlayerName = jsonObject.get("currentPlayer").getAsString();
 
         for (Player player : board1.players) {
@@ -557,14 +547,16 @@ public class Board extends Subject implements ISerializable {
             }
         }
 
-
         jsonObject.addProperty("checkPointCount", checkpointCount);
         jsonObject.addProperty("moveCounter", this.moveCounter);
         jsonObject.addProperty("step", this.step);
         jsonObject.addProperty("phase", this.phase.toString());
         jsonObject.addProperty("stepMode", this.stepMode);
 
-
         return null;
     }
 }
+
+    
+
+

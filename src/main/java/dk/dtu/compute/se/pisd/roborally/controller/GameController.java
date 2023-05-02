@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.javafx.stage.PopupWindowPeerListener;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
@@ -342,7 +343,6 @@ public class GameController implements ISerializable {
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
         performMove(Move.fromPlayer(player, 2));
-
     }
 
     private void performSimultaneousMoves(Move... moves) {
@@ -353,7 +353,6 @@ public class GameController implements ISerializable {
                 continue;
             }
 
-
             Position endingPos = move.getEndingPosition();
             if (colliding.contains(endingPos)) {
                 continue;
@@ -362,8 +361,7 @@ public class GameController implements ISerializable {
             if (validMoves.containsKey(endingPos)) {
                 colliding.add(endingPos);
                 validMoves.remove(endingPos);
-            }
-            else {
+            } else {
                 validMoves.put(endingPos, move);
             }
         }
@@ -377,8 +375,7 @@ public class GameController implements ISerializable {
             // If going out of bounds
             if (endingSpace == null) {
                 m.Moving.reboot();
-            }
-            else {
+            } else {
                 m.Moving.setSpace(endingSpace);
             }
         }
@@ -484,9 +481,7 @@ public class GameController implements ISerializable {
             moves[i] = player.getSpace().endedRegisterOn(player, 0);
         }
         performSimultaneousMoves(moves);
-
     }
-
 
     @Override
     public JsonElement serialize() {
@@ -494,16 +489,15 @@ public class GameController implements ISerializable {
 
         jsonObject.add("board", this.board.serialize());
 
-        if (currentInteractiveCard != null) {
-            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
-        }
+      
+            if (currentInteractiveCard != null) {
+                jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+            }
         return jsonObject;
     }
-
 
     @Override
     public ISerializable deserialize(JsonElement element) {
         return null;
-
     }
 }
