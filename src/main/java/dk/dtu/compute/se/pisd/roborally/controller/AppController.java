@@ -56,12 +56,14 @@ import java.util.Optional;
 
 public class AppController implements Observer {
 
+
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
 
-    private GameController gameController;
+    private static Transformer transformer;
+    private static GameController gameController;
 
     @FXML
     FileChooser fileChooser = new FileChooser();
@@ -110,6 +112,9 @@ public class AppController implements Observer {
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();
 
+            // Gives transformer the currentGameController
+            transformer = new Transformer(gameController);
+
             roboRally.createBoardView(gameController);
         }
     }
@@ -130,7 +135,7 @@ public class AppController implements Observer {
             try {
                 file.createNewFile();
                 // Saves to Json-file
-                Transformer.saveBoard(this.gameController.board, file);
+                Transformer.saveBoard(gameController.board, file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -170,6 +175,9 @@ public class AppController implements Observer {
                 alert.showAndWait();
                 return;
             }
+            // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
+            //gameController = transformer.getCurrentGameController();
+            
             gameController = new GameController(board);
 
             // Makes a game with 2 players, with the given game configurations
@@ -188,7 +196,7 @@ public class AppController implements Observer {
             roboRally.createBoardView(gameController);
 
             // Provided error pop-up if there was a problem with loading the file
-            
+
 
             // If the user opts out of loading
         } else {
@@ -261,5 +269,6 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
+
 
 }
