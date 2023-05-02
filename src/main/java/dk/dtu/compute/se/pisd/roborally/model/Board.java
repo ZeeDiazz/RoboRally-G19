@@ -30,6 +30,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
@@ -62,9 +63,9 @@ public class Board extends Subject implements ISerializable {
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
      *
-     * @param name the name of the board
-     * @param width     the width of the board
-     * @param height    the height of the board
+     * @param name   the name of the board
+     * @param width  the width of the board
+     * @param height the height of the board
      * @author ZeeDiazz (Zaid)
      */
 
@@ -555,3 +556,7 @@ public class Board extends Subject implements ISerializable {
         return null;
     }
 }
+
+    
+
+
