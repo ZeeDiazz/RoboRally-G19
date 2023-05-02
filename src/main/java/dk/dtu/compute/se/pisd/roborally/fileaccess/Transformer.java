@@ -2,14 +2,14 @@ package dk.dtu.compute.se.pisd.roborally.fileaccess;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.TypeAdapters.SpaceTemplateTypeAdapter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.CheckPoint;
-import dk.dtu.compute.se.pisd.roborally.model.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 
 import java.io.File;
@@ -21,8 +21,15 @@ public class Transformer {
 
     public static Board initialBoard;
 
+    private static GameController currentGameController;
+
+
+    public Transformer(GameController gameController) {
+        currentGameController = gameController;
+    }
+
     public static void saveBoard(Board board, File file) {
-        BoardTemplate template = new BoardTemplate();
+      /*  BoardTemplate template = new BoardTemplate();
         template.width = board.width;
         template.height = board.height;
 
@@ -42,9 +49,9 @@ public class Transformer {
 
                 
                 
-               /* if (space.hasPlayer()) {
+               *//* if (space.hasPlayer()) {
                     spaceTemplate.player = space.getPlayer();
-                }*/
+                }*//*
                 if (!space.getWalls().isEmpty()) {
                     spaceTemplate.walls.addAll(space.getWalls());
                     include = true;
@@ -66,18 +73,27 @@ public class Transformer {
                     template.spaces.add(spaceTemplate);
                 }
             }
-        }
+        }*/
+
+
+        JsonObject saveFileJson = new JsonObject();
+
+        saveFileJson.add("gameController", currentGameController.serialize());
+
+
         FileWriter fileWriter = null;
         JsonWriter writer = null;
         try {
 
 
-            Gson gson = new GsonBuilder().registerTypeAdapter(SpaceTemplate.class, new SpaceTemplateTypeAdapter()).setPrettyPrinting().create();
+            //  Gson gson = new GsonBuilder().registerTypeAdapter(SpaceTemplate.class, new SpaceTemplateTypeAdapter()).setPrettyPrinting().create();
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             fileWriter = new FileWriter(file);
             writer = gson.newJsonWriter(fileWriter);
 
-            gson.toJson(template, template.getClass(), writer);
+            gson.toJson(saveFileJson, writer);
 
             writer.close();
         } catch (IOException e1) {
@@ -144,6 +160,9 @@ public class Transformer {
     }
 
 
+    public GameController getCurrentGameController() {
+        return currentGameController;
+    }
 }
 
 
