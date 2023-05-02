@@ -29,12 +29,6 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 
-
-import javafx.geometry.Pos;
-
-import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
-import dk.dtu.compute.se.pisd.roborally.controller.FieldAction; // From 1.4.0
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +46,6 @@ public class Space extends Subject implements ISerializable {
 
     private Player player;
     private final ArrayList<Heading> walls;
-    private List<FieldAction> actions;
     public final boolean IsSpawnSpace;
 
     /**
@@ -70,10 +63,7 @@ public class Space extends Subject implements ISerializable {
     public Space(Position position, boolean isSpawnSpace, Heading... walls) {
         this.Position = position;
         this.IsSpawnSpace = isSpawnSpace;
-        this.actions = new ArrayList<>();
         this.player = null;
-
-
         this.walls = new ArrayList<>(Arrays.stream(walls).toList());
     }
 
@@ -144,9 +134,7 @@ public class Space extends Subject implements ISerializable {
         return walls;
     }
 
-    public List<FieldAction> getActions() {
-        return actions;
-    }
+
 
 
     /**
