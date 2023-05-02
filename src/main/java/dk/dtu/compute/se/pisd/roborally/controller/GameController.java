@@ -22,6 +22,10 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.ObstacleType;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

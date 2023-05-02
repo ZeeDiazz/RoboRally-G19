@@ -3,12 +3,14 @@ package java.dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.BLUE_CONVEYOR_BELT;
+import static dk.dtu.compute.se.pisd.roborally.model.spaces.ObstacleType.BLUE_CONVEYOR_BELT;
 
 class GameControllerTest {
 

@@ -1,6 +1,7 @@
-package dk.dtu.compute.se.pisd.roborally.model;
+package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
-import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
+import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
 
 /**
  * @author ZeeDaizz (Zaid)

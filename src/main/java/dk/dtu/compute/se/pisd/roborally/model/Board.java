@@ -22,12 +22,15 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
+import static dk.dtu.compute.se.pisd.roborally.model.spaces.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
