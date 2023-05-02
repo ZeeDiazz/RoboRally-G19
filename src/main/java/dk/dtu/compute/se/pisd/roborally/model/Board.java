@@ -25,13 +25,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.*;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -291,7 +291,7 @@ public class Board extends Subject implements ISerializable {
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
-        return getSpace(Position.move(space.Position, heading));
+        return getSpace(Position.move(space.position, heading));
         /*
         int x = space.Position.X;
         int y = space.y;
@@ -398,10 +398,10 @@ public class Board extends Subject implements ISerializable {
                 break;
             } else if (space.hasWall(Heading.turnAround(move.Direction))) {
                 break;
-            } else if (space.hasPlayer()) {
+            } else if (space.getPlayer() != null) {
                 // Can maximally move the full amount, minus the part already moved
                 int moveOtherAmount = move.Amount - moveAmount;
-                Move otherPlayerMove = new Move(space.Position, move.Direction, moveOtherAmount, space.getPlayer());
+                Move otherPlayerMove = new Move(space.position, move.Direction, moveOtherAmount, space.getPlayer());
 
                 for (Move resultingMove : resultingMoves(otherPlayerMove)) {
                     moves.add(resultingMove);
@@ -418,7 +418,7 @@ public class Board extends Subject implements ISerializable {
     }
 
     public void addCheckpoint(Position position) {
-        this.spaces[position.X][position.Y] = new CheckPoint(position, checkpointCount++);
+        this.spaces[position.X][position.Y] = new CheckPointSpace(position, checkpointCount++);
     }
 
     public int getCheckpointCount() {
@@ -444,10 +444,10 @@ public class Board extends Subject implements ISerializable {
     }
 
     public static Board add(Board board, Board adding, Position offset, String newName) {
-        Position currentTopLeft = board.spaces[0][0].Position;
-        Position currentBottomRight = board.spaces[board.width - 1][board.height - 1].Position;
-        Position addingTopLeft = Position.add(adding.spaces[0][0].Position, offset);
-        Position addingBottomRight = Position.add(adding.spaces[adding.width - 1][adding.height - 1].Position, offset);
+        Position currentTopLeft = board.spaces[0][0].position;
+        Position currentBottomRight = board.spaces[board.width - 1][board.height - 1].position;
+        Position addingTopLeft = Position.add(adding.spaces[0][0].position, offset);
+        Position addingBottomRight = Position.add(adding.spaces[adding.width - 1][adding.height - 1].position, offset);
 
         int newWidth = Math.max(Math.abs(currentTopLeft.X - addingBottomRight.X), Math.abs(addingTopLeft.X - currentBottomRight.X)) + 1;
         int newHeight = Math.max(Math.abs(currentTopLeft.Y - addingBottomRight.Y), Math.abs(addingTopLeft.Y - currentBottomRight.Y)) + 1;
@@ -504,9 +504,12 @@ public class Board extends Subject implements ISerializable {
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
                 Space currentSpace = spaces[i][j];
+                // TODO
+                /*
                 if (currentSpace instanceof CheckPoint || currentSpace instanceof Obstacle || !currentSpace.getWalls().isEmpty() || currentSpace.hasPlayer()) {
                     jsonArraySpaces.add(currentSpace.serialize());
                 }
+                */
             }
         }
 

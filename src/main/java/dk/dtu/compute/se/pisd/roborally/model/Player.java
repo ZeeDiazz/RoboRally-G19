@@ -25,6 +25,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +47,7 @@ public class Player extends Subject implements ISerializable {
 
     final public Board board;
     public int checkpointGoal = 0;
+    public int direction;
 
     private String name;
     private String color;
@@ -53,6 +55,7 @@ public class Player extends Subject implements ISerializable {
     private Space space;
     private Space rebootSpace;
     private Heading heading = SOUTH;
+
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
@@ -101,7 +104,7 @@ public class Player extends Subject implements ISerializable {
             this.name = name;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
@@ -124,7 +127,7 @@ public class Player extends Subject implements ISerializable {
         this.color = color;
         notifyChange();
         if (space != null) {
-            space.playerChanged();
+            space.changed();
         }
     }
 
@@ -177,7 +180,7 @@ public class Player extends Subject implements ISerializable {
             this.heading = heading;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
@@ -241,8 +244,8 @@ public class Player extends Subject implements ISerializable {
 
         jsonObject.addProperty("checkpointGoal", this.checkpointGoal);
         jsonObject.addProperty("name", this.name);
-        jsonObject.add("space", this.space.Position.serialize());
-        jsonObject.add("rebootSpace", this.rebootSpace.Position.serialize());
+        jsonObject.add("space", this.space.position.serialize());
+        jsonObject.add("rebootSpace", this.rebootSpace.position.serialize());
         jsonObject.addProperty("heading", this.heading.toString());
 
 

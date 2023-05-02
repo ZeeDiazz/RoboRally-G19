@@ -19,33 +19,26 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package dk.dtu.compute.se.pisd.roborally.fileaccess.model;
+package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 
 /**
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
+ *
  */
-public class SpaceTemplate {
+public abstract class FieldAction {
 
-    public SpaceTemplate() {
-    }
-
-    public List<Heading> walls = new ArrayList<>();
-
-    //public Obstacle obstacle;
-
-    //public CheckPoint checkPoint;
-
-    //public int playerNumber;
-
-    public int x;
-    public int y;
-
+    /**
+     * Executes the field action for a given space. In order to be able to do
+     * that the GameController associated with the game is passed to this method.
+     *
+     * @param gameController the gameController of the respective game
+     * @param space the space this action should be executed for
+     * @return whether the action was successfully executed
+     */
+    public abstract boolean doAction(GameController gameController, Space space);
 
 }

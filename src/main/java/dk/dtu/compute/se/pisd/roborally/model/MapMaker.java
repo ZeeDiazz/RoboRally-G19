@@ -1,8 +1,9 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import dk.dtu.compute.se.pisd.roborally.model.spaces.BlueConveyorSpace;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.GreenConveyorSpace;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import java.util.HashMap;
-
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.*;
 
 public final class MapMaker {
@@ -18,7 +19,7 @@ public final class MapMaker {
                     space = specialSpaces.get(currentPosition);
                 }
                 else {
-                    space = new Space(currentPosition, false);
+                    space = new Space(currentPosition);
                 }
                 spaces[x][y] = space;
 
@@ -37,16 +38,18 @@ public final class MapMaker {
         HashMap<Position, Space> spaces = new HashMap<>();
         // Making special spaces
         // The spawn points
+        /*
         addSpace(spaces, new Space(new Position(1, 1), true));
         addSpace(spaces, new Space(new Position(3, 2), true));
         addSpace(spaces, new Space(new Position(4, 1), true));
         addSpace(spaces, new Space(new Position(5, 1), true));
         addSpace(spaces, new Space(new Position(6, 2), true));
         addSpace(spaces, new Space(new Position(8, 1), true));
+         */
 
         // The two green conveyors
-        addSpace(spaces, new Obstacle(new Position(0, 0), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(9, 0), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(0, 0), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(9, 0), NORTH));
 
         HashMap<Position, Heading[]> walls = new HashMap<>();
         walls.put(new Position(2, 1), new Heading[] {WEST});
@@ -65,44 +68,44 @@ public final class MapMaker {
         for (int i = 0; i < 4; i++) {
             Position position = startingAt[i];
             Heading direction = startHeading[i];
-            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+            addSpace(spaces, new BlueConveyorSpace(position, direction));
             position = Position.move(position, direction);
-            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+            addSpace(spaces, new BlueConveyorSpace(position, direction));
             position = Position.move(position, direction);
             direction = Heading.turnRight(direction);
-            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+            addSpace(spaces, new BlueConveyorSpace(position, direction));
             position = Position.move(position, direction);
-            addSpace(spaces, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
+            addSpace(spaces, new BlueConveyorSpace(position, direction));
         }
 
-        addSpace(spaces, new Obstacle(new Position(5, 1), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(spaces, new Obstacle(new Position(4, 1), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(spaces, new Obstacle(new Position(3, 1), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(3, 2), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(3, 3), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(2, 3), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(2, 4), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(1, 4), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(1, 5), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(1, 6), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(spaces, new Obstacle(new Position(2, 6), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(spaces, new Obstacle(new Position(3, 6), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(spaces, new Obstacle(new Position(4, 6), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(spaces, new Obstacle(new Position(4, 7), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(4, 8), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(spaces, new Obstacle(new Position(5, 8), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(spaces, new Obstacle(new Position(6, 8), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(6, 7), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(6, 6), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(7, 6), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(7, 5), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(spaces, new Obstacle(new Position(8, 5), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(8, 4), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(spaces, new Obstacle(new Position(8, 3), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(spaces, new Obstacle(new Position(7, 3), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(spaces, new Obstacle(new Position(6, 3), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(spaces, new Obstacle(new Position(5, 3), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(spaces, new Obstacle(new Position(5, 2), GREEN_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(5, 1), WEST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(4, 1), WEST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(3, 1), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(3, 2), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(3, 3), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(2, 3), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(2, 4), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(1, 4), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(1, 5), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(1, 6), EAST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(2, 6), EAST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(3, 6), EAST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(4, 6), WEST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(4, 7), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(4, 8), EAST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(5, 8), EAST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(6, 8), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(6, 7), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(6, 6), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(7, 6), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(7, 5), SOUTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(8, 5), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(8, 4), NORTH));
+        addSpace(spaces, new GreenConveyorSpace(new Position(8, 3), WEST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(7, 3), WEST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(6, 3), WEST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(5, 3), EAST));
+        addSpace(spaces, new GreenConveyorSpace(new Position(5, 2), NORTH));
 
         HashMap<Position, Heading[]> walls = new HashMap<>();
 
@@ -115,21 +118,21 @@ public final class MapMaker {
         // Making special spaces
         // The blue conveyor ring
         for (int y = 0; y < 8; y++) {
-            addSpace(spaces, new Obstacle(new Position(1, y), BLUE_CONVEYOR_BELT, SOUTH));
+            addSpace(spaces, new BlueConveyorSpace(new Position(1, y), SOUTH));
         }
-        addSpace(spaces, new Obstacle(new Position(2, 0), BLUE_CONVEYOR_BELT, SOUTH));
+        addSpace(spaces, new BlueConveyorSpace(new Position(2, 0), SOUTH));
         for (int x = 2; x < 10; x++) {
-            addSpace(spaces, new Obstacle(new Position(x, 1), BLUE_CONVEYOR_BELT, WEST));
+            addSpace(spaces, new BlueConveyorSpace(new Position(x, 1), WEST));
         }
-        addSpace(spaces, new Obstacle(new Position(9, 2), BLUE_CONVEYOR_BELT, WEST));
+        addSpace(spaces, new BlueConveyorSpace(new Position(9, 2), WEST));
         for (int y = 2; y < 10; y++) {
-            addSpace(spaces, new Obstacle(new Position(8, y), BLUE_CONVEYOR_BELT, NORTH));
+            addSpace(spaces, new BlueConveyorSpace(new Position(8, y), NORTH));
         }
-        addSpace(spaces, new Obstacle(new Position(2, 0), BLUE_CONVEYOR_BELT, NORTH));
+        addSpace(spaces, new BlueConveyorSpace(new Position(2, 0), NORTH));
         for (int x = 0; x < 8; x++) {
-            addSpace(spaces, new Obstacle(new Position(x, 8), BLUE_CONVEYOR_BELT, EAST));
+            addSpace(spaces, new BlueConveyorSpace(new Position(x, 8), EAST));
         }
-        addSpace(spaces, new Obstacle(new Position(0, 7), BLUE_CONVEYOR_BELT, EAST));
+        addSpace(spaces, new BlueConveyorSpace(new Position(0, 7), EAST));
 
         HashMap<Position, Heading[]> walls = new HashMap<>();
         walls.put(new Position(3, 3), new Heading[] {NORTH});
@@ -157,63 +160,7 @@ public final class MapMaker {
         return riskyCrossing;
     }
 
-    /*
-    public static Board makeRiskyCrossing() {
-        HashMap<Position, Space> special = makeStartASpaces();
-        // Making special spaces
-        Position[] startingAt = new Position[] {new Position(4, 0), new Position(3, 8), new Position(12, 1), new Position(11, 9)};
-        Heading[] startHeading = new Heading[] {SOUTH, EAST, WEST, NORTH};
-        for (int i = 0; i < 4; i++) {
-            Position position = startingAt[i];
-            Heading direction = startHeading[i];
-            addSpace(special, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
-            position = Position.move(position, direction);
-            addSpace(special, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
-            position = Position.move(position, direction);
-            direction = Heading.turnRight(direction);
-            addSpace(special, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
-            position = Position.move(position, direction);
-            addSpace(special, new Obstacle(position, BLUE_CONVEYOR_BELT, direction));
-        }
-
-        addSpace(special, new Obstacle(new Position(8, 1), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(special, new Obstacle(new Position(7, 1), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(special, new Obstacle(new Position(6, 1), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(6, 2), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(6, 3), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(special, new Obstacle(new Position(5, 3), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(5, 4), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(special, new Obstacle(new Position(4, 4), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(4, 5), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(4, 6), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(special, new Obstacle(new Position(5, 6), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(special, new Obstacle(new Position(6, 6), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(special, new Obstacle(new Position(7, 6), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(special, new Obstacle(new Position(7, 7), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(7, 8), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(special, new Obstacle(new Position(8, 8), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(special, new Obstacle(new Position(9, 8), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(special, new Obstacle(new Position(9, 7), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(special, new Obstacle(new Position(9, 6), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(10, 6), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(special, new Obstacle(new Position(10, 5), GREEN_CONVEYOR_BELT, SOUTH));
-        addSpace(special, new Obstacle(new Position(11, 5), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(special, new Obstacle(new Position(11, 4), GREEN_CONVEYOR_BELT, NORTH));
-        addSpace(special, new Obstacle(new Position(11, 3), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(special, new Obstacle(new Position(10, 3), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(special, new Obstacle(new Position(9, 3), GREEN_CONVEYOR_BELT, WEST));
-        addSpace(special, new Obstacle(new Position(8, 3), GREEN_CONVEYOR_BELT, EAST));
-        addSpace(special, new Obstacle(new Position(8, 2), GREEN_CONVEYOR_BELT, NORTH));
-
-        addSpace(special, new CheckPoint(new Position(8, 7), 0));
-        addSpace(special, new CheckPoint(new Position(11, 0), 1));
-        HashMap<Position, Heading[]> walls = makeStartAWalls();
-
-        return makeCustomBoard(special, walls, 13, 10, "Risky Crossing");
-    }
-    */
-
     private static void addSpace(HashMap<Position, Space> spaces, Space space) {
-        spaces.put(space.Position, space);
+        spaces.put(space.position, space);
     }
 }

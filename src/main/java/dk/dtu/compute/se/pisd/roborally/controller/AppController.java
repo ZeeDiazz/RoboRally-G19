@@ -30,7 +30,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.Transformer;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -99,7 +99,7 @@ public class AppController implements Observer {
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
 
-            Board board = MapMaker.makeRiskyCrossing();
+            Board board = MapMaker.makeDizzyHighway();
 
             gameController = new GameController(board);
             int no = result.get();
@@ -272,6 +272,4 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
-
-
 }
