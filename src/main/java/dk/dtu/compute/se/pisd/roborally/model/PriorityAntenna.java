@@ -11,11 +11,11 @@ public class PriorityAntenna extends Space{
     }
 
     /**
-     * Takes a list of players and sorts them based on distance,
-     * if two players have the same  distance then the player with the smallest angle from the player to the antenna gets highest priority
+     *
+     * 
      * @author Felix723
      * @param players
-     * @return   prioritylist, a list of player sorted  by priorit
+     * @return   prioritylist, a list of player sorted  by priority
      */
     public List<Player> getPriority(List<Player> players){
         List<Player> tied = new ArrayList<>();
