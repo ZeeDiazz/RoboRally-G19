@@ -507,6 +507,9 @@ public class Board extends Subject implements ISerializable {
             for (int j = 0; j < this.height; j++) {
                 Space currentSpace = spaces[i][j];
                 // TODO
+                if (currentSpace instanceof SubClassOfSpace || currentSpace.getPlayer() != null || currentSpace.hasWalls()) {
+                    jsonArraySpaces.add(currentSpace.serialize());
+                }
                 /*
                 if (currentSpace instanceof CheckPoint || currentSpace instanceof Obstacle || !currentSpace.getWalls().isEmpty() || currentSpace.hasPlayer()) {
                     jsonArraySpaces.add(currentSpace.serialize());

@@ -1,12 +1,16 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Space extends Subject {
+public class Space extends Subject implements ISerializable {
     public final Position position;
     protected final ArrayList<Heading> walls;
     protected Player standingOn;
@@ -71,7 +75,42 @@ public class Space extends Subject {
         changed();
     }
 
+    public boolean hasWalls(){
+        return !this.walls.isEmpty();
+    }
+    
     public Player getPlayer() {
         return standingOn;
+    }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("spaceType",this.getClass().getSimpleName());
+        
+        
+
+
+        jsonObject.add("boardPosition", this.position.serialize());
+       
+
+        if (!this.walls.isEmpty()) {
+            JsonArray jsonArrayWalls = new JsonArray();
+            for (Heading wall : walls) {
+                jsonArrayWalls.add(wall.toString());
+            }
+            jsonObject.add("wall", jsonArrayWalls);
+        }
+        if (this.standingOn != null) {
+            jsonObject.addProperty("playerOccupyingSpace", this.standingOn.getName());
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return null;
     }
 }
