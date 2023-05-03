@@ -323,8 +323,6 @@ public class Player extends Subject implements ISerializable {
         
         // TODO implement
         Position position = new Position(0, 0);
-        Space space = new Space(position);
-        // player1.space = (Space) player1.space.deserialize(jsonObject.get("space"));
         player.setRebootPosition((Position)deserialize(jsonObject.get("rebootSpace")));
         
         String headingAsString = jsonObject.get("heading").getAsString();

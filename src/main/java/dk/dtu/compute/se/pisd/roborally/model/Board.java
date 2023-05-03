@@ -543,9 +543,14 @@ public class Board extends Subject implements ISerializable {
         // Adding players
         Player playerToAdd = new Player(null, null, null);
         ArrayList<Player> players = new ArrayList<>();
+
+        ArrayList<Position> playerPositions = new ArrayList<>();
+        Position position = new Position(0, 0);
         for (int i = 0; i < playerCount; i++) {
             playerToAdd = (Player)playerToAdd.deserialize(jsonObject.get("player"));
             players.add(playerToAdd);
+
+            playerPositions.add((Position)position.deserialize(jsonObject.get("player").getAsJsonObject().get("space")));
         }
 
         // PlayerName of current player
@@ -569,9 +574,29 @@ public class Board extends Subject implements ISerializable {
         Space space = new Space(new Position(0, 0));
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                JsonElement spaceJson = spacesJson.get(x * width + y);
+                JsonObject spaceJson = spacesJson.get(x * width + y).getAsJsonObject();
                 spaces[x][y] = (Space)space.deserialize(spaceJson);
+
+                JsonElement playerNameJson = spaceJson.get("playerOccupyingSpace");
+                Player player = null;
+                if (playerNameJson != null) {
+                    String playerName = playerNameJson.getAsString();
+                    for (Player candidate : players) {
+                        if (candidate.getName().equals(playerName)) {
+                            player = candidate;
+                            break;
+                        }
+                    }
+                }
+
+                spaces[x][y].setPlayer(player);
             }
+        }
+
+        for (int i = 0; i < playerCount; i++) {
+            Player p = players.get(i);
+            Position pPos = playerPositions.get(i);
+            p.setSpace(spaces[pPos.X][pPos.Y]);
         }
 
         return new Board(moveCounter, width, height, boardName, gameId, spaces, players, current, phase, step, stepMode, checkpointCount);
