@@ -85,16 +85,12 @@ public class Space extends Subject implements ISerializable {
         return json;
     }*/
 
-  /*  @Override
-    public JsonElement serialize() {
-        return serializeCommon("normal");
-    }
-*/
-    @Override
-    public ISerializable deserialize(JsonElement element) {
-        // TODO
-        return null;
-    }
+    /*  @Override
+      public JsonElement serialize() {
+          return serializeCommon("normal");
+      }
+  */
+    
 
     // Hack
     public void changed() {
@@ -107,10 +103,10 @@ public class Space extends Subject implements ISerializable {
         changed();
     }
 
-    public boolean hasWalls(){
+    public boolean hasWalls() {
         return !this.walls.isEmpty();
     }
-    
+
     public Player getPlayer() {
         return standingOn;
     }
@@ -132,5 +128,48 @@ public class Space extends Subject implements ISerializable {
         }
 
         return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+     /*   JsonObject jsonObject = element.getAsJsonObject();
+
+
+        jsonObject.addProperty("spaceType", (this instanceof Obstacle) ? "obstacle"
+                : (this instanceof CheckPoint) ? "checkPoint" : "regularType");
+
+
+        Space space1 = new Space((Position) Position.deserialize(jsonObject.get("boardPosition")), jsonObject.get("isSpawnSpace").getAsBoolean());
+
+        if (jsonObject.get("wall") != null) {
+
+            JsonArray jsonArrayOfWalls = jsonObject.get("wall").getAsJsonArray();
+
+
+            // For adding walls
+            Iterator<JsonElement> wallsIterator = jsonArrayOfWalls.iterator();
+
+            while (wallsIterator.hasNext()) {
+                String headingNameOfWall = wallsIterator.next().toString();
+                Heading wallToBeAdded = Heading.getHeading(headingNameOfWall);
+                space1.walls.add(wallToBeAdded);
+            }
+
+
+            if (!this.walls.isEmpty()) {
+                JsonArray jsonArrayWalls = new JsonArray();
+                for (Heading wall : walls) {
+                    jsonArrayWalls.add(wall.toString());
+                }
+                jsonObject.add("wall", jsonArrayWalls);
+            }
+            if (this.player != null) {
+                jsonObject.addProperty("playerOccupyingSpace", this.player.getName());
+            }
+
+
+        }
+        return space1;*/
+        return null;
     }
 }
