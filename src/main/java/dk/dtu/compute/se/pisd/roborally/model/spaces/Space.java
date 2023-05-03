@@ -64,7 +64,7 @@ public class Space extends Subject implements ISerializable {
         }
     }
 
-    protected JsonElement serializeCommon(String type) {
+  /*  protected JsonElement serializeCommon(String type) {
         JsonObject json = new JsonObject();
 
         json.addProperty("type", type);
@@ -83,13 +83,13 @@ public class Space extends Subject implements ISerializable {
         }
 
         return json;
-    }
+    }*/
 
-    @Override
+  /*  @Override
     public JsonElement serialize() {
         return serializeCommon("normal");
     }
-
+*/
     @Override
     public ISerializable deserialize(JsonElement element) {
         // TODO
@@ -119,10 +119,7 @@ public class Space extends Subject implements ISerializable {
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
-   
         
-        
-
 
         jsonObject.add("boardPosition", this.position.serialize());
         
@@ -142,9 +139,5 @@ public class Space extends Subject implements ISerializable {
         
         return jsonObject;
     }
-
-    @Override
-    public ISerializable deserialize(JsonElement element) {
-        return null;
-    }
+    
 }
