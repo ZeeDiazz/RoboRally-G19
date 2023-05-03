@@ -118,13 +118,13 @@ class GameControllerTest {
         players.add(player4);
         players.add(player5);
         players.add(player6);
-        player1.setSpace(new Space(board,2,1));
+        player1.setSpace(new Space(board,4,5));
         player2.setSpace(new Space(board,0,3));
         player3.setSpace(new Space(board, 3,2));
         player4.setSpace(new Space(board, 5,2));
         player5.setSpace(new Space(board, 6,2));
         player6.setSpace(new Space(board, 7,2));
-        // felix, zaid, daniel, dulle, zach, emma
+        //  zaid, daniel, felix ,dulle, zach, emma
 
         List<Player> priorityPlayers = priorityAntenna.getPriority(players);
         Player priorityPlayer1 = priorityPlayers.get(0);
@@ -135,10 +135,10 @@ class GameControllerTest {
         Player priorityPlayer6 = priorityPlayers.get(5);
 
 
-        Assertions.assertTrue(priorityPlayer1.equals(player1));
-        Assertions.assertTrue(priorityPlayer2.equals(player3));
-        Assertions.assertTrue(priorityPlayer3.equals(player2));
-        Assertions.assertTrue(priorityPlayer4.equals(player4));
+        Assertions.assertTrue(priorityPlayer1.equals(player3));
+        Assertions.assertTrue(priorityPlayer2.equals(player2));
+        Assertions.assertTrue(priorityPlayer3.equals(player4));
+        Assertions.assertTrue(priorityPlayer4.equals(player1));
         Assertions.assertTrue(priorityPlayer5.equals(player5));
         Assertions.assertTrue(priorityPlayer6.equals(player6));
     }
@@ -161,7 +161,7 @@ class GameControllerTest {
         players.add(player6);
         player1.setSpace(new Space(board,2,1));
         player2.setSpace(new Space(board,0,3));
-        player3.setSpace(new Space(board, 4,2));
+        player3.setSpace(new Space(board, 3,2));
         player4.setSpace(new Space(board, 5,2));
         player5.setSpace(new Space(board, 6,2));
         player6.setSpace(new Space(board, 7,2));

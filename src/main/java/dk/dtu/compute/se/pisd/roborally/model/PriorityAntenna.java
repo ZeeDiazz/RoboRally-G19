@@ -25,7 +25,7 @@ public class PriorityAntenna extends Space{
         players.sort((a,b) -> (getDistanceTo(a) - getDistanceTo(b)));
 
         for(int i = 0; i < playersSize; i++){
-            Player current = players.remove(0 );
+            Player current = players.remove(0);
 
             if(getDistanceTo(current) != previousPlayerDistance){
                 tied.sort((a, b) -> Double.compare(getAngle(a),getAngle(b)));
@@ -60,9 +60,12 @@ public class PriorityAntenna extends Space{
             if(uy == vy){
                 uy++;
             }
+        int xDifference = ux - vx;
+        int yDifference = uy - vy;
 
-        double cos = (vx - ux)/(vy -uy);
-        return Math.acos(cos);
+        //double cos = (vx - ux)/(vy -uy);
+        //return Math.acos(cos);
+        return Math.atan2(yDifference,xDifference);
     }
 
 }
