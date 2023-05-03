@@ -81,6 +81,9 @@ public class SpaceView extends StackPane implements ViewObserver {
         else if (space instanceof PitSpace) {
             style = "-fx-background-color: black;";
         }
+        else if (space instanceof CheckPointSpace) {
+            style = "-fx-background-color: yellow;";
+        }
         else if ((space.position.X + space.position.Y) % 2 == 0) {
             style = "-fx-background-color: white;";
         }
