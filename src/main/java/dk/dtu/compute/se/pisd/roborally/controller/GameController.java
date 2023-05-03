@@ -500,6 +500,30 @@ public class GameController implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        Board board = new Board(0, 0);
+        board = (Board) board.deserialize(jsonObject.get("board"));
+
+        // For assigning board to players
+        for (Player player : board.getPlayers()) {
+            player.board = board;
+        }
+
+        String commandCardStringName = jsonObject.get("currentInteractiveCard").getAsString();
+
+        Command currentInteractiveCard = Command.LEFT;
+
+        for (Command command : Command.values()) {
+            if (commandCardStringName.equals(command.toString())) {
+                currentInteractiveCard = command;
+                break;
+            }
+        }
+
+        GameController gameController = new GameController(board);
+        gameController.currentInteractiveCard = currentInteractiveCard;
+        return gameController;
+
     }
 }

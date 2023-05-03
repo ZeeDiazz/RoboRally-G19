@@ -264,6 +264,8 @@ public class Player extends Subject implements ISerializable {
         Player player = new Player(null, jsonObject.get("color").getAsString(), jsonObject.get("name").getAsString());
         player.checkpointGoal = jsonObject.get("checkpointGoal").getAsInt();
 
+        
+        
         // TODO implement
         Position position = new Position(0, 0);
         Space space = new Space(position);
@@ -280,4 +282,6 @@ public class Player extends Subject implements ISerializable {
 
         return player;
     }
+    
+    
 }
