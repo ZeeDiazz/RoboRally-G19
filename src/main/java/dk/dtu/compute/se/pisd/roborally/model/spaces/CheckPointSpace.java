@@ -1,5 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public class CheckPointSpace extends Space implements SubClassOfSpace {
@@ -12,10 +15,10 @@ public class CheckPointSpace extends Space implements SubClassOfSpace {
     }
 
     /**
-     * @author Daniel Jensen
-     * Check whether a player has passed this checkpoint
      * @param player The player to check
      * @return True if the player has passed this checkpoint, else false.
+     * @author Daniel Jensen
+     * Check whether a player has passed this checkpoint
      */
     public boolean hasPassed(Player player) {
         return player.checkpointGoal < this.id;
@@ -34,5 +37,24 @@ public class CheckPointSpace extends Space implements SubClassOfSpace {
     @Override
     public Space copy(Position newPosition) {
         return new CheckPointSpace(newPosition, this.id, this.walls.toArray(new Heading[0]));
+    }
+
+
+    @Override
+    public JsonElement serialize() {
+
+        JsonObject jsonObject = super.serialize().getAsJsonObject();
+
+
+        jsonObject.addProperty("checkpointId", this.id);
+
+
+        return jsonObject;
+    }
+
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return super.deserialize(element);
     }
 }

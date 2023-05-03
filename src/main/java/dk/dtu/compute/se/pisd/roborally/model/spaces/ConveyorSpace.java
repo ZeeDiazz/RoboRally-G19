@@ -1,5 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
 public abstract class ConveyorSpace extends Space implements SubClassOfSpace{
@@ -27,4 +29,15 @@ public abstract class ConveyorSpace extends Space implements SubClassOfSpace{
         super.rotateLeft();
         this.direction = Heading.turnLeft(this.direction);
     }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = super.serialize().getAsJsonObject();
+
+       
+        jsonObject.addProperty("heading", this.direction.toString());
+
+        return jsonObject;
+    }
+    
 }

@@ -87,13 +87,13 @@ public class Space extends Subject implements ISerializable {
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("spaceType",this.getClass().getSimpleName());
+   
         
         
 
 
         jsonObject.add("boardPosition", this.position.serialize());
-       
+        
 
         if (!this.walls.isEmpty()) {
             JsonArray jsonArrayWalls = new JsonArray();
@@ -105,7 +105,9 @@ public class Space extends Subject implements ISerializable {
         if (this.standingOn != null) {
             jsonObject.addProperty("playerOccupyingSpace", this.standingOn.getName());
         }
-
+        jsonObject.addProperty("spaceType", this.getClass().getSimpleName());
+        
+        
         return jsonObject;
     }
 
