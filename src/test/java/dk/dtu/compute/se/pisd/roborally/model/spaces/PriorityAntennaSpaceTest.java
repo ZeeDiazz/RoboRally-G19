@@ -18,7 +18,7 @@ class PriorityAntennaTest {
     @Test
     void testPriorityAntennaWithNoTie(){
 
-        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(0,0), Heading.NORTH);
+        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(3,2), Heading.NORTH);
         Player player1 = new Player(null,"purple","Felix");
         Player player2 = new Player(null,"blue","Daniel");
         Player player3 = new Player(null,"yellow","Zaid");
@@ -43,7 +43,7 @@ class PriorityAntennaTest {
 
     @Test
     void testPriorityAntennaWithTieAndPlayerBelowAntenna(){
-        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(0,0), Heading.NORTH);
+        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(3,2), Heading.NORTH);
         Player player1 = new Player(null,"purple",  "Felix");
         Player player2 = new Player(null,"blue",  "Daniel");
         Player player3 = new Player(null, "yellow", "Zaid");
@@ -57,12 +57,12 @@ class PriorityAntennaTest {
         players.add(player4);
         players.add(player5);
         players.add(player6);
-        player1.setSpace(new Space(new Position(4,5)));
-        player2.setSpace(new Space(new Position(0,3)));
-        player3.setSpace(new Space(new Position(3,2)));
-        player4.setSpace(new Space(new Position(5,2)));
-        player5.setSpace(new Space(new Position(6,2)));
-        player6.setSpace(new Space(new Position(7,2)));
+        player1.setSpace(new Space(new Position(4,5),Heading.SOUTH));
+        player2.setSpace(new Space(new Position(0,3),Heading.SOUTH));
+        player3.setSpace(new Space(new Position(3,2),Heading.SOUTH));
+        player4.setSpace(new Space(new Position(5,2),Heading.SOUTH));
+        player5.setSpace(new Space(new Position(6,2),Heading.SOUTH));
+        player6.setSpace(new Space(new Position(7,2),Heading.SOUTH));
         //  zaid, daniel, felix ,dulle, zach, emma
 
         List<Player> priorityPlayers = priorityAntenna.getPriority(players);
@@ -98,12 +98,12 @@ class PriorityAntennaTest {
         players.add(player4);
         players.add(player5);
         players.add(player6);
-        player1.setSpace(new Space(new Position(2,1)));
-        player2.setSpace(new Space(new Position(0,3)));
-        player3.setSpace(new Space(new Position(3,2)));
-        player4.setSpace(new Space(new Position(5,2)));
-        player5.setSpace(new Space(new Position(6,2)));
-        player6.setSpace(new Space(new Position(7,2)));
+        player1.setSpace(new Space(new Position(2,1),Heading.SOUTH));
+        player2.setSpace(new Space(new Position(0,3),Heading.SOUTH));
+        player3.setSpace(new Space(new Position(3,2),Heading.SOUTH));
+        player4.setSpace(new Space(new Position(5,2),Heading.SOUTH));
+        player5.setSpace(new Space(new Position(6,2),Heading.SOUTH));
+        player6.setSpace(new Space(new Position(7,2),Heading.SOUTH));
         // felix, zaid, daniel, dulle, zach, emma
 
         List<Player> priorityPlayers = priorityAntenna.getPriority(players);
