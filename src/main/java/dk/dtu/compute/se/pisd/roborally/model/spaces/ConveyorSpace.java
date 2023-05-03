@@ -2,7 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
-public abstract class ConveyorSpace extends Space {
+public abstract class ConveyorSpace extends Space implements SubClassOfSpace{
     protected Heading direction;
     protected final int amount;
 

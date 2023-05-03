@@ -2,7 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
-public class CheckPointSpace extends Space {
+public class CheckPointSpace extends Space implements SubClassOfSpace {
     public final int id;
 
     public CheckPointSpace(Position position, int id, Heading... walls) {

@@ -4,7 +4,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Position;
 
-public class BlueConveyorSpace extends ConveyorSpace {
+public class BlueConveyorSpace extends ConveyorSpace implements SubClassOfSpace {
     public BlueConveyorSpace(Position position, Heading direction, Heading... walls) {
         super(position, direction, 2, walls);
     }

@@ -4,7 +4,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Position;
 
-public class EnergySpace extends Space {
+public class EnergySpace extends Space implements SubClassOfSpace{
     public EnergySpace(Position position, Heading... walls) {
         super(position, walls);
     }

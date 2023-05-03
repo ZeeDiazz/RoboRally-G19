@@ -2,7 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
-public abstract class GearSpace extends Space {
+public abstract class GearSpace extends Space implements SubClassOfSpace {
 
     public GearSpace(Position position, Heading... walls) {
         super(position, walls);

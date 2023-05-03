@@ -5,7 +5,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Position;
 
-public class GreenGearSpace extends GearSpace {
+public class GreenGearSpace extends GearSpace implements SubClassOfSpace {
     public GreenGearSpace(Position position, Heading... walls) {
         super(position, walls);
     }
