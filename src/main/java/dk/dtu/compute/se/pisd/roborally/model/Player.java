@@ -29,8 +29,6 @@ import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
 /**
@@ -53,7 +51,7 @@ public class Player extends Subject implements ISerializable {
     private String color;
 
     private Space space;
-    private Space rebootSpace;
+    private Position rebootPosition;
     private Heading heading = SOUTH;
 
 
@@ -208,12 +206,12 @@ public class Player extends Subject implements ISerializable {
      * @author Daniel Jensen
      * Set the reboot space of a player, used when the player has to reboot
      */
-    public void setRebootSpace(Space space) {
-        this.rebootSpace = space;
+    public void setRebootPosition(Position position) {
+        this.rebootPosition = position;
     }
 
-    public Space getRebootSpace() {
-        return rebootSpace;
+    public Position getRebootPosition() {
+        return rebootPosition;
     }
 
     public CommandCardField[] getCards() {
@@ -229,7 +227,7 @@ public class Player extends Subject implements ISerializable {
      * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
      */
     public void reboot() {
-        setSpace(this.rebootSpace);
+        // TODO fix
         notifyChange();
     }
 
@@ -241,7 +239,7 @@ public class Player extends Subject implements ISerializable {
         jsonObject.addProperty("checkpointGoal", this.checkpointGoal);
         jsonObject.addProperty("color", this.color);
         jsonObject.add("space", this.space.position.serialize());
-        jsonObject.add("rebootSpace", this.rebootSpace.position.serialize());
+        jsonObject.add("rebootSpace", this.rebootPosition.serialize());
         jsonObject.addProperty("heading", this.heading.toString());
 
         JsonArray jsonArrayProgram = new JsonArray();
@@ -263,21 +261,23 @@ public class Player extends Subject implements ISerializable {
     public ISerializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
 
-        Player player1 = new Player(null, jsonObject.get("color").getAsString(), jsonObject.get("name").getAsString());
-        player1.checkpointGoal = jsonObject.get("checkpointGoal").getAsInt();
+        Player player = new Player(null, jsonObject.get("color").getAsString(), jsonObject.get("name").getAsString());
+        player.checkpointGoal = jsonObject.get("checkpointGoal").getAsInt();
 
         // TODO implement
+        Position position = new Position(0, 0);
+        Space space = new Space(position);
         // player1.space = (Space) player1.space.deserialize(jsonObject.get("space"));
-        // player1.rebootSpace = (Space) player1.space.deserialize(jsonObject.get("rebootSpace"));
+        player.setRebootPosition((Position)deserialize(jsonObject.get("rebootSpace")));
         
         String headingAsString = jsonObject.get("heading").getAsString();
         for (Heading heading : Heading.values()) {
-            if (headingAsString.equals(player1.heading.toString())) {
-                player1.heading = heading;
+            if (headingAsString.equals(player.heading.toString())) {
+                player.heading = heading;
                 break;
             }
         }
 
-        return player1;
+        return player;
     }
 }

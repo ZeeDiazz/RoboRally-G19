@@ -107,7 +107,7 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.setSpace(startingSpace);
-                player.setRebootSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
             }
 
             // XXX: V2
@@ -188,7 +188,7 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.setSpace(startingSpace);
-                player.setRebootSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
             }
 
             // XXX: V2

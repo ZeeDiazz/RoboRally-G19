@@ -23,7 +23,6 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.sun.javafx.stage.PopupWindowPeerListener;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
@@ -370,14 +369,17 @@ public class GameController implements ISerializable {
     }
 
     private void performMove(Move move) {
-        for (Move m : board.resultingMoves(move)) {
-            Space endingSpace = board.getSpace(m.getEndingPosition());
+        for (Move resultingMove : board.resultingMoves(move)) {
+            Player player = resultingMove.Moving;
+            Space endingSpace = board.getSpace(resultingMove.getEndingPosition());
             // If going out of bounds
             if (endingSpace == null) {
-                m.Moving.reboot();
-            } else {
-                m.Moving.setSpace(endingSpace);
+                endingSpace = board.getSpace(player.getRebootPosition());
             }
+
+            player.setSpace(endingSpace);
+            board.getSpace(resultingMove.Start).changed();
+            endingSpace.changed();
         }
     }
 
