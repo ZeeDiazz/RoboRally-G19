@@ -122,7 +122,7 @@ public class Space extends Subject implements ISerializable {
         for (Heading wall : walls) {
             jsonArrayWalls.add(wall.toString());
         }
-        jsonObject.add("wall", jsonArrayWalls);
+        jsonObject.add("walls", jsonArrayWalls);
         if (this.standingOn != null) {
             jsonObject.addProperty("playerOccupyingSpace", this.standingOn.getName());
         }
@@ -132,44 +132,40 @@ public class Space extends Subject implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-     /*   JsonObject jsonObject = element.getAsJsonObject();
+        JsonObject jsonObject = element.getAsJsonObject();
 
+        Position position = new Position(0, 0);
+        position = (Position)position.deserialize(jsonObject.get("boardPosition"));
 
-        jsonObject.addProperty("spaceType", (this instanceof Obstacle) ? "obstacle"
-                : (this instanceof CheckPoint) ? "checkPoint" : "regularType");
-
-
-        Space space1 = new Space((Position) Position.deserialize(jsonObject.get("boardPosition")), jsonObject.get("isSpawnSpace").getAsBoolean());
-
-        if (jsonObject.get("wall") != null) {
-
-            JsonArray jsonArrayOfWalls = jsonObject.get("wall").getAsJsonArray();
-
-
-            // For adding walls
-            Iterator<JsonElement> wallsIterator = jsonArrayOfWalls.iterator();
-
-            while (wallsIterator.hasNext()) {
-                String headingNameOfWall = wallsIterator.next().toString();
-                Heading wallToBeAdded = Heading.getHeading(headingNameOfWall);
-                space1.walls.add(wallToBeAdded);
-            }
-
-
-            if (!this.walls.isEmpty()) {
-                JsonArray jsonArrayWalls = new JsonArray();
-                for (Heading wall : walls) {
-                    jsonArrayWalls.add(wall.toString());
-                }
-                jsonObject.add("wall", jsonArrayWalls);
-            }
-            if (this.player != null) {
-                jsonObject.addProperty("playerOccupyingSpace", this.player.getName());
-            }
-
-
+        ArrayList<Heading> wallsList = new ArrayList<>();
+        for (JsonElement wallJson : jsonObject.get("walls").getAsJsonArray()) {
+            wallsList.add(Heading.valueOf(wallJson.getAsString()));
         }
-        return space1;*/
+        Heading[] walls = wallsList.toArray(new Heading[0]);
+
+        String type = jsonObject.get("spaceType").getAsString();
+        Heading direction;
+        switch (type) {
+            case "Space":
+                return new Space(position, walls);
+            case "EnergySpace":
+                return new EnergySpace(position, walls);
+            case "GreenGearSpace":
+                return new GreenGearSpace(position, walls);
+            case "RedGearSpace":
+                return new RedGearSpace(position, walls);
+            case "PitSpace":
+                return new PitSpace(position, walls);
+            case "CheckPointSpace":
+                int id = jsonObject.get("checkpointId").getAsInt();
+                return new CheckPointSpace(position, id, walls);
+            case "GreenConveyorSpace":
+                direction = Heading.valueOf(jsonObject.get("direction").getAsString());
+                return new GreenConveyorSpace(position, direction, walls);
+            case "BlueConveyorSpace":
+                direction = Heading.valueOf(jsonObject.get("direction").getAsString());
+                return new BlueConveyorSpace(position, direction, walls);
+        }
         return null;
     }
 }
