@@ -75,6 +75,22 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
+    protected void makeGame(Board board, Player[] players, boolean hasCards) {
+            gameController = new GameController(board);
+            for (Player player : players) {
+                board.addPlayer(player);
+            }
+
+            // XXX: V2
+            // board.setCurrentPlayer(board.getPlayer(0));
+            gameController.startProgrammingPhase(!hasCards);
+
+            // Gives transformer the currentGameController
+            transformer = new Transformer(gameController);
+
+            roboRally.createBoardView(gameController);
+    }
+
     /**
      * This method firstly creates a dialog dropbox choice dialog with options for numbers of players.
      * Then creates an empty board with the required number of players(including the view)
@@ -99,6 +115,19 @@ public class AppController implements Observer {
             //     here we just create an empty board with the required number of players.
 
             Board board = MapMaker.makeDizzyHighway();
+            int playerCount = result.get();
+            Player[] players = new Player[playerCount];
+            for (int i = 0; i < playerCount; i++) {
+                players[i] = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Space startingSpace = board.getSpace(i % board.width, i);
+                players[i].setSpace(startingSpace);
+                players[i].setRebootPosition(startingSpace.position);
+            }
+
+            makeGame(board, players, false);
+            /*
+            if (true)
+            return;
 
             gameController = new GameController(board);
             int no = result.get();
@@ -118,6 +147,7 @@ public class AppController implements Observer {
             transformer = new Transformer(gameController);
 
             roboRally.createBoardView(gameController);
+             */
         }
     }
 
@@ -163,41 +193,50 @@ public class AppController implements Observer {
         File file = fileChooser.showOpenDialog(null);
 
 
-        if (file != null && file.isFile()) {
-            Board board;
+        if (file == null || !file.isFile()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("File could not be loaded");
+            alert.setContentText("There was a problem with loading the given file");
+            alert.showAndWait();
+            return;
+        }
+        Board board;
 
-            try {
-                board = Transformer.loadBoard(file);
-            } catch (Exception e) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("File could not be loaded");
-                alert.setContentText("There was a problem with loading the given file");
-                alert.showAndWait();
-                return;
-            }
-            // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
-            //gameController = transformer.getCurrentGameController();
-            
-            gameController = new GameController(board);
-
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase(false);
-
-            roboRally.createBoardView(gameController);
-
-            // Provided error pop-up if there was a problem with loading the file
-
-
-            // If the user opts out of loading
-        } else {
+        try {
+            board = Transformer.loadBoard(file);
+        } catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("File could not be loaded");
+            alert.setContentText("There was a problem with loading the given file");
+            alert.showAndWait();
             return;
         }
 
+        makeGame(board, board.getPlayers().toArray(new Player[0]), true);
 
+        /*
+        // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
+        //gameController = transformer.getCurrentGameController();
+
+        gameController = new GameController(board);
+
+        // XXX: V2
+        // board.setCurrentPlayer(board.getPlayer(0));
+        gameController.startProgrammingPhase(false);
+
+        roboRally.createBoardView(gameController);
+
+        // Provided error pop-up if there was a problem with loading the file
+
+
+        // If the user opts out of loading
+    } else {
+        return;
+    }
+
+
+    */
         fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
-
-
     }
 
     /**
