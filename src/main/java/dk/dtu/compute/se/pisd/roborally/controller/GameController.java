@@ -570,10 +570,9 @@ public class GameController implements ISerializable {
 
         jsonObject.add("board", this.board.serialize());
 
-      
-            if (currentInteractiveCard != null) {
-                jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
-            }
+        if (currentInteractiveCard != null) {
+            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+        }
         return jsonObject;
     }
 

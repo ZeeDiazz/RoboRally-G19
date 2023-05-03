@@ -160,10 +160,10 @@ public class Space extends Subject implements ISerializable {
                 int id = jsonObject.get("checkpointId").getAsInt();
                 return new CheckPointSpace(position, id, walls);
             case "GreenConveyorSpace":
-                direction = Heading.valueOf(jsonObject.get("direction").getAsString());
+                direction = Heading.valueOf(jsonObject.get("heading").getAsString());
                 return new GreenConveyorSpace(position, direction, walls);
             case "BlueConveyorSpace":
-                direction = Heading.valueOf(jsonObject.get("direction").getAsString());
+                direction = Heading.valueOf(jsonObject.get("heading").getAsString());
                 return new BlueConveyorSpace(position, direction, walls);
         }
         return null;

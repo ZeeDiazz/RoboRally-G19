@@ -163,9 +163,7 @@ public class AppController implements Observer {
         File file = fileChooser.showOpenDialog(null);
 
 
-        if (file != null) {
-            file.isFile();
-
+        if (file != null && file.isFile()) {
             Board board;
 
             try {
@@ -175,7 +173,8 @@ public class AppController implements Observer {
                 alert.setTitle("File could not be loaded");
                 alert.setContentText("There was a problem with loading the given file");
                 alert.showAndWait();
-                return;
+                throw e;
+                // return;
             }
             // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
             //gameController = transformer.getCurrentGameController();

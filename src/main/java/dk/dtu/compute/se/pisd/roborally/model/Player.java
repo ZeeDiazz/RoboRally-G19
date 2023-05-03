@@ -66,7 +66,7 @@ public class Player extends Subject implements ISerializable {
      * @param color The color of the player.
      * @param name  The name of the player.
      */
-    public Player(@NotNull Board board, String color, @NotNull String name) {
+    public Player(Board board, String color, @NotNull String name) {
         this.board = board;
         this.name = name;
         this.color = color;

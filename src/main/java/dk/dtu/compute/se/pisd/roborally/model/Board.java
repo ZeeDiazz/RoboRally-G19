@@ -60,7 +60,7 @@ public class Board extends Subject implements ISerializable {
     private boolean stepMode;
     private int checkpointCount;
 
-    private Board(int moveCounter, int width, int height, String boardName, int gameId, Space[][] spaces, List<Player> players, Player current, Phase phase, int step, boolean stepMode, int checkpointCount) {
+    private Board(int moveCounter, int width, int height, String boardName, Integer gameId, Space[][] spaces, List<Player> players, Player current, Phase phase, int step, boolean stepMode, int checkpointCount) {
         this.moveCounter = moveCounter;
         this.width = width;
         this.height = height;
@@ -530,27 +530,30 @@ public class Board extends Subject implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        JsonObject jsonObject = new JsonObject();
+        JsonObject jsonObject = element.getAsJsonObject();
 
         int width = jsonObject.get("width").getAsInt();
         int height = jsonObject.get("height").getAsInt();
 
         String boardName = jsonObject.get("boardName").getAsString();
-        int gameId = jsonObject.get("gameId").getAsInt();
+        JsonElement gameIdJson = jsonObject.get("gameId");
+        Integer gameId = (gameIdJson == null) ? null : gameIdJson.getAsInt();
 
         int playerCount = jsonObject.get("playerCount").getAsInt();
 
         // Adding players
-        Player playerToAdd = new Player(null, null, null);
+        JsonArray playersJson = jsonObject.get("players").getAsJsonArray();
+        Player playerToAdd = new Player(null, null, "");
         ArrayList<Player> players = new ArrayList<>();
 
         ArrayList<Position> playerPositions = new ArrayList<>();
         Position position = new Position(0, 0);
         for (int i = 0; i < playerCount; i++) {
-            playerToAdd = (Player)playerToAdd.deserialize(jsonObject.get("player"));
+            JsonObject playerJson = playersJson.get(i).getAsJsonObject();
+            playerToAdd = (Player)playerToAdd.deserialize(playerJson);
             players.add(playerToAdd);
 
-            playerPositions.add((Position)position.deserialize(jsonObject.get("player").getAsJsonObject().get("space")));
+            playerPositions.add((Position)position.deserialize(playerJson.get("space")));
         }
 
         // PlayerName of current player
@@ -574,7 +577,7 @@ public class Board extends Subject implements ISerializable {
         Space space = new Space(new Position(0, 0));
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                JsonObject spaceJson = spacesJson.get(x * width + y).getAsJsonObject();
+                JsonObject spaceJson = spacesJson.get(x * height + y).getAsJsonObject();
                 spaces[x][y] = (Space)space.deserialize(spaceJson);
 
                 JsonElement playerNameJson = spaceJson.get("playerOccupyingSpace");

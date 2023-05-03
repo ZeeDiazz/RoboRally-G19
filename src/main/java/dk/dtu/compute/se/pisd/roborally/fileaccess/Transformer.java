@@ -1,15 +1,13 @@
 package dk.dtu.compute.se.pisd.roborally.fileaccess;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.text.ParseException;
 
 public class Transformer {
 
@@ -108,50 +106,18 @@ public class Transformer {
     }
 
     public static Board loadBoard(File file) {
+        JsonParser parser = new JsonParser();
+
+        try {
+            JsonObject json = (JsonObject)parser.parse(new FileReader(file));
+            Board board = new Board(1, 1);
+            return (Board)board.deserialize(json.get("gameController").getAsJsonObject().get("board"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Todo implement
         return null;
-/*
-        // In simple cases, we can create a Gson object with new Gson():
-        Gson gson = new GsonBuilder().registerTypeAdapter(SpaceTemplate.class, new SpaceTemplateTypeAdapter()).create();
-
-
-        Board result = null;
-        FileReader fileReader = null;
-        JsonReader reader = null;
-        try {
-            fileReader = new FileReader(file);
-
-            reader = gson.newJsonReader(fileReader);
-            BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
-
-
-            result = new Board(template.width, template.height);
-            initialBoard = result;
-
-            for (SpaceTemplate spaceTemplate : template.spaces) {
-                Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
-                if (space != null) {
-                    space.getWalls().addAll(spaceTemplate.walls);
-                }
-            }
-            reader.close();
-            return result;
-        } catch (IOException e1) {
-            if (reader != null) {
-                try {
-                    reader.close();
-
-                } catch (IOException e2) {
-                }
-            }
-            if (fileReader != null) {
-                try {
-                    fileReader.close();
-                } catch (IOException e2) {
-                }
-            }
-        }
-        return result;*/
     }
 
 
