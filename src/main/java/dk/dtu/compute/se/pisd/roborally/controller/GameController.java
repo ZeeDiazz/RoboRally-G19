@@ -93,6 +93,10 @@ public class GameController implements ISerializable {
 
     // XXX: V2
     public void startProgrammingPhase() {
+        startProgrammingPhase(true);
+    }
+
+    public void startProgrammingPhase(boolean randomCards) {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
@@ -107,7 +111,9 @@ public class GameController implements ISerializable {
                 }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
-                    field.setCard(generateRandomCommandCard());
+                    if (randomCards) {
+                        field.setCard(generateRandomCommandCard());
+                    }
                     field.setVisible(true);
                 }
             }

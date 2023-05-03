@@ -173,26 +173,16 @@ public class AppController implements Observer {
                 alert.setTitle("File could not be loaded");
                 alert.setContentText("There was a problem with loading the given file");
                 alert.showAndWait();
-                throw e;
-                // return;
+                return;
             }
             // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
             //gameController = transformer.getCurrentGameController();
             
             gameController = new GameController(board);
 
-            // Makes a game with 2 players, with the given game configurations
-            for (int i = 0; i < 2; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                board.addPlayer(player);
-                Space startingSpace = board.getSpace(i % board.width, i);
-                player.setSpace(startingSpace);
-                player.setRebootPosition(startingSpace.position);
-            }
-
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
+            gameController.startProgrammingPhase(false);
 
             roboRally.createBoardView(gameController);
 
