@@ -51,13 +51,15 @@ public class PriorityAntenna extends Space{
     protected double getAngle(Player player){
         // (x1,y1) = priorityantenna
         // (x2,y2) = player
-        // s = sqrt((y2-y1)/(x2-x1)
 
         int vx = this.Position.X;
         int vy = this.Position.Y;
 
         int ux = player.getSpace().Position.X;
-        int uy = player.getSpace().Position.Y -1;
+        int uy = player.getSpace().Position.Y;
+            if(uy == vy){
+                uy++;
+            }
 
         double cos = (vx - ux)/(vy -uy);
         return Math.acos(cos);
