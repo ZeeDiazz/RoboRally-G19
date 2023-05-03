@@ -18,7 +18,7 @@ class PriorityAntennaTest {
     @Test
     void testPriorityAntennaWithNoTie(){
 
-        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(3,2), Heading.NORTH);
+        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(0,0), Heading.NORTH);
         Player player1 = new Player(null,"purple","Felix");
         Player player2 = new Player(null,"blue","Daniel");
         Player player3 = new Player(null,"yellow","Zaid");
@@ -43,7 +43,7 @@ class PriorityAntennaTest {
 
     @Test
     void testPriorityAntennaWithTieAndPlayerBelowAntenna(){
-        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(3,2), Heading.NORTH);
+        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(2,3), Heading.NORTH);
         Player player1 = new Player(null,"purple",  "Felix");
         Player player2 = new Player(null,"blue",  "Daniel");
         Player player3 = new Player(null, "yellow", "Zaid");
@@ -84,7 +84,7 @@ class PriorityAntennaTest {
 
     @Test
     void testPriorityAntennaWithTieWithoutPlayerBelowAntenna(){
-        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(0,0), Heading.NORTH);
+        PriorityAntennaSpace priorityAntenna = new PriorityAntennaSpace(new Position(2,3), Heading.NORTH);
         Player player1 = new Player(null,"purple",  "Felix");
         Player player2 = new Player(null,"blue",  "Daniel");
         Player player3 = new Player(null, "yellow", "Zaid");
