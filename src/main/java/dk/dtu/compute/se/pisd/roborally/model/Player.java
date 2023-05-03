@@ -295,6 +295,7 @@ public class Player extends Subject implements ISerializable {
         jsonObject.add("space", this.space.position.serialize());
         jsonObject.add("rebootSpace", this.rebootPosition.serialize());
         jsonObject.addProperty("heading", this.heading.toString());
+        jsonObject.addProperty("previousCommand", this.prevProgramming.displayName);
 
         JsonArray jsonArrayProgram = new JsonArray();
         for (CommandCardField cardField : program) {
@@ -333,6 +334,7 @@ public class Player extends Subject implements ISerializable {
                 break;
             }
         }
+        player.setPrevProgramming(Command.valueOf(jsonObject.get("previousCommand").getAsString()));
 
         return player;
     }
