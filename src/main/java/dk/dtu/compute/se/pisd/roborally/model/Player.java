@@ -295,7 +295,10 @@ public class Player extends Subject implements ISerializable {
         jsonObject.add("space", this.space.position.serialize());
         jsonObject.add("rebootSpace", this.rebootPosition.serialize());
         jsonObject.addProperty("heading", this.heading.toString());
-        jsonObject.addProperty("previousCommand", this.prevProgramming.displayName);
+
+        if (this.prevProgramming != null) {
+            jsonObject.addProperty("previousCommand", this.prevProgramming.displayName);
+        }
 
         JsonArray jsonArrayProgram = new JsonArray();
         for (CommandCardField cardField : program) {
@@ -319,11 +322,8 @@ public class Player extends Subject implements ISerializable {
         Player player = new Player(null, jsonObject.get("color").getAsString(), jsonObject.get("name").getAsString());
         player.checkpointGoal = jsonObject.get("checkpointGoal").getAsInt();
 
-        
-        
-        // TODO implement
         Position position = new Position(0, 0);
-        player.setRebootPosition((Position)deserialize(jsonObject.get("rebootSpace")));
+        player.setRebootPosition((Position)position.deserialize(jsonObject.get("rebootSpace")));
         
         String headingAsString = jsonObject.get("heading").getAsString();
         for (Heading heading : Heading.values()) {
@@ -332,7 +332,16 @@ public class Player extends Subject implements ISerializable {
                 break;
             }
         }
-        player.setPrevProgramming(Command.valueOf(jsonObject.get("previousCommand").getAsString()));
+
+        JsonElement prevProgrammingJson = jsonObject.get("previousCommand");
+        Command previous;
+        if (prevProgrammingJson == null) {
+            previous = null;
+        }
+        else {
+            previous = Command.valueOf(jsonObject.get("previousCommand").getAsString());
+        }
+        player.setPrevProgramming(previous);
 
         return player;
     }
