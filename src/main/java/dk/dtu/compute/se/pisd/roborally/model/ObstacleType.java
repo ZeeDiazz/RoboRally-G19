@@ -10,5 +10,17 @@ public enum ObstacleType {
     GREEN_CONVEYOR_BELT,
     PUSH_PANEL,
     GEAR,
-    BOARD_LASER
+    BOARD_LASER;
+
+    public static ObstacleType getObstacleType(String name) {
+
+        for (ObstacleType obstacleType : ObstacleType.values()) {
+            if (name.equals(obstacleType.toString())) {
+                return obstacleType;
+            }
+        }
+        return null;
+    }
 }
+
+

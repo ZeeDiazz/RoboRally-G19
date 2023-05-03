@@ -24,12 +24,12 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.Transformer;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
-import dk.dtu.compute.se.pisd.roborally.model.Space;
-
+import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -38,6 +38,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
 import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,12 +56,14 @@ import java.util.Optional;
 
 public class AppController implements Observer {
 
+
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
 
-    private GameController gameController;
+    private static Transformer transformer;
+    private static GameController gameController;
 
     @FXML
     FileChooser fileChooser = new FileChooser();
@@ -94,7 +97,9 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = new Board(8, 8);
+
+            Board board = MapMaker.makeDizzyHighway();
+
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
@@ -102,12 +107,15 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.setSpace(startingSpace);
-                player.setRebootSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
             }
 
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();
+
+            // Gives transformer the currentGameController
+            transformer = new Transformer(gameController);
 
             roboRally.createBoardView(gameController);
         }
@@ -115,10 +123,6 @@ public class AppController implements Observer {
 
     @FXML
     public void saveGame() {
-
-
-        // XXX needs to be implemented eventually
-
 
         fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
 
@@ -132,7 +136,8 @@ public class AppController implements Observer {
         if (file != null) {
             try {
                 file.createNewFile();
-                saveToJsonFile(file);
+                // Saves to Json-file
+                Transformer.saveBoard(gameController.board, file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -147,14 +152,62 @@ public class AppController implements Observer {
 
     }
 
+    @FXML
     public void loadGame() {
-        // XXX needs to be implemented eventually
-        // for now, we just create a new game
-       /* if (gameController == null) {
-            newGame();
-        }*/
 
-        LoadBoard loadBoard = new LoadBoard();
+        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+
+        fileChooser.setTitle("Load Game"); // Description for action
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be load as a json file type
+        File file = fileChooser.showOpenDialog(null);
+
+
+        if (file != null) {
+            file.isFile();
+
+            Board board;
+
+            try {
+                board = Transformer.loadBoard(file);
+            } catch (Exception e) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("File could not be loaded");
+                alert.setContentText("There was a problem with loading the given file");
+                alert.showAndWait();
+                return;
+            }
+            // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
+            //gameController = transformer.getCurrentGameController();
+            
+            gameController = new GameController(board);
+
+            // Makes a game with 2 players, with the given game configurations
+            for (int i = 0; i < 2; i++) {
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                board.addPlayer(player);
+                Space startingSpace = board.getSpace(i % board.width, i);
+                player.setSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
+            }
+
+            // XXX: V2
+            // board.setCurrentPlayer(board.getPlayer(0));
+            gameController.startProgrammingPhase();
+
+            roboRally.createBoardView(gameController);
+
+            // Provided error pop-up if there was a problem with loading the file
+
+
+            // If the user opts out of loading
+        } else {
+            return;
+        }
+
+
+        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
+
 
     }
 
@@ -218,12 +271,4 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
-
-    private void saveToJsonFile(File file) {
-        LoadBoard.saveBoard(this.gameController.board, file);
-
-
-    }
-
-
 }

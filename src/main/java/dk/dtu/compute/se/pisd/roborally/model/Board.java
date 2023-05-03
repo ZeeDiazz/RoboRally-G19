@@ -21,13 +21,18 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.*;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import static dk.dtu.compute.se.pisd.roborally.model.ObstacleType.*;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -35,7 +40,7 @@ import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
-public class Board extends Subject {
+public class Board extends Subject implements ISerializable {
     private int moveCounter;
 
     public final int width;
@@ -49,61 +54,23 @@ public class Board extends Subject {
     private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
-
     private Player current;
-
     private Phase phase = INITIALISATION;
-
     private int step = 0;
-
     private boolean stepMode;
-
-    static public final int checkpointCount = 2;
+    private int checkpointCount;
 
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
      *
-     * @param boardName the name of the board
-     * @param width     the width of the board
-     * @param height    the height of the board
+     * @param name   the name of the board
+     * @param width  the width of the board
+     * @param height the height of the board
      * @author ZeeDiazz (Zaid)
      */
 
-    public Board(int width, int height, @NotNull String boardName) {
-        this.boardName = boardName;
-        this.width = width;
-        this.height = height;
-        spaces = new Space[width][height];
-        for (int x = 0; x < width; x++) {
-
-            for (int y = 0; y < height; y++) {
-                Space space;
-
-                //ZeeDiazz (Zaid) {
-                if (x == 0 && y == 1 || x == 2 && y == 3) {
-                    space = new Obstacle(this, x, y, BLUE_CONVEYOR_BELT, Heading.SOUTH);
-                } else if (x == 1 && y == 5) {
-                    space = new Obstacle(this, x, y, GREEN_CONVEYOR_BELT, Heading.NORTH);
-                }
-
-                //   }
-                else if (x == 3 && y == 4) {
-                    space = new CheckPoint(this, x, y, 0);
-                } else if (x == 6 && y == 2) {
-                    space = new CheckPoint(this, x, y, 1);
-                } else {
-                    space = new Space(this, x, y);
-                }
-
-
-                if (x == 1 && y == 1) {
-                    space.addWall(Heading.SOUTH);
-                }
-
-                spaces[x][y] = space;
-            }
-        }
-        this.stepMode = false;
+    public Board(int width, int height, @NotNull String name) {
+        this(new Space[width][height], name);
     }
 
     /**
@@ -114,6 +81,16 @@ public class Board extends Subject {
      */
     public Board(int width, int height) {
         this(width, height, "defaultboard");
+    }
+
+    public Board(Space[][] spaces, String name) {
+        this.boardName = name;
+        this.width = spaces.length;
+        this.height = spaces[0].length;
+        this.spaces = spaces;
+
+        this.stepMode = false;
+        this.checkpointCount = 0;
     }
 
     /**
@@ -149,8 +126,7 @@ public class Board extends Subject {
      * @return the given coordinates, or null if out of bounds
      */
     public Space getSpace(int x, int y) {
-        if (x >= 0 && x < width &&
-                y >= 0 && y < height) {
+        if (x >= 0 && x < width && y >= 0 && y < height) {
             return spaces[x][y];
         } else {
             return null;
@@ -195,6 +171,10 @@ public class Board extends Subject {
         } else {
             return null;
         }
+    }
+
+    public List<Player> getPlayers() {
+        return this.players;
     }
 
     /**
@@ -312,7 +292,7 @@ public class Board extends Subject {
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
-        return getSpace(Position.move(space.Position, heading));
+        return getSpace(Position.move(space.position, heading));
         /*
         int x = space.Position.X;
         int y = space.y;
@@ -328,7 +308,7 @@ public class Board extends Subject {
         return getSpace(x, y);
          */
     }
-    
+
     // From 1.4.0
     /*public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         if (space.getWalls().contains(heading)) {
@@ -403,13 +383,176 @@ public class Board extends Subject {
                 ", Step: " + getMoveCounter();
     }
 
-    /**
-     * Checks if the given space got a player on it
-     *
-     * @param space the space to check
-     * @return true if there is a plaer on the space, else false
-     */
-    public boolean hasPlayer(Space space) {
-        return space.getPlayer() != null;
+    public ArrayList<Move> resultingMoves(Move move) {
+        int moveAmount = 0;
+        ArrayList<Move> moves = new ArrayList<>();
+
+        Space space = getSpace(move.Start);
+        for (int i = 0; i < move.Amount; i++) {
+            if (space.hasWall(move.Direction)) {
+                break;
+            }
+
+            space = getNeighbour(space, move.Direction);
+            if (space == null) {
+                moveAmount++;
+                break;
+            } else if (space.hasWall(Heading.turnAround(move.Direction))) {
+                break;
+            } else if (space.getPlayer() != null) {
+                // Can maximally move the full amount, minus the part already moved
+                int moveOtherAmount = move.Amount - moveAmount;
+                Move otherPlayerMove = new Move(space.position, move.Direction, moveOtherAmount, space.getPlayer());
+
+                int leftToMove = 0;
+                for (Move resultingMove : resultingMoves(otherPlayerMove)) {
+                    moves.add(resultingMove);
+                    leftToMove = Math.max(leftToMove, resultingMove.Amount);
+                }
+                moveAmount += leftToMove;
+
+                break;
+            }
+            moveAmount++;
+        }
+
+        moves.add(new Move(move.Start, move.Direction, moveAmount, move.Moving));
+        return moves;
+    }
+
+    public void addCheckpoint(Position position) {
+        this.spaces[position.X][position.Y] = new CheckPointSpace(position, checkpointCount++);
+    }
+
+    public int getCheckpointCount() {
+        return checkpointCount;
+    }
+
+    public static Board rotateLeft(Board board) {
+        Space[][] newSpaces = new Space[board.height][board.width];
+        for (int x = 0; x < board.width; x++) {
+            for (int y = 0; y < board.height; y++) {
+                Position newPosition = new Position(y, board.width - x - 1);
+                Space newSpace = board.spaces[x][y].copy(newPosition);
+                newSpace.rotateLeft();
+                newSpaces[newPosition.X][newPosition.Y] = newSpace;
+            }
+        }
+
+        return new Board(newSpaces, board.boardName);
+    }
+
+    public static Board rotateRight(Board board) {
+        return rotateLeft(rotateLeft(rotateLeft(board)));
+    }
+
+    public static Board add(Board board, Board adding, Position offset, String newName) {
+        Position currentTopLeft = board.spaces[0][0].position;
+        Position currentBottomRight = board.spaces[board.width - 1][board.height - 1].position;
+        Position addingTopLeft = Position.add(adding.spaces[0][0].position, offset);
+        Position addingBottomRight = Position.add(adding.spaces[adding.width - 1][adding.height - 1].position, offset);
+
+        int newWidth = Math.max(Math.abs(currentTopLeft.X - addingBottomRight.X), Math.abs(addingTopLeft.X - currentBottomRight.X)) + 1;
+        int newHeight = Math.max(Math.abs(currentTopLeft.Y - addingBottomRight.Y), Math.abs(addingTopLeft.Y - currentBottomRight.Y)) + 1;
+
+        Space[][] newSpaces = new Space[newWidth][newHeight];
+        // Add all the "board" spaces
+        for (int x = 0; x < board.width; x++) {
+            for (int y = 0; y < board.height; y++) {
+                newSpaces[x][y] = board.spaces[x][y].copy(new Position(x, y));
+            }
+        }
+        // Add all the "adding" spaces
+        for (int x = 0; x < adding.width; x++) {
+            for (int y = 0; y < adding.height; y++) {
+                newSpaces[x + offset.X][y + offset.Y] = adding.spaces[x][y].copy(new Position(x + offset.X, y + offset.Y));
+            }
+        }
+
+        return new Board(newSpaces, newName);
+    }
+
+    public static Board add(Board board, Board adding, Position offset) {
+        return add(board, adding, offset, board.boardName);
+    }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("width", this.width);
+        jsonObject.addProperty("height", this.height);
+        jsonObject.addProperty("boardName", this.boardName);
+        jsonObject.addProperty("gameId", this.gameId);
+        JsonArray jsonArrayPlayers = new JsonArray();
+
+        for (Player player : this.players) {
+            jsonArrayPlayers.add(player.serialize());
+        }
+        jsonObject.add("players", jsonArrayPlayers);
+
+        jsonObject.addProperty("playerCount", this.getPlayerCount());
+        jsonObject.addProperty("currentPlayer", this.current.getName());
+        jsonObject.addProperty("checkPointCount", checkpointCount);
+        jsonObject.addProperty("moveCounter", this.moveCounter);
+        jsonObject.addProperty("step", this.step);
+        jsonObject.addProperty("phase", this.phase.toString());
+        jsonObject.addProperty("stepMode", this.stepMode);
+
+        JsonArray jsonArraySpaces = new JsonArray();
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                Space currentSpace = spaces[i][j];
+                // TODO
+                jsonArraySpaces.add(currentSpace.serialize());
+            }
+        }
+
+        jsonObject.add("spaces", jsonArraySpaces);
+
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        JsonObject jsonObject = new JsonObject();
+
+        int width = jsonObject.get("width").getAsInt();
+        int height = jsonObject.get("height").getAsInt();
+
+        String boardName = jsonObject.get("boardName").getAsString();
+        Board board1 = new Board(width, height, boardName);
+        board1.gameId = jsonObject.get("gameId").getAsInt();
+
+        int playerCount = jsonObject.get("playerCount").getAsInt();
+
+        // Adding players
+        Player playerToAdd = new Player(null, null, null);
+        for (int i = 0; i < playerCount; i++) {
+            playerToAdd = (Player) playerToAdd.deserialize(jsonObject.get("player"));
+            board1.players.add(playerToAdd);
+        }
+
+        // PlayerName of current player
+        String currentPlayerName = jsonObject.get("currentPlayer").getAsString();
+
+        for (Player player : board1.players) {
+            if (currentPlayerName.equals(player.getName())) {
+                board1.current = player;
+                break;
+            }
+        }
+
+        jsonObject.addProperty("checkPointCount", checkpointCount);
+        jsonObject.addProperty("moveCounter", this.moveCounter);
+        jsonObject.addProperty("step", this.step);
+        jsonObject.addProperty("phase", this.phase.toString());
+        jsonObject.addProperty("stepMode", this.stepMode);
+
+        return null;
     }
 }
+
+    
+
+

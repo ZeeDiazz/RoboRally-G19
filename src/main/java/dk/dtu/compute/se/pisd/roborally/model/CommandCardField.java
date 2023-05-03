@@ -21,16 +21,18 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 
 /**
  * A class representing a Command Card Field, that extends the Subject class.
  * Command Card Field represents a field where a Command Card can be placed by a Player.
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
-public class CommandCardField extends Subject {
+public class CommandCardField extends Subject implements ISerializable {
 
     /**
      * The Player associated with this Command Card Field.
@@ -47,16 +49,18 @@ public class CommandCardField extends Subject {
 
     /**
      * Constructs a new CommandCardField with the given Player.
+     *
      * @param player The Player associated with this Command Card Field.
      */
     public CommandCardField(Player player) {
         this.player = player;
-        this. card = null;
+        this.card = null;
         this.visible = true;
     }
 
     /**
      * Returns the Command Card currently placed in this Command Card Field.
+     *
      * @return The Command Card currently placed in this field, or null if no Command Card is placed.
      */
     public CommandCard getCard() {
@@ -67,6 +71,7 @@ public class CommandCardField extends Subject {
      * Sets the Command Card to be placed in this Command Card Field.
      * If the new Command Card is different from the current Command Card,
      * it will notify observers of the change.
+     *
      * @param card placeing the command card in the field.
      */
     public void setCard(CommandCard card) {
@@ -78,6 +83,7 @@ public class CommandCardField extends Subject {
 
     /**
      * Returns whether the Command Card in this field is currently visible.
+     *
      * @return true if the Command Card is visible, false otherwise.
      */
     public boolean isVisible() {
@@ -87,6 +93,7 @@ public class CommandCardField extends Subject {
     /**
      * Sets the visibility of the Command Card in this field.
      * If the visibility changes, it will notify observers of the change.
+     *
      * @param visible true to make the command card visible, false to make it invisible.
      */
     public void setVisible(boolean visible) {
@@ -94,5 +101,23 @@ public class CommandCardField extends Subject {
             this.visible = visible;
             notifyChange();
         }
+    }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        //jsonObject.add("player", this.player.serialize());
+        if(this.card != null) {
+            jsonObject.add("commandCardField", this.card.serialize());
+            jsonObject.addProperty("isVisible", this.visible);
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        return null;
     }
 }

@@ -21,7 +21,12 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
@@ -32,14 +37,13 @@ import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
  * (name, color, position on the board heading direction, and command card fields.)
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
-public class Player extends Subject {
+public class Player extends Subject implements ISerializable {
 
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
 
-    final public Board board;
+    public Board board;
     public int checkpointGoal = 0;
     private int energyCube;
 
@@ -47,8 +51,9 @@ public class Player extends Subject {
     private String color;
 
     private Space space;
-    private Space rebootSpace;
+    private Position rebootPosition;
     private Heading heading = SOUTH;
+
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
@@ -56,9 +61,10 @@ public class Player extends Subject {
 
     /**
      * Constructor to create a Player object with the given board, color, and name.
+     *
      * @param board The board that the player belong to.
      * @param color The color of the player.
-     * @param name The name of the player.
+     * @param name  The name of the player.
      */
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
@@ -82,6 +88,7 @@ public class Player extends Subject {
 
     /**
      * Gets the name of the player
+     *
      * @return players name
      */
     public String getName() {
@@ -90,6 +97,7 @@ public class Player extends Subject {
 
     /**
      * Set the name of the player
+     *
      * @param name Sets the players name
      */
     public void setName(String name) {
@@ -97,13 +105,14 @@ public class Player extends Subject {
             this.name = name;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
 
     /**
      * Gets the color of the player
+     *
      * @return the color of the player
      */
     public String getColor() {
@@ -112,18 +121,20 @@ public class Player extends Subject {
 
     /**
      * Sets color of the player
+     *
      * @param color Sets the players color
      */
     public void setColor(String color) {
         this.color = color;
         notifyChange();
         if (space != null) {
-            space.playerChanged();
+            space.changed();
         }
     }
 
     /**
      * Gets the position of the player on the board.
+     *
      * @return position of the player.
      */
     public Space getSpace() {
@@ -132,12 +143,12 @@ public class Player extends Subject {
 
     /**
      * Sets the space where the player is positioned.
+     *
      * @param space the space to set the players position.
      */
     public void setSpace(Space space) {
         Space oldSpace = this.space;
-        if (space != oldSpace &&
-                (space == null || space.board == this.board)) {
+        if (space != oldSpace) {
             this.space = space;
             if (oldSpace != null) {
                 oldSpace.setPlayer(null);
@@ -151,6 +162,7 @@ public class Player extends Subject {
 
     /**
      * Gets the heading direction of the player
+     *
      * @return the heading direction of the player
      */
     public Heading getHeading() {
@@ -159,6 +171,7 @@ public class Player extends Subject {
 
     /**
      * Sets the absalute direction of the player.
+     *
      * @param heading the new direction (heading) to be set.
      */
     public void setHeading(@NotNull Heading heading) {
@@ -166,15 +179,16 @@ public class Player extends Subject {
             this.heading = heading;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
 
     /**
      * Gets the program field at the specific index
+     *
      * @param index index og the program field
-     * @return  the command card field at the specific index
+     * @return the command card field at the specific index
      */
     public CommandCardField getProgramField(int index) {
         return program[index];
@@ -182,6 +196,7 @@ public class Player extends Subject {
 
     /**
      * Gets the program field at the specific index
+     *
      * @param index index og the program field
      * @return the command card field at the specific index
      */
@@ -190,12 +205,24 @@ public class Player extends Subject {
     }
 
     /**
+     * @param space The space the player will reboot on
      * @author Daniel Jensen
      * Set the reboot space of a player, used when the player has to reboot
-     * @param space The space the player will reboot on
      */
-    public void setRebootSpace(Space space) {
-        this.rebootSpace = space;
+    public void setRebootPosition(Position position) {
+        this.rebootPosition = position;
+    }
+
+    public Position getRebootPosition() {
+        return rebootPosition;
+    }
+
+    public CommandCardField[] getCards() {
+        return cards;
+    }
+
+    public CommandCardField[] getProgram() {
+        return program;
     }
 
     /**
@@ -203,7 +230,7 @@ public class Player extends Subject {
      * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
      */
     public void reboot() {
-        setSpace(this.rebootSpace);
+        // TODO fix
         notifyChange();
     }
 
@@ -256,5 +283,55 @@ public class Player extends Subject {
      */
     public void setPrevProgramming(Command programming) {
        prevProgramming = programming;
+     }
+       
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("name", this.name);
+        jsonObject.addProperty("checkpointGoal", this.checkpointGoal);
+        jsonObject.addProperty("color", this.color);
+        jsonObject.add("space", this.space.position.serialize());
+        jsonObject.add("rebootSpace", this.rebootPosition.serialize());
+        jsonObject.addProperty("heading", this.heading.toString());
+
+        JsonArray jsonArrayProgram = new JsonArray();
+        for (CommandCardField cardField : program) {
+            jsonArrayProgram.add(cardField.serialize());
+        }
+        jsonObject.add("program", jsonArrayProgram);
+
+        JsonArray jsonArrayCards = new JsonArray();
+        for (CommandCardField card : cards) {
+            jsonArrayCards.add(card.serialize());
+        }
+        jsonObject.add("cards", jsonArrayCards);
+
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        Player player = new Player(null, jsonObject.get("color").getAsString(), jsonObject.get("name").getAsString());
+        player.checkpointGoal = jsonObject.get("checkpointGoal").getAsInt();
+
+        // TODO implement
+        Position position = new Position(0, 0);
+        Space space = new Space(position);
+        // player1.space = (Space) player1.space.deserialize(jsonObject.get("space"));
+        player.setRebootPosition((Position)deserialize(jsonObject.get("rebootSpace")));
+        
+        String headingAsString = jsonObject.get("heading").getAsString();
+        for (Heading heading : Heading.values()) {
+            if (headingAsString.equals(player.heading.toString())) {
+                player.heading = heading;
+                break;
+            }
+        }
+
+        return player;
     }
 }
