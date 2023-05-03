@@ -61,7 +61,6 @@ public class CommandCard extends Subject implements ISerializable {
 
     @Override
     public JsonElement serialize() {
-
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("command", this.command.toString());
 
@@ -70,6 +69,10 @@ public class CommandCard extends Subject implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        return null;
+        JsonObject json = element.getAsJsonObject();
+
+        Command command = Command.valueOf(json.get("command").getAsString());
+
+        return new CommandCard(command);
     }
 }
