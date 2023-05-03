@@ -465,7 +465,7 @@ public class GameController implements ISerializable {
         Heading oppositeDirection = Heading.turnAround(playerDirection);
 
         //move player by one the opposite side
-        performMove(new Move(player.getSpace().Position, oppositeDirection, 1, player));
+        performMove(new Move(player.getSpace().position, oppositeDirection, 1, player));
     }
 
     /**
