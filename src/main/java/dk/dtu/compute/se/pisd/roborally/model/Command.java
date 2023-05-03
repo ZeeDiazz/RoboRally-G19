@@ -40,6 +40,7 @@ public enum Command {
     RIGHT("Turn Right"),
     LEFT("Turn Left"),
     MOVE_2("Move 2"),
+    // ZeeDiazz (Zaid) {
     MOVE_3("Move 3"),
     U_TURN("U-Turn"),
     BACK_UP("Move Back"),
@@ -47,7 +48,8 @@ public enum Command {
     AGAIN("Again"),
 
     // XXX Assignment P3
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
+    OPTION_LEFT_RIGHT("Weasel Routine", LEFT, RIGHT,U_TURN);
+    // } ZeeDiazz (Zaid)
 
     final public String displayName;
 
