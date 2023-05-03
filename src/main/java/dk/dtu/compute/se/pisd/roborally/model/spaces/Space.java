@@ -64,6 +64,38 @@ public class Space extends Subject implements ISerializable {
         }
     }
 
+    protected JsonElement serializeCommon(String type) {
+        JsonObject json = new JsonObject();
+
+        json.addProperty("type", type);
+        json.add("position", position.serialize());
+
+        if (walls.size() > 0) {
+            JsonArray jsonWalls = new JsonArray();
+            for (Heading wall : walls) {
+                jsonWalls.add(wall.toString());
+            }
+            json.add("walls", jsonWalls);
+        }
+
+        if (standingOn != null) {
+            json.addProperty("player", standingOn.getName());
+        }
+
+        return json;
+    }
+
+    @Override
+    public JsonElement serialize() {
+        return serializeCommon("normal");
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        // TODO
+        return null;
+    }
+
     // Hack
     public void changed() {
         notifyChange();

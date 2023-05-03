@@ -24,12 +24,11 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
-
 import dk.dtu.compute.se.pisd.roborally.fileaccess.Transformer;
-
-import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
+
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -108,7 +107,7 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.setSpace(startingSpace);
-                player.setRebootSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
             }
 
             // XXX: V2
@@ -189,7 +188,7 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.setSpace(startingSpace);
-                player.setRebootSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
             }
 
             // XXX: V2
