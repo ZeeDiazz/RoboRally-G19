@@ -24,7 +24,7 @@ class GameControllerTest {
     void setUp() {
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
         gameController = new GameController(board);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null,"Player " + i);
             board.addPlayer(player);
             player.setSpace(board.getSpace(i, i));
@@ -103,24 +103,72 @@ class GameControllerTest {
     }
     @Test
     void testPriorityAntennaWithTie(){
-        Board board = gameController.board;
-        Player player1 = board.getPlayer(0);
-        Player player2 = board.getPlayer(1);
-        Player player3 = board.getPlayer(2);
-        PriorityAntenna priorityAntenna = new PriorityAntenna(board,4,4);
+        Board board = new Board(0,0);
+        PriorityAntenna  priorityAntenna = new PriorityAntenna(board,2,3);
+        Player player1 = new Player(board,"purple",  "Felix");
+        Player player2 = new Player(board,"blue",  "Daniel");
+        Player player3 = new Player(board, "yellow", "Zaid");
+        Player player4 = new Player(board, "orange", "Dulle");
+        Player player5 = new Player(board,  "grey",  "Zach");
+        Player player6 = new Player(board, "red", "Emma");
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        players.add(player3);
+        players.add(player4);
+        players.add(player5);
+        players.add(player6);
+        player1.setSpace(new Space(board,2,1));
+        player2.setSpace(new Space(board,0,3));
+        player3.setSpace(new Space(board, 3,2));
+        player4.setSpace(new Space(board, 5,2));
+        player5.setSpace(new Space(board, 6,2));
+        player6.setSpace(new Space(board, 7,2));
+        // felix, zaid, daniel, dulle, zach, emma
 
-        board.setCurrentPlayer(player3);
-        gameController.moveCurrentPlayerToSpace(board.getSpace(3,2));
-
-        board.setCurrentPlayer(player2);
-        gameController.moveCurrentPlayerToSpace(board.getSpace(5,1));
-
-        board.setCurrentPlayer(player1);
-        gameController.moveCurrentPlayerToSpace(board.getSpace(3,7));
-
+        List<Player> priorityPlayers = priorityAntenna.getPriority(players);
+        Player priorityPlayer1 = priorityPlayers.get(0);
+        Player priorityPlayer2 = priorityPlayers.get(1);
+        Player priorityPlayer3 = priorityPlayers.get(2);
+        Player priorityPlayer4 = priorityPlayers.get(3);
+        Player priorityPlayer5 = priorityPlayers.get(4);
+        Player priorityPlayer6 = priorityPlayers.get(5);
 
 
-        Assertions.assertTrue(board.getCurrentPlayer() == player3);
+        Assertions.assertTrue(priorityPlayer1.equals(player1));
+        Assertions.assertTrue(priorityPlayer2.equals(player3));
+        Assertions.assertTrue(priorityPlayer3.equals(player2));
+        Assertions.assertTrue(priorityPlayer4.equals(player4));
+        Assertions.assertTrue(priorityPlayer5.equals(player5));
+        Assertions.assertTrue(priorityPlayer6.equals(player6));
+    }
+
+    void testPriorityAntennaWithTieSecond(){
+        Board board = new Board(0,0);
+        PriorityAntenna  priorityAntenna = new PriorityAntenna(board,7,7);
+        Player player1 = new Player(board,"purple",  "Felix");
+        Player player2 = new Player(board,"blue",  "Daniel");
+        Player player3 = new Player(board, "yellow", "Zaid");
+        Player player4 = new Player(board, "orange", "Dulle");
+        Player player5 = new Player(board,  "grey",  "Zach");
+        Player player6 = new Player(board, "red", "Emma");
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        players.add(player3);
+        players.add(player4);
+        players.add(player5);
+        players.add(player6);
+        player1.setSpace(new Space(board,2,1));
+        player2.setSpace(new Space(board,0,3));
+        player3.setSpace(new Space(board, 4,2));
+        player4.setSpace(new Space(board, 5,2));
+        player5.setSpace(new Space(board, 6,2));
+        player6.setSpace(new Space(board, 7,2));
+
+        List<Player> priorityPlayers = priorityAntenna.getPriority(players);
+        Player priorityPlayer = priorityPlayers.get(0);
+        Assertions.assertTrue(priorityPlayer.equals(player1));
 
     }
 

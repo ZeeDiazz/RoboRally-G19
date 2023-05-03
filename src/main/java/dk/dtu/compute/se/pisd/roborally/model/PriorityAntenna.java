@@ -9,22 +9,33 @@ public class PriorityAntenna extends Space{
         super(board,x,y);
 
     }
+
+    /**
+     * Takes a list of players and sorts them based on distance,
+     * if two players have the same  distance then the player with the smallest angle from the player to the antenna gets highest priority
+     * @author Felix723
+     * @param players
+     * @return   prioritylist, a list of player sorted  by priorit
+     */
     public List<Player> getPriority(List<Player> players){
         List<Player> tied = new ArrayList<>();
         List<Player> priority = new ArrayList<>();
         int previousPlayerDistance = -1;
+        int playersSize = players.size();
         players.sort((a,b) -> (getDistanceTo(a) - getDistanceTo(b)));
 
-        for(int i = 0; i < players.size(); i++){
-            Player current = players.remove(0);
+        for(int i = 0; i < playersSize; i++){
+            Player current = players.remove(0 );
+
             if(getDistanceTo(current) != previousPlayerDistance){
-                tied.sort((a, b) -> Double.compare(Math.atan(getSlope(a)), Math.atan(getSlope(b))));
+                tied.sort((a, b) -> Double.compare(getAngle(a),getAngle(b)));
                 priority.addAll(tied);
+                tied.clear();
             }
             previousPlayerDistance = getDistanceTo(current);
             tied.add(current);
         }
-        tied.sort((a, b) -> Double.compare(Math.atan(getSlope(a)), Math.atan(getSlope(b))));
+        tied.sort((a, b) -> Double.compare(getAngle(a),getAngle(b)));
         priority.addAll(tied);
         return priority;
 
@@ -37,19 +48,19 @@ public class PriorityAntenna extends Space{
         int yPlayer = player.getSpace().Position.Y;
         return Math.abs(xPlayer-xAntenna) + Math.abs(yPlayer-yAntenna);
     }
-    protected double getSlope(Player player){
+    protected double getAngle(Player player){
         // (x1,y1) = priorityantenna
         // (x2,y2) = player
         // s = sqrt((y2-y1)/(x2-x1)
-        int xAntenna = this.Position.X;
-        int yAntenna = this.Position.Y;
-        int xPlayer = player.getSpace().Position.X;
-        int yPlayer = player.getSpace().Position.Y;
 
+        int vx = this.Position.X;
+        int vy = this.Position.Y;
 
+        int ux = player.getSpace().Position.X;
+        int uy = player.getSpace().Position.Y -1;
 
-        return Math.sqrt((yPlayer - yAntenna) / (double)(xPlayer - xAntenna));
+        double cos = (vx - ux)/(vy -uy);
+        return Math.acos(cos);
     }
-
 
 }
