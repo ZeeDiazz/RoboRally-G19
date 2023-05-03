@@ -118,6 +118,19 @@ public class CommandCardField extends Subject implements ISerializable {
 
     @Override
     public ISerializable deserialize(JsonElement element) {
-        return null;
+        JsonObject json = element.getAsJsonObject();
+        CommandCard card = new CommandCard(Command.LEFT);
+
+        JsonElement cardJson = json.get("commandCardField");
+        if (cardJson != null) {
+            this.card = (CommandCard)card.deserialize(json.get("commandCardField"));
+            this.visible = json.get("isVisible").getAsBoolean();
+        }
+        else {
+            this.card = null;
+            this.visible = true;
+        }
+
+        return this;
     }
 }
