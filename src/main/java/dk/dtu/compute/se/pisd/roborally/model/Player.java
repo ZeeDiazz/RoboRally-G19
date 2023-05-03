@@ -356,5 +356,17 @@ public class Player extends Subject implements ISerializable {
         return player;
     }
     
-    
+    public Player copy(Board newBoard) {
+        Player copied = new Player(newBoard, this.color, this.name);
+        copied.setSpace(this.space);
+        copied.setRebootPosition(this.rebootPosition);
+        copied.checkpointGoal = this.checkpointGoal;
+        copied.energyCube = this.energyCube;
+        copied.heading = this.heading;
+        copied.program = this.program;
+        copied.cards = this.cards;
+        copied.prevProgramming = this.prevProgramming;
+
+        return copied;
+    }
 }

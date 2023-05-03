@@ -60,14 +60,13 @@ public class Board extends Subject implements ISerializable {
     private boolean stepMode;
     private int checkpointCount;
 
-    private Board(int moveCounter, int width, int height, String boardName, Integer gameId, Space[][] spaces, List<Player> players, Player current, Phase phase, int step, boolean stepMode, int checkpointCount) {
+    private Board(int moveCounter, int width, int height, String boardName, Integer gameId, Space[][] spaces, Player current, Phase phase, int step, boolean stepMode, int checkpointCount) {
         this.moveCounter = moveCounter;
         this.width = width;
         this.height = height;
         this.boardName = boardName;
         this.gameId = gameId;
         this.spaces = spaces;
-        this.players.addAll(players);
         this.current = current;
         this.phase = phase;
         this.step = step;
@@ -596,13 +595,16 @@ public class Board extends Subject implements ISerializable {
             }
         }
 
+        Board board = new Board(moveCounter, width, height, boardName, gameId, spaces, current, phase, step, stepMode, checkpointCount);
         for (int i = 0; i < playerCount; i++) {
-            Player p = players.get(i);
+            Player p = players.remove(0);
             Position pPos = playerPositions.get(i);
-            p.setSpace(spaces[pPos.X][pPos.Y]);
+            p.setSpace(board.getSpace(pPos));
+
+            board.addPlayer(p.copy(board));
         }
 
-        return new Board(moveCounter, width, height, boardName, gameId, spaces, players, current, phase, step, stepMode, checkpointCount);
+        return board;
     }
 }
 

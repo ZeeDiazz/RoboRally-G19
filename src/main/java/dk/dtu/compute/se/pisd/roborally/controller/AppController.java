@@ -75,11 +75,8 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
-    protected void makeGame(Board board, Player[] players, boolean hasCards) {
+    protected void makeGame(Board board, boolean hasCards) {
             gameController = new GameController(board);
-            for (Player player : players) {
-                board.addPlayer(player);
-            }
 
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
@@ -116,15 +113,15 @@ public class AppController implements Observer {
 
             Board board = MapMaker.makeDizzyHighway();
             int playerCount = result.get();
-            Player[] players = new Player[playerCount];
             for (int i = 0; i < playerCount; i++) {
-                players[i] = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
                 Space startingSpace = board.getSpace(i % board.width, i);
-                players[i].setSpace(startingSpace);
-                players[i].setRebootPosition(startingSpace.position);
+                player.setSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
+                board.addPlayer(player);
             }
 
-            makeGame(board, players, false);
+            makeGame(board, false);
             /*
             if (true)
             return;
@@ -212,7 +209,7 @@ public class AppController implements Observer {
             return;
         }
 
-        makeGame(board, board.getPlayers().toArray(new Player[0]), true);
+        makeGame(board, true);
 
         /*
         // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
