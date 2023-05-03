@@ -5,6 +5,7 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.BlueConveyorSpace;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +60,21 @@ class GameControllerTest {
         Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
         Assertions.assertNull(board.getSpace(0, 0).getPlayer(), "Space (0,0) should be empty!");
     }
+
+    @Test
+    void turnAround() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        gameController.turnAround(current);
+
+        Assertions.assertEquals(Heading.NORTH, current.getHeading(), "Player 0 should be heading North!");
+    }
+    @Test
+    void backUp() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+    }
+
     @Test
     void testObstacleAction(){
         Board board = gameController.board;
@@ -77,7 +93,7 @@ class GameControllerTest {
         current.setSpace(space);
 
         //Run the method obstacleAction
-        gameController.obstacleAction(current);
+        gameController.obstacleAction();
 
         //Check if the player moved two spaces
         Assertions.assertEquals(current,board.getSpace(0, 3).getPlayer(),"Player " + current.getName() + " should be Space (0,3)!");

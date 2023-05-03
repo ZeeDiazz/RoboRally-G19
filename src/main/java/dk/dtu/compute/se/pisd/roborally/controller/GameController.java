@@ -519,7 +519,7 @@ public class GameController implements ISerializable {
             if (currentStep < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
                 //ZeeDiazz (Zaid){
-                obstacleAction(currentPlayer);
+                obstacleAction();
                 //ZeeDiazz (Zaid)}
 
                 /*
@@ -552,11 +552,10 @@ public class GameController implements ISerializable {
     }
 
     /**
-     * @param currentPlayer
      * @author ZeeDiazz (Zaid)
      * It checks if a player is on an obstacle, and executes the obstacles action.
      */
-    public void obstacleAction(Player currentPlayer) {
+    public void obstacleAction() {
         Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
             Player player =  board.getPlayer(i);
