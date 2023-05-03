@@ -45,7 +45,7 @@ public class Player extends Subject implements ISerializable {
 
     public Board board;
     public int checkpointGoal = 0;
-    public int direction;
+    private int energyCube;
 
     private String name;
     private String color;
@@ -57,6 +57,7 @@ public class Player extends Subject implements ISerializable {
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
+    private Command prevProgramming;
 
     /**
      * Constructor to create a Player object with the given board, color, and name.
@@ -69,6 +70,8 @@ public class Player extends Subject implements ISerializable {
         this.board = board;
         this.name = name;
         this.color = color;
+        //Player starts with 5 energy cube
+        this.energyCube = 5;
 
         this.space = null;
 
@@ -231,6 +234,57 @@ public class Player extends Subject implements ISerializable {
         notifyChange();
     }
 
+    /**
+     * @author ZeeDiazz (Zaid)
+     * gets the amount of energy cubes a player has
+     * @return the amount of energy cubes
+     */
+    public int getEnergyCube(){return energyCube;}
+
+    /**
+     * @author Zeediazz (Zaid)
+     * Takes an amount of energy cube and adds to Players energy cubes
+     * If amount is less or equal to 0 it does nothing
+     * @param amount of energy cube
+     */
+    public void addEnergyCube(int amount){
+        if(amount > 0) {
+            energyCube += amount;
+            notifyChange();
+        }
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * Takes an amount of energy cube and removes X amount of Players energy cubes
+     * If amount is less or equal to 0 it does nothing
+     * @param amount
+     */
+    public void removeEnergyCube(int amount){
+        if(amount > 0) {
+            energyCube -= amount;
+            notifyChange();
+        }
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * Get the programming from previous register
+     * @return
+     */
+    public Command getPrevProgramming() {
+        return prevProgramming;
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * Set a programming as previous programming
+     * @param programming
+     */
+    public void setPrevProgramming(Command programming) {
+       prevProgramming = programming;
+     }
+       
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
