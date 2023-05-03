@@ -76,19 +76,19 @@ public class AppController implements Observer {
     }
 
     protected void makeGame(Board board, Player[] players, boolean hasCards) {
-            gameController = new GameController(board);
-            for (Player player : players) {
-                board.addPlayer(player);
-            }
+        gameController = new GameController(board);
+        for (Player player : players) {
+            board.addPlayer(player);
+        }
 
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase(!hasCards);
+        // XXX: V2
+        // board.setCurrentPlayer(board.getPlayer(0));
+        gameController.startProgrammingPhase(!hasCards);
 
-            // Gives transformer the currentGameController
-            transformer = new Transformer(gameController);
+        // Gives transformer the currentGameController
+        transformer = new Transformer(gameController);
 
-            roboRally.createBoardView(gameController);
+        roboRally.createBoardView(gameController);
     }
 
     /**
@@ -151,6 +151,12 @@ public class AppController implements Observer {
         }
     }
 
+
+    /**
+     * Saves the game to a json file. The player chooses where the file should be located on the local computer
+     */
+
+
     @FXML
     public void saveGame() {
 
@@ -181,6 +187,13 @@ public class AppController implements Observer {
         fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
 
     }
+
+
+    /**
+     * Loads a game from a json file. If the file can't be loading correctly,
+     * the player will get an alert saying that the file couldn't be load properly
+     * It then returns back to the menu 
+     */
 
     @FXML
     public void loadGame() {
