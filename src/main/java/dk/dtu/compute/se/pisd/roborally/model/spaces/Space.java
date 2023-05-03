@@ -119,25 +119,18 @@ public class Space extends Subject implements ISerializable {
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
-        
-
+        jsonObject.addProperty("spaceType", this.getClass().getSimpleName());
         jsonObject.add("boardPosition", this.position.serialize());
-        
 
-        if (!this.walls.isEmpty()) {
-            JsonArray jsonArrayWalls = new JsonArray();
-            for (Heading wall : walls) {
-                jsonArrayWalls.add(wall.toString());
-            }
-            jsonObject.add("wall", jsonArrayWalls);
+        JsonArray jsonArrayWalls = new JsonArray();
+        for (Heading wall : walls) {
+            jsonArrayWalls.add(wall.toString());
         }
+        jsonObject.add("wall", jsonArrayWalls);
         if (this.standingOn != null) {
             jsonObject.addProperty("playerOccupyingSpace", this.standingOn.getName());
         }
-        jsonObject.addProperty("spaceType", this.getClass().getSimpleName());
-        
-        
+
         return jsonObject;
     }
-    
 }

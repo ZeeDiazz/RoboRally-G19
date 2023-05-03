@@ -1,10 +1,9 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Position;
 
-public class GreenConveyorSpace extends ConveyorSpace implements SubClassOfSpace {
+public class GreenConveyorSpace extends ConveyorSpace {
     public GreenConveyorSpace(Position position, Heading direction, Heading... walls) {
         super(position, direction, 1, walls);
     }
