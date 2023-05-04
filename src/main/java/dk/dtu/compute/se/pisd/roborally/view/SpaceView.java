@@ -22,21 +22,13 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.*;
-import javafx.beans.Observable;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.*;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * ...
@@ -73,37 +65,33 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-
-        //ZeeDiaz (Zaid){
-        if (space instanceof Obstacle obstacle) {
-            switch (obstacle.getType()) {
-                case BLUE_CONVEYOR_BELT:
-                    this.setStyle("-fx-background-color: blue;");
-                    break;
-                case GREEN_CONVEYOR_BELT:
-                    this.setStyle("-fx-background-color: green;");
-                    break;
-                case PUSH_PANEL:
-                    break;
-                case BOARD_LASER:
-                    break;
-                case GEAR:
-                    break;
-            }
-        } //ZeeDiaz (Zaid)}
-
-        else if (space instanceof CheckPoint checkPoint) {
-            this.setStyle("-fx-background-color: orange;");
-        }else if(space instanceof PriorityAntenna priorityAntenna){
-            this.setStyle("-fx-background-color: grey;");
+        String style;
+        if (space instanceof BlueConveyorSpace) {
+            style = "-fx-background-color: blue;";
+        }
+        else if (space instanceof GreenConveyorSpace) {
+            style = "-fx-background-color: green;";
+        }
+        else if (space instanceof RedGearSpace) {
+            style = "-fx-background-color: red;";
+        }
+        else if (space instanceof GreenGearSpace) {
+            style = "-fx-background-color: darkgreen;";
+        }
+        else if (space instanceof PitSpace) {
+            style = "-fx-background-color: black;";
+        }
+        else if (space instanceof CheckPointSpace) {
+            style = "-fx-background-color: yellow;";
+        }
+        else if ((space.position.X + space.position.Y) % 2 == 0) {
+            style = "-fx-background-color: white;";
         }
         else {
-            if ((space.Position.X + space.Position.Y) % 2 == 0) {
-                this.setStyle("-fx-background-color: white;");
-            } else {
-                this.setStyle("-fx-background-color: black;");
-            }
+            style = "-fx-background-color: gray;";
         }
+        this.setStyle(style);
+
         // Zahed Wafa {
         double top = space.hasWall(Heading.NORTH) ? wallThickness : 0;
         double right = space.hasWall(Heading.EAST) ? wallThickness : 0;

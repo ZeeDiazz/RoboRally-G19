@@ -150,6 +150,7 @@ public class PlayerView extends Tab implements ViewObserver {
                 if (cardFieldView != null) {
                     if (player.board.getPhase() == Phase.PROGRAMMING) {
                         cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
+                        cardFieldView.imageView.setImage(null);
                     } else {
                         if (i < player.board.getStep()) {
                             cardFieldView.setBackground(CardFieldView.BG_DONE);
@@ -163,6 +164,7 @@ public class PlayerView extends Tab implements ViewObserver {
                             }
                         } else {
                             cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
+                            cardFieldView.imageView.setImage(null);
                         }
                     }
                 }

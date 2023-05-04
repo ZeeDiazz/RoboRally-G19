@@ -21,7 +21,11 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -29,12 +33,13 @@ import java.util.Hashtable;
 
 /**
  * ...
- *This class is responsible for the users interaction with:
+ * This class is responsible for the users interaction with:
  * game phases, execution of cards, execution of steps, movement, and who's the current player.
+ *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
 
-public class GameController {
+public class GameController implements ISerializable {
 
     final public Board board;
 
@@ -42,8 +47,6 @@ public class GameController {
      * @author Zigalow
      * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
      * This is also so that the PlayerView class is able to access the interactive card in question
-     *
-     *
      */
     public Command currentInteractiveCard;
 
@@ -60,10 +63,9 @@ public class GameController {
      */
 
     /**
+     * @param space The space which the player's robot is going to be moved to
      * @author Zigalow
      * This method makes it possible to click on a space, and make the current player's robot move to that space
-     * @param space The space which the player's robot is going to be moved to
-     *
      */
     public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
@@ -72,16 +74,16 @@ public class GameController {
         if (spaceIsOccupied(space)) {
             return;
         } else {
-            space.setPlayer(currentPlayer);
+            currentPlayer.setSpace(space);
         }
         nextPlayer(currentPlayer);
     }
 
     /**
-     * @author Zigalow
-     * This method is for checking whether a space is being occupied by a robot
      * @param space The space which is checked whether it's being occupied by a robot
      * @return Returns true if there is another robot on the space received as parameter
+     * @author Zigalow
+     * This method is for checking whether a space is being occupied by a robot
      */
 
     public boolean spaceIsOccupied(Space space) {
@@ -91,6 +93,10 @@ public class GameController {
 
     // XXX: V2
     public void startProgrammingPhase() {
+        startProgrammingPhase(true);
+    }
+
+    public void startProgrammingPhase(boolean randomCards) {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
@@ -105,7 +111,9 @@ public class GameController {
                 }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
-                    field.setCard(generateRandomCommandCard());
+                    if (randomCards) {
+                        field.setCard(generateRandomCommandCard());
+                    }
                     field.setVisible(true);
                 }
             }
@@ -159,12 +167,10 @@ public class GameController {
 
 
     /**
+     * @param options Refers to the command of the interactive card
      * @author Zigalow
      * This method starts the Player Interaction phase
-     * @param options Refers to the command of the interactive card
      */
-
-
 
 
     // XXX: V3
@@ -233,6 +239,12 @@ public class GameController {
     }
 
     // XXX: V2
+
+    /**
+     * @author Daniel, ZeeDiazz (Zaid)
+     * @param player
+     * @param command
+     */
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == board && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
@@ -240,18 +252,45 @@ public class GameController {
             //     (this concerns the way cards are modelled as well as the way they are executed).
 
             switch (command) {
-                case FORWARD:
+                case MOVE_1:
                     this.moveForward(player);
+                    player.setPrevProgramming(command);
                     break;
                 case RIGHT:
                     this.turnRight(player);
+                    player.setPrevProgramming(command);
                     break;
                 case LEFT:
                     this.turnLeft(player);
+                    player.setPrevProgramming(command);
                     break;
-                case FAST_FORWARD:
+                case MOVE_2:
                     this.fastForward(player);
+                    player.setPrevProgramming(command);
                     break;
+                    //ZeeDiazz (Zaid) {
+                case MOVE_3:
+                    this.moveThree(player);
+                    player.setPrevProgramming(command);
+                    break;
+                case U_TURN:
+                    this.turnAround(player);
+                    player.setPrevProgramming(command);
+                    break;
+                case BACK_UP:
+                    this.backUp(player);
+                    player.setPrevProgramming(command);
+                    break;
+                case POWER_UP:
+                    player.addEnergyCube(1);
+                    player.setPrevProgramming(command);
+                    break;
+                case AGAIN:
+                    //TODO: update AGAIN after the implementation of damage card and upgrade
+                    this.repeatPrevProgramming(player);
+                    //player.setPrevProgramming(command);
+                    break;
+                    //}ZeeDiazz (Zaid)
                 default:
                     // DO NOTHING (for now)
             }
@@ -259,11 +298,11 @@ public class GameController {
     }
 
     /**
+     * @param option The command which the player has chosen to execute
      * @author Zigalow
      * This method is for executing an interactive card, where a player has chosen what command to execute
      * <p>If all the programs was chosen to be executed before the interactive card,
      * they will continue to do so after an option has been chosen</p>
-     * @param option The command which the player has chosen to execute
      */
     public void executeCommandOptionAndContinue(Command option) {
         executeCommand(board.getCurrentPlayer(), option);
@@ -298,7 +337,7 @@ public class GameController {
             }
         }
     }*/
-    
+
     // From 1.4.0
     /*void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
@@ -337,8 +376,8 @@ public class GameController {
     }
 
 }*/
-    
-    
+
+
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
         performMove(Move.fromPlayer(player, 2));
@@ -360,8 +399,7 @@ public class GameController {
             if (validMoves.containsKey(endingPos)) {
                 colliding.add(endingPos);
                 validMoves.remove(endingPos);
-            }
-            else {
+            } else {
                 validMoves.put(endingPos, move);
             }
         }
@@ -370,38 +408,18 @@ public class GameController {
     }
 
     private void performMove(Move move) {
-        Player player = move.Moving;
-        Heading direction = move.Direction;
-
-        Space currentSpace = player.getSpace();
-
-        for (int i = 0; i < move.Amount; i++) {
-            if (!currentSpace.canMove(direction)) {
-                continue;
+        for (Move resultingMove : board.resultingMoves(move)) {
+            Player player = resultingMove.Moving;
+            Space endingSpace = board.getSpace(resultingMove.getEndingPosition());
+            // If going out of bounds
+            if (endingSpace == null) {
+                endingSpace = board.getSpace(player.getRebootPosition());
             }
-            currentSpace = player.board.getNeighbour(currentSpace, direction);
-            if (currentSpace == null) {
-                break;
-            }
-            if (currentSpace.hasPlayer()) {
-                Move otherPlayerMove = new Move(currentSpace.Position, direction, 1, currentSpace.getPlayer());
-                performMove(otherPlayerMove);
-            }
-        }
 
-        if (currentSpace == null) {
-            player.reboot();
+            player.setSpace(endingSpace);
+            board.getSpace(resultingMove.Start).changed();
+            endingSpace.changed();
         }
-        else {
-            player.setSpace(currentSpace);
-        }
-
-        // Is this still required?
-        /*
-        if (spaceIsOccupied(currentSpace)) {
-            return;
-        }
-         */
     }
 
     // TODO Assignment V2
@@ -420,6 +438,53 @@ public class GameController {
         player.setHeading(newDirection);
     }
 
+    /**
+     * This method turns players to the opposite direction, and the robot still remains in the current space.
+     * @author ZeeDiazz (Zaid)
+     * @param player
+     */
+    public void turnAround(@NotNull Player player){
+        Heading playerDirection = player.getHeading();
+        Heading newDirection = Heading.turnAround(playerDirection);
+
+        player.setHeading(newDirection);
+    }
+
+    /**
+     * This method moves the player by three amount
+     * @author ZeeDiazz (Zaid)
+     * @param player
+     */
+    public void moveThree(@NotNull Player player) {
+        performMove(Move.fromPlayer(player, 3));
+    }
+
+    /**
+     * This method moves the player one space back, and doesn't change players direction.
+     * @author ZeeDiazz (Zaid)
+     * @param player
+     */
+    public void backUp(@NotNull Player player){
+        Heading playerDirection = player.getHeading();
+
+        //get the opposite direction of the player
+        Heading oppositeDirection = Heading.turnAround(playerDirection);
+
+        //move player by one the opposite side
+        performMove(new Move(player.getSpace().position, oppositeDirection, 1, player));
+    }
+
+    /**
+     * @author ZeeDiazz (Zaid)
+     * This method is for the command Again, and repeat the programming from previous register
+     * @param player
+     */
+    public void repeatPrevProgramming(@NotNull Player player){
+        Command previousCommand = player.getPrevProgramming();
+        //if(previousCommand != Command.AGAIN) {
+        executeCommand(player, previousCommand);
+        //}
+    }
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -442,12 +507,10 @@ public class GameController {
     }
 
     /**
+     * @param currentPlayer The current turn's player before the end of a turn
      * @author Zigalow, Daniel, Zaid Sheikh, Felix723
      * This method relates to all that has to do with passing on the turn to the next player
      * <p>If the last player has executed his/her last command, the programming phase will start</p>
-     *
-     * @param currentPlayer The current turn's player before the end of a turn
-     *
      */
 
     public void nextPlayer(Player currentPlayer) {
@@ -462,9 +525,10 @@ public class GameController {
             if (currentStep < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
                 //ZeeDiazz (Zaid){
-                obstacleAction(currentPlayer);
+                obstacleAction();
                 //ZeeDiazz (Zaid)}
 
+                /*
                 //Felix723 (Felix Schmidt){
                 for (int i = 0; i < board.getPlayerCount(); i++) {
                     Player checkingPlayer = board.getPlayer(i);
@@ -473,12 +537,13 @@ public class GameController {
                             checkPoint.playerPassed(checkingPlayer);
                         }
 
-                        if (checkingPlayer.checkpointGoal == Board.checkpointCount) {
+                        if (checkingPlayer.checkpointGoal == board.getCheckpointCount()) {
                             checkingPlayer.setColor("purple");
                         }
                     }
                 }
                 //Felix723 (Felix Schmidt)}
+                */
 
                 board.setStep(currentStep);
             } else {
@@ -486,8 +551,7 @@ public class GameController {
             }
 
 
-
-        // Daniel }
+            // Daniel }
 
         }
         this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
@@ -495,32 +559,55 @@ public class GameController {
 
     /**
      * @author ZeeDiazz (Zaid)
-     *  It checks if a player is on an obstacle, and executes the obstacles action.
-     * @param currentPlayer
+     * It checks if a player is on an obstacle, and executes the obstacles action.
      */
-    public void obstacleAction(Player currentPlayer) {
+    public void obstacleAction() {
         Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
-            if (board.getPlayer(i).getSpace() instanceof Obstacle obstacle) {
-                switch (obstacle.getType()) {
-                    case BLUE_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 2, board.getPlayer(i));
-                        break;
-                    case GREEN_CONVEYOR_BELT:
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
-                        break;
-                    case PUSH_PANEL:
-                        //move the player according to its register
-                        //The code below is just for now
-                        moves[i] = new Move(obstacle.Position, obstacle.getDirection(), 1, board.getPlayer(i));
-                        break;
-                    case BOARD_LASER:
-                        break;
-                    case GEAR:
-                        break;
-                }
-            }
+            Player player =  board.getPlayer(i);
+            moves[i] = player.getSpace().endedRegisterOn(player, 0);
         }
         performSimultaneousMoves(moves);
+    }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.add("board", this.board.serialize());
+
+        if (currentInteractiveCard != null) {
+            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        Board board = new Board(0, 0);
+        board = (Board) board.deserialize(jsonObject.get("board"));
+
+        // For assigning board to players
+        for (Player player : board.getPlayers()) {
+            player.board = board;
+        }
+
+        String commandCardStringName = jsonObject.get("currentInteractiveCard").getAsString();
+
+        Command currentInteractiveCard = Command.LEFT;
+
+        for (Command command : Command.values()) {
+            if (commandCardStringName.equals(command.toString())) {
+                currentInteractiveCard = command;
+                break;
+            }
+        }
+
+        GameController gameController = new GameController(board);
+        gameController.currentInteractiveCard = currentInteractiveCard;
+        return gameController;
+
     }
 }
