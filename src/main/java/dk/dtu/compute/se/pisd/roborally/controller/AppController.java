@@ -151,12 +151,25 @@ public class AppController implements Observer {
 
     /**
      * Saves the game to a json file. The player chooses where the file should be located on the local computer
+     * <p>The game can only be saved when in the Programming phase</p>
+     *
      * @author Zigalow
      */
 
 
     @FXML
     public void saveGame() {
+
+
+        if (gameController.board.getPhase() != Phase.PROGRAMMING) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Not in Programming phase");
+            alert.setContentText("Please finish the current phase and reach the Programming phase, before trying to save the game again!");
+            alert.showAndWait();
+            return;
+
+        }
+
 
         fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
 
@@ -190,7 +203,8 @@ public class AppController implements Observer {
     /**
      * Loads a game from a json file. If the file can't be loading correctly,
      * the player will get an alert saying that the file couldn't be load properly
-     * It then returns back to the menu 
+     * It then returns back to the menu
+     *
      * @author Zigalow
      */
 
