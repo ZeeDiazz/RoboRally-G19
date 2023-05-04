@@ -82,7 +82,6 @@ public class Board extends Subject implements ISerializable {
      * @param height the height of the board
      * @author ZeeDiazz (Zaid)
      */
-
     public Board(int width, int height, @NotNull String name) {
         this(new Space[width][height], name);
     }
@@ -185,10 +184,6 @@ public class Board extends Subject implements ISerializable {
         } else {
             return null;
         }
-    }
-
-    public List<Player> getPlayers() {
-        return this.players;
     }
 
     /**
@@ -605,6 +600,9 @@ public class Board extends Subject implements ISerializable {
         }
 
         return board;
+    }
+    public List<Player> getPlayers() {
+        return players;
     }
 }
 

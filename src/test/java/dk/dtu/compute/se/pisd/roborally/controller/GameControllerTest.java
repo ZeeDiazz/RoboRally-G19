@@ -4,12 +4,16 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.BlueConveyorSpace;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.PriorityAntennaSpace;
 import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class GameControllerTest {
 
@@ -98,4 +102,90 @@ class GameControllerTest {
         //Check if the player moved two spaces
         //Assertions.assertEquals(current,board.getSpace(0, 3).getPlayer(),"Player " + current.getName() + " should be Space (0,3)!");
     }
+    @Test
+    void testPriorityAntennaSpace(){
+        Board board = new Board(0,0);
+        PriorityAntennaSpace antenna = new PriorityAntennaSpace(new Position(7,7));
+        Player player1 = new Player(board,"purple",  "Felix");
+        Player player2 = new Player(board,"blue",  "Daniel");
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        player1.setSpace(new Space(new Position(4, 4)));
+        player2.setSpace(new Space(new Position(7, 6)));
+
+        List<Player> priotityPlayers = antenna.getPriority(players);
+        Player priorityPlayer = priotityPlayers.get(0);
+        Assertions.assertEquals(priorityPlayer, player2);
+    }
+    @Test
+    void testPriorityAntennaSpaceWithTie(){
+        Board board = new Board(0,0);
+        PriorityAntennaSpace  antenna = new PriorityAntennaSpace(new Position(2, 3));
+        Player player1 = new Player(board,"purple",  "Felix");
+        Player player2 = new Player(board,"blue",  "Daniel");
+        Player player3 = new Player(board, "yellow", "Zaid");
+        Player player4 = new Player(board, "orange", "Dulle");
+        Player player5 = new Player(board,  "grey",  "Zach");
+        Player player6 = new Player(board, "red", "Emma");
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        players.add(player3);
+        players.add(player4);
+        players.add(player5);
+        players.add(player6);
+        player1.setSpace(new Space(new Position(4,5)));
+        player2.setSpace(new Space(new Position(0,3)));
+        player3.setSpace(new Space(new Position(3,2)));
+        player4.setSpace(new Space(new Position(5,2)));
+        player5.setSpace(new Space(new Position(6,2)));
+        player6.setSpace(new Space(new Position(7,2)));
+        //  zaid, daniel, felix ,dulle, zach, emma
+
+        List<Player> priorityPlayers = antenna.getPriority(players);
+        Player priorityPlayer1 = priorityPlayers.get(0);
+        Player priorityPlayer2 = priorityPlayers.get(1);
+        Player priorityPlayer3 = priorityPlayers.get(2);
+        Player priorityPlayer4 = priorityPlayers.get(3);
+        Player priorityPlayer5 = priorityPlayers.get(4);
+        Player priorityPlayer6 = priorityPlayers.get(5);
+
+
+        Assertions.assertEquals(priorityPlayer1, player3);
+        Assertions.assertEquals(priorityPlayer2, player2);
+        Assertions.assertEquals(priorityPlayer3, player4);
+        Assertions.assertEquals(priorityPlayer4, player1);
+        Assertions.assertEquals(priorityPlayer5, player5);
+        Assertions.assertEquals(priorityPlayer6, player6);
+    }
+
+    void testPriorityAntennaSpaceWithTieSecond(){
+        Board board = new Board(0,0);
+        PriorityAntennaSpace antenna = new PriorityAntennaSpace(new Position(7,7));
+        Player player1 = new Player(board,"purple",  "Felix");
+        Player player2 = new Player(board,"blue",  "Daniel");
+        Player player3 = new Player(board, "yellow", "Zaid");
+        Player player4 = new Player(board, "orange", "Dulle");
+        Player player5 = new Player(board,  "grey",  "Zach");
+        Player player6 = new Player(board, "red", "Emma");
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        players.add(player3);
+        players.add(player4);
+        players.add(player5);
+        players.add(player6);
+        player1.setSpace(new Space(new Position(2,1)));
+        player2.setSpace(new Space(new Position(0,3)));
+        player3.setSpace(new Space(new Position(3,2)));
+        player4.setSpace(new Space(new Position(5,2)));
+        player5.setSpace(new Space(new Position(6,2)));
+        player6.setSpace(new Space(new Position(7,2)));
+
+        List<Player> priorityPlayers = antenna.getPriority(players);
+        Player priorityPlayer = priorityPlayers.get(0);
+        Assertions.assertEquals(priorityPlayer, player1);
+    }
+
 }

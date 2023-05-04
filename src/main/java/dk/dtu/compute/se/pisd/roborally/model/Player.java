@@ -46,7 +46,6 @@ public class Player extends Subject implements ISerializable {
     public Board board;
     public int checkpointGoal = 0;
     private int energyCube;
-
     private String name;
     private String color;
 
@@ -205,7 +204,7 @@ public class Player extends Subject implements ISerializable {
     }
 
     /**
-     * @param space The space the player will reboot on
+     * @param position The space the player will reboot on
      * @author Daniel Jensen
      * Set the reboot space of a player, used when the player has to reboot
      */
