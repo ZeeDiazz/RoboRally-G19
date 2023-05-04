@@ -9,13 +9,9 @@ class PlayerTest {
     Player currentPlayer;
     @BeforeEach
     public void setUp() {
-        Board board = new Board(8,8);
-        currentPlayer = new Player(board, "blue", "Alice");
+        currentPlayer = new Player(null, "blue", "Zaid");
     }
 
-    @Test
-    void reboot() {
-    }
 
     @Test
     void addEnergyCube() {
