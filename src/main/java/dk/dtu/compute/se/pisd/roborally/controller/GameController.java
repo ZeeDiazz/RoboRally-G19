@@ -93,6 +93,7 @@ public class GameController implements ISerializable {
 
     /**
      * Starts the programming face, with randomly generated cards
+     *
      * @Daniel
      */
     // XXX: V2
@@ -102,9 +103,10 @@ public class GameController implements ISerializable {
 
     /**
      * Starts the programming phase. If randomCards is true, random cards will be generated for each player
+     *
      * @param randomCards True if cards needs to be randomly generated
      */
-    
+
     public void startProgrammingPhase(boolean randomCards) {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
@@ -115,8 +117,11 @@ public class GameController implements ISerializable {
             if (player != null) {
                 for (int j = 0; j < Player.NO_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
-                    field.setCard(null);
-                    field.setVisible(true);
+                    if (randomCards) {
+                        field.setCard(null);
+                        field.setVisible(true);
+                    }
+                  
                 }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
@@ -250,9 +255,9 @@ public class GameController implements ISerializable {
     // XXX: V2
 
     /**
-     * @author Daniel, ZeeDiazz (Zaid)
      * @param player
      * @param command
+     * @author Daniel, ZeeDiazz (Zaid)
      */
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == board && command != null) {
@@ -277,7 +282,7 @@ public class GameController implements ISerializable {
                     this.fastForward(player);
                     player.setPrevProgramming(command);
                     break;
-                    //ZeeDiazz (Zaid) {
+                //ZeeDiazz (Zaid) {
                 case MOVE_3:
                     this.moveThree(player);
                     player.setPrevProgramming(command);
@@ -299,7 +304,7 @@ public class GameController implements ISerializable {
                     this.repeatPrevProgramming(player);
                     //player.setPrevProgramming(command);
                     break;
-                    //}ZeeDiazz (Zaid)
+                //}ZeeDiazz (Zaid)
                 default:
                     // DO NOTHING (for now)
             }
@@ -449,10 +454,11 @@ public class GameController implements ISerializable {
 
     /**
      * This method turns players to the opposite direction, and the robot still remains in the current space.
-     * @author ZeeDiazz (Zaid)
+     *
      * @param player
+     * @author ZeeDiazz (Zaid)
      */
-    public void turnAround(@NotNull Player player){
+    public void turnAround(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
         Heading newDirection = Heading.turnAround(playerDirection);
 
@@ -461,8 +467,9 @@ public class GameController implements ISerializable {
 
     /**
      * This method moves the player by three amount
-     * @author ZeeDiazz (Zaid)
+     *
      * @param player
+     * @author ZeeDiazz (Zaid)
      */
     public void moveThree(@NotNull Player player) {
         performMove(Move.fromPlayer(player, 3));
@@ -470,10 +477,11 @@ public class GameController implements ISerializable {
 
     /**
      * This method moves the player one space back, and doesn't change players direction.
-     * @author ZeeDiazz (Zaid)
+     *
      * @param player
+     * @author ZeeDiazz (Zaid)
      */
-    public void backUp(@NotNull Player player){
+    public void backUp(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
 
         //get the opposite direction of the player
@@ -484,16 +492,17 @@ public class GameController implements ISerializable {
     }
 
     /**
+     * @param player
      * @author ZeeDiazz (Zaid)
      * This method is for the command Again, and repeat the programming from previous register
-     * @param player
      */
-    public void repeatPrevProgramming(@NotNull Player player){
+    public void repeatPrevProgramming(@NotNull Player player) {
         Command previousCommand = player.getPrevProgramming();
         //if(previousCommand != Command.AGAIN) {
         executeCommand(player, previousCommand);
         //}
     }
+
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -573,7 +582,7 @@ public class GameController implements ISerializable {
     public void obstacleAction() {
         Move[] moves = new Move[board.getPlayerCount()];
         for (int i = 0; i < board.getPlayerCount(); i++) {
-            Player player =  board.getPlayer(i);
+            Player player = board.getPlayer(i);
             moves[i] = player.getSpace().endedRegisterOn(player, 0);
         }
         performSimultaneousMoves(moves);
