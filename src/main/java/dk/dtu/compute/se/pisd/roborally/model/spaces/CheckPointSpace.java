@@ -21,12 +21,12 @@ public class CheckPointSpace extends Space {
      * Check whether a player has passed this checkpoint
      */
     public boolean hasPassed(Player player) {
-        return player.checkpointGoal < this.id;
+        return player.checkpointGoal >= this.id;
     }
 
     @Override
     public Move endedRegisterOn(Player player, int registerIndex) {
-        if (!hasPassed(player)) {
+        if (hasPassed(player)) {
             player.checkpointGoal = this.id + 1;
             // player.setRebootSpace(this);
             changed();
