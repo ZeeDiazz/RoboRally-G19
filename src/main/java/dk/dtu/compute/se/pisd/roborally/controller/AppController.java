@@ -171,7 +171,7 @@ public class AppController implements Observer {
             try {
                 file.createNewFile();
                 // Saves to Json-file
-                Transformer.saveBoard(gameController.board, file);
+                Transformer.saveBoard(file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
