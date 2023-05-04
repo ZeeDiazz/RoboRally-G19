@@ -1,73 +1,30 @@
 package dk.dtu.compute.se.pisd.roborally.fileaccess;
 
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 
 import java.io.*;
-import java.text.ParseException;
 
+
+/**
+ * Class for handling of the save/load game feature
+ * @author Zigalow
+ */
 public class Transformer {
-
-    public static Board initialBoard;
-
+    
     private static GameController currentGameController;
-
-
+    
     public Transformer(GameController gameController) {
         currentGameController = gameController;
     }
 
-    public static void saveBoard(Board board, File file) {
-      /*  BoardTemplate template = new BoardTemplate();
-        template.width = board.width;
-        template.height = board.height;
-
-        initialBoard = board;
-
-
-        for (int i = 0; i < board.width; i++) {
-            for (int j = 0; j < board.height; j++) {
-                Space space = board.getSpace(i, j);
-
-                boolean include = false;
-
-                SpaceTemplate spaceTemplate = new SpaceTemplate();
-                spaceTemplate.x = i;
-                spaceTemplate.y = j;
-
-
-                
-                
-               *//* if (space.hasPlayer()) {
-                    spaceTemplate.player = space.getPlayer();
-                }*//*
-                if (!space.getWalls().isEmpty()) {
-                    spaceTemplate.walls.addAll(space.getWalls());
-                    include = true;
-                }
-                if (space instanceof Obstacle) {
-                    Obstacle obstacle = (Obstacle) space;
-
-                    spaceTemplate.obstacle = obstacle;
-                    include = true;
-                }
-                if (space instanceof CheckPoint) {
-
-                    CheckPoint checkPoint = (CheckPoint) space;
-
-                    spaceTemplate.checkPoint = checkPoint;
-                    include = true;
-                }
-                if (include) {
-                    template.spaces.add(spaceTemplate);
-                }
-            }
-        }*/
-
-
+    /**
+     * @param file The json file where the serialization should be stored 
+     * @author Zigalow
+     */
+    public static void saveBoard(File file) {
         JsonObject saveFileJson = new JsonObject();
 
         saveFileJson.add("gameController", currentGameController.serialize());
@@ -76,10 +33,7 @@ public class Transformer {
         FileWriter fileWriter = null;
         JsonWriter writer = null;
         try {
-
-
-            //  Gson gson = new GsonBuilder().registerTypeAdapter(SpaceTemplate.class, new SpaceTemplateTypeAdapter()).setPrettyPrinting().create();
-
+            
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             fileWriter = new FileWriter(file);
@@ -105,23 +59,25 @@ public class Transformer {
         }
     }
 
+    /**
+     * 
+     * @param file The json file which should be loaded
+     * @return The board which is loaded from the json file
+     * @author Zigalow, Daniel
+     */
+    
     public static Board loadBoard(File file) {
         JsonParser parser = new JsonParser();
 
         try {
-            JsonObject json = (JsonObject)parser.parse(new FileReader(file));
+            JsonObject json = (JsonObject) parser.parse(new FileReader(file));
             Board board = new Board(1, 1);
-            return (Board)board.deserialize(json.get("gameController").getAsJsonObject().get("board"));
+            return (Board) board.deserialize(json.get("gameController").getAsJsonObject().get("board"));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-
-    public GameController getCurrentGameController() {
-        return currentGameController;
     }
 }
 

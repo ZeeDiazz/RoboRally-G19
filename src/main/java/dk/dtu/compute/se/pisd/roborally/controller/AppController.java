@@ -151,6 +151,7 @@ public class AppController implements Observer {
 
     /**
      * Saves the game to a json file. The player chooses where the file should be located on the local computer
+     * @author Zigalow
      */
 
 
@@ -170,7 +171,7 @@ public class AppController implements Observer {
             try {
                 file.createNewFile();
                 // Saves to Json-file
-                Transformer.saveBoard(gameController.board, file);
+                Transformer.saveBoard(file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -190,6 +191,7 @@ public class AppController implements Observer {
      * Loads a game from a json file. If the file can't be loading correctly,
      * the player will get an alert saying that the file couldn't be load properly
      * It then returns back to the menu 
+     * @author Zigalow
      */
 
     @FXML

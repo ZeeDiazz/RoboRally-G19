@@ -61,7 +61,8 @@ public class Board extends Subject implements ISerializable {
     private int checkpointCount;
 
     /**
-     * A constructor for internal use, which has literally all the parts of the Board given.
+     * A constructor for internal use, which has literally all the parts of the Board given. Used for deserialization
+     *
      * @param moveCounter
      * @param width
      * @param height
@@ -411,6 +412,7 @@ public class Board extends Subject implements ISerializable {
      * A method to calculate all the moves coming from a single move.
      * This is used when performing a move, to make sure all the players who will get pushed also move.
      * It will also include the given move, but it has potentially been shortened (e.g. if there is a wall in the way).
+     *
      * @param move the base move.
      * @return all the moves to be performed to execute the given move to the rules' satisfaction.
      * @author Daniel Jensen
@@ -456,12 +458,10 @@ public class Board extends Subject implements ISerializable {
         this.spaces[position.X][position.Y] = new CheckPointSpace(position, checkpointCount++);
     }
 
-    public int getCheckpointCount() {
-        return checkpointCount;
-    }
 
     /**
      * Rotate a whole board to the left.
+     *
      * @param board the board to rotate.
      * @return a rotated copy of the given board.
      * @author Daniel Jensen
@@ -482,6 +482,7 @@ public class Board extends Subject implements ISerializable {
 
     /**
      * Rotate a whole board to the right.
+     *
      * @param board the board to rotate.
      * @return a rotated copy of the given board.
      * @author Daniel Jensen
@@ -493,9 +494,10 @@ public class Board extends Subject implements ISerializable {
     /**
      * Add to boards together, and get the resulting board.
      * This is useful because the original game has different physical boards, which you can combine to create one large board.
-     * @param board the base board, which the other board will be added to.
-     * @param adding the board we're adding.
-     * @param offset the new position of "adding"s (0, 0).
+     *
+     * @param board   the base board, which the other board will be added to.
+     * @param adding  the board we're adding.
+     * @param offset  the new position of "adding"s (0, 0).
      * @param newName the name of the new unified board.
      * @return a board with all the spaces of the two boards, with the correct positions according to the offset.
      * @author Daniel Jensen
@@ -525,10 +527,12 @@ public class Board extends Subject implements ISerializable {
 
         return new Board(newSpaces, newName);
     }
+
     /**
      * Add to boards together, and get the resulting board. The resulting board will have the name of "board".
      * This is useful because the original game has different physical boards, which you can combine to create one large board.
-     * @param board the base board, which the other board will be added to.
+     *
+     * @param board  the base board, which the other board will be added to.
      * @param adding the board we're adding.
      * @param offset the new position of "adding"s (0, 0).
      * @return a board with all the spaces of the two boards, with the correct positions according to the offset.
@@ -597,10 +601,10 @@ public class Board extends Subject implements ISerializable {
         Position position = new Position(0, 0);
         for (int i = 0; i < playerCount; i++) {
             JsonObject playerJson = playersJson.get(i).getAsJsonObject();
-            playerToAdd = (Player)playerToAdd.deserialize(playerJson);
+            playerToAdd = (Player) playerToAdd.deserialize(playerJson);
             players.add(playerToAdd);
 
-            playerPositions.add((Position)position.deserialize(playerJson.get("space")));
+            playerPositions.add((Position) position.deserialize(playerJson.get("space")));
         }
 
         // PlayerName of current player
@@ -625,7 +629,7 @@ public class Board extends Subject implements ISerializable {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 JsonObject spaceJson = spacesJson.get(x * height + y).getAsJsonObject();
-                spaces[x][y] = (Space)space.deserialize(spaceJson);
+                spaces[x][y] = (Space) space.deserialize(spaceJson);
 
                 JsonElement playerNameJson = spaceJson.get("playerOccupyingSpace");
                 Player player = null;
@@ -654,6 +658,7 @@ public class Board extends Subject implements ISerializable {
 
         return board;
     }
+
     public List<Player> getPlayers() {
         return players;
     }
