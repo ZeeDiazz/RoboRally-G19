@@ -7,6 +7,10 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 
 import java.io.*;
 
+
+/**
+ * Class for handling of the save/load game feature
+ */
 public class Transformer {
     
     private static GameController currentGameController;
