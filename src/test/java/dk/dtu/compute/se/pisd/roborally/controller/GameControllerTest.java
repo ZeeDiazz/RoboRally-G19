@@ -22,9 +22,11 @@ class GameControllerTest {
 
     private GameController gameController;
 
+    private Board board;
+    
     @BeforeEach
     void setUp() {
-        Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
+         board = MapMaker.makeDizzyHighway();
         gameController = new GameController(board);
         for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null,"Player " + i);
@@ -41,12 +43,12 @@ class GameControllerTest {
     }
     @Test
     void moveForward(){
-        Board board = gameController.board;
+      
         Player current = board.getCurrentPlayer();
         gameController.moveForward(current);
 
         Position position = new Position(0,1);
-        Assertions.assertEquals(current.getSpace().position,board.getSpace(position));
+        Assertions.assertEquals(current.getSpace(),board.getSpace(position));
     }
 
     @Test
