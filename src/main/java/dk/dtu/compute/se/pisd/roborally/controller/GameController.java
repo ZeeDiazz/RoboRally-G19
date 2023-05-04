@@ -44,13 +44,13 @@ public class GameController implements ISerializable {
     final public Board board;
 
     /**
-     * @author Zigalow
      * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
      * This is also so that the PlayerView class is able to access the interactive card in question
+     * @author Zigalow
      */
     public Command currentInteractiveCard;
 
-
+    
     public GameController(@NotNull Board board) {
         this.board = board;
     }
@@ -91,11 +91,20 @@ public class GameController implements ISerializable {
     }
 
 
+    /**
+     * Starts the programming face, with randomly generated cards
+     * @Daniel
+     */
     // XXX: V2
     public void startProgrammingPhase() {
         startProgrammingPhase(true);
     }
 
+    /**
+     * Starts the programming phase. If randomCards is true, random cards will be generated for each player
+     * @param randomCards True if cards needs to be randomly generated
+     */
+    
     public void startProgrammingPhase(boolean randomCards) {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
