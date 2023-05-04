@@ -15,11 +15,11 @@ public class PriorityAntennaSpace extends Space{
     }
 
     /**
-     *
-     *
+     * This method is for creating and getting a list
+     * of players sorted by priority based roborrally rules
      * @author Felix723
      * @param players
-     * @return   prioritylist, a list of player sorted  by priority
+     * @return prioritylist, a list of player sorted  by priority
      */
     public List<Player> getPriority(List<Player> players){
         List<Player> tied = new ArrayList<>();
@@ -56,18 +56,18 @@ public class PriorityAntennaSpace extends Space{
         // (x1,y1) = priorityantenna
         // (x2,y2) = player
 
-        int vx = this.position.X;
-        int vy = this.position.Y;
+        int xAntenna = this.position.X;
+        int yAntenna = this.position.Y;
 
-        int ux = player.getSpace().position.X;
-        int uy = player.getSpace().position.Y;
-        if(uy == vy){
-            uy++;
+        int xPlayer = player.getSpace().position.X;
+        int yPlayer = player.getSpace().position.Y;
+        if(yPlayer == yAntenna){
+            yPlayer++;
         }
-        int xDifference = ux - vx;
-        int yDifference = uy - vy;
+        int xDifference = xPlayer - xAntenna;
+        int yDifference = yPlayer - yAntenna;
 
-        //double cos = (vx - ux)/(vy -uy);
+        //double cos = (xAntenna - xPlayer)/(yAntenna -yPlayer);
         //return Math.acos(cos);
         return Math.atan2(yDifference,xDifference);
     }
