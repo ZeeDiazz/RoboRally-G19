@@ -10,6 +10,7 @@ import java.io.*;
 
 /**
  * Class for handling of the save/load game feature
+ * @author Zigalow
  */
 public class Transformer {
     
