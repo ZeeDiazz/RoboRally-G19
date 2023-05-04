@@ -332,7 +332,7 @@ public class Player extends Subject implements ISerializable {
             }
         }
 
-        CommandCardField field = new CommandCardField(null);
+        CommandCardField field = new CommandCardField(player);
         int index = 0;
         for (JsonElement cardJson : jsonObject.get("cards").getAsJsonArray()) {
             CommandCardField savedField = (CommandCardField)field.deserialize(cardJson);
