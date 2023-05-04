@@ -163,6 +163,12 @@ public class Space extends Subject implements ISerializable {
         return jsonObject;
     }
 
+    /**
+     * Deserializes the given JSON element into an instance of a class that implements ISerializable.
+     *
+     * @param element the JSON element to deserialize
+     * @return an instance of a class that implements ISerializable
+     */
     @Override
     public ISerializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
