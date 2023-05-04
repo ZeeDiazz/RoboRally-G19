@@ -39,7 +39,15 @@ class GameControllerTest {
     void tearDown() {
         gameController = null;
     }
+    @Test
+    void moveForward(){
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        gameController.moveForward(current);
 
+        Position position = new Position(0,1);
+        Assertions.assertEquals(current.getSpace().position,board.getSpace(position));
+    }
 
     @Test
     void turnAround() {
