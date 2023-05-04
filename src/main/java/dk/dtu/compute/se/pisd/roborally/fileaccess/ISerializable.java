@@ -10,18 +10,17 @@ import com.google.gson.JsonElement;
  */
 public interface ISerializable {
     /**
-     * 
+     *
      * @return A serialized json-element
      */
-    public JsonElement serialize();
+    JsonElement serialize();
 
     /**
-     * 
+     *
      * @param element The json element that needs to be deserialized
      * @return An ISerializable object from given json element
      */
-    
-    public ISerializable deserialize(JsonElement element);
 
+    ISerializable deserialize(JsonElement element);
 
 }
