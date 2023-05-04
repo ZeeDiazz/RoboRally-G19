@@ -60,6 +60,21 @@ public class Board extends Subject implements ISerializable {
     private boolean stepMode;
     private int checkpointCount;
 
+    /**
+     * A constructor for internal use, which has literally all the parts of the Board given.
+     * @param moveCounter
+     * @param width
+     * @param height
+     * @param boardName
+     * @param gameId
+     * @param spaces
+     * @param current
+     * @param phase
+     * @param step
+     * @param stepMode
+     * @param checkpointCount
+     * @author Daniel Jensen
+     */
     private Board(int moveCounter, int width, int height, String boardName, Integer gameId, Space[][] spaces, Player current, Phase phase, int step, boolean stepMode, int checkpointCount) {
         this.moveCounter = moveCounter;
         this.width = width;
@@ -392,6 +407,14 @@ public class Board extends Subject implements ISerializable {
                 ", Step: " + getMoveCounter();
     }
 
+    /**
+     * A method to calculate all the moves coming from a single move.
+     * This is used when performing a move, to make sure all the players who will get pushed also move.
+     * It will also include the given move, but it has potentially been shortened (e.g. if there is a wall in the way).
+     * @param move the base move.
+     * @return all the moves to be performed to execute the given move to the rules' satisfaction.
+     * @author Daniel Jensen
+     */
     public ArrayList<Move> resultingMoves(Move move) {
         int moveAmount = 0;
         ArrayList<Move> moves = new ArrayList<>();
@@ -437,6 +460,12 @@ public class Board extends Subject implements ISerializable {
         return checkpointCount;
     }
 
+    /**
+     * Rotate a whole board to the left.
+     * @param board the board to rotate.
+     * @return a rotated copy of the given board.
+     * @author Daniel Jensen
+     */
     public static Board rotateLeft(Board board) {
         Space[][] newSpaces = new Space[board.height][board.width];
         for (int x = 0; x < board.width; x++) {
@@ -451,10 +480,26 @@ public class Board extends Subject implements ISerializable {
         return new Board(newSpaces, board.boardName);
     }
 
+    /**
+     * Rotate a whole board to the right.
+     * @param board the board to rotate.
+     * @return a rotated copy of the given board.
+     * @author Daniel Jensen
+     */
     public static Board rotateRight(Board board) {
         return rotateLeft(rotateLeft(rotateLeft(board)));
     }
 
+    /**
+     * Add to boards together, and get the resulting board.
+     * This is useful because the original game has different physical boards, which you can combine to create one large board.
+     * @param board the base board, which the other board will be added to.
+     * @param adding the board we're adding.
+     * @param offset the new position of "adding"s (0, 0).
+     * @param newName the name of the new unified board.
+     * @return a board with all the spaces of the two boards, with the correct positions according to the offset.
+     * @author Daniel Jensen
+     */
     public static Board add(Board board, Board adding, Position offset, String newName) {
         Position currentTopLeft = board.spaces[0][0].position;
         Position currentBottomRight = board.spaces[board.width - 1][board.height - 1].position;
@@ -480,7 +525,15 @@ public class Board extends Subject implements ISerializable {
 
         return new Board(newSpaces, newName);
     }
-
+    /**
+     * Add to boards together, and get the resulting board. The resulting board will have the name of "board".
+     * This is useful because the original game has different physical boards, which you can combine to create one large board.
+     * @param board the base board, which the other board will be added to.
+     * @param adding the board we're adding.
+     * @param offset the new position of "adding"s (0, 0).
+     * @return a board with all the spaces of the two boards, with the correct positions according to the offset.
+     * @author Daniel Jensen
+     */
     public static Board add(Board board, Board adding, Position offset) {
         return add(board, adding, offset, board.boardName);
     }
