@@ -163,10 +163,24 @@ public class AppController implements Observer {
 
         if (gameController.board.getPhase() != Phase.PROGRAMMING) {
             Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Not in Programming phase");
-            alert.setContentText("Please finish the current phase and reach the Programming phase, before trying to save the game again!");
+            alert.setTitle("Not in Programming phase!");
+            alert.setContentText("Please finish the current phase and reach the Programming phase before trying to save the game again");
             alert.showAndWait();
             return;
+
+        }
+
+        for (Player player : gameController.board.getPlayers()) {
+            for (CommandCardField commandCardField : player.getProgram()) {
+                if (commandCardField.getCard() != null) {
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setTitle("Cards in program field!");
+                    alert.setContentText("Please empty all the cards in each player's program field before trying to save the game again");
+                    alert.showAndWait();
+                    return;
+                }
+            }
+
 
         }
 
