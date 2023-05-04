@@ -204,9 +204,9 @@ public class Player extends Subject implements ISerializable {
     }
 
     /**
+     * Set the reboot space of a player, used when the player has to reboot
      * @param position The space the player will reboot on
      * @author Daniel Jensen
-     * Set the reboot space of a player, used when the player has to reboot
      */
     public void setRebootPosition(Position position) {
         this.rebootPosition = position;
@@ -225,8 +225,8 @@ public class Player extends Subject implements ISerializable {
     }
 
     /**
-     * @author Daniel Jensen
      * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
+     * @author Daniel Jensen
      */
     public void reboot() {
         // TODO fix
@@ -234,17 +234,17 @@ public class Player extends Subject implements ISerializable {
     }
 
     /**
-     * @author ZeeDiazz (Zaid)
      * gets the amount of energy cubes a player has
      * @return the amount of energy cubes
+     * @author ZeeDiazz (Zaid)
      */
     public int getEnergyCube(){return energyCube;}
 
     /**
-     * @author Zeediazz (Zaid)
      * Takes an amount of energy cube and adds to Players energy cubes
      * If amount is less or equal to 0 it does nothing
      * @param amount of energy cube
+     * @author Zeediazz (Zaid)
      */
     public void addEnergyCube(int amount){
         if(amount > 0) {
@@ -254,10 +254,10 @@ public class Player extends Subject implements ISerializable {
     }
 
     /**
-     * @author ZeeDiazz (Zaid)
      * Takes an amount of energy cube and removes X amount of Players energy cubes
      * If amount is less or equal to 0 it does nothing
      * @param amount
+     * @author ZeeDiazz (Zaid)
      */
     public void removeEnergyCube(int amount){
         if(amount > 0) {
@@ -267,18 +267,18 @@ public class Player extends Subject implements ISerializable {
     }
 
     /**
-     * @author ZeeDiazz (Zaid)
      * Get the programming from previous register
      * @return
+     * @author ZeeDiazz (Zaid)
      */
     public Command getPrevProgramming() {
         return prevProgramming;
     }
 
     /**
-     * @author ZeeDiazz (Zaid)
      * Set a programming as previous programming
      * @param programming
+     * @author ZeeDiazz (Zaid)
      */
     public void setPrevProgramming(Command programming) {
        prevProgramming = programming;
@@ -332,7 +332,7 @@ public class Player extends Subject implements ISerializable {
             }
         }
 
-        CommandCardField field = new CommandCardField(null);
+        CommandCardField field = new CommandCardField(player);
         int index = 0;
         for (JsonElement cardJson : jsonObject.get("cards").getAsJsonArray()) {
             CommandCardField savedField = (CommandCardField)field.deserialize(cardJson);
@@ -354,7 +354,13 @@ public class Player extends Subject implements ISerializable {
 
         return player;
     }
-    
+
+    /**
+     * Make a copy of this player, but on a new board.
+     * @param newBoard the board for the copied player.
+     * @return a copy of this player, but on a new board.
+     * @author Daniel Jensen
+     */
     public Player copy(Board newBoard) {
         Player copied = new Player(newBoard, this.color, this.name);
         copied.setSpace(this.space);

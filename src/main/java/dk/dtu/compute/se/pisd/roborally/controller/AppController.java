@@ -76,7 +76,7 @@ public class AppController implements Observer {
     }
 
     protected void makeGame(Board board, boolean hasCards) {
-            gameController = new GameController(board);
+        gameController = new GameController(board);
 
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
