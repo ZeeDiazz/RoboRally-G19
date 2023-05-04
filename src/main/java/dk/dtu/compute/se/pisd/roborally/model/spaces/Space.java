@@ -10,6 +10,9 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A generic space, with nothing special going on
+ */
 public class Space extends Subject implements ISerializable {
     public final Position position;
     protected final ArrayList<Heading> walls;
