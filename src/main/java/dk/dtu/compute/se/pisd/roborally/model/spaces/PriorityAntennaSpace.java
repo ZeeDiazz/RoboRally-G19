@@ -44,7 +44,12 @@ public class PriorityAntennaSpace extends Space{
         return priority;
 
     }
-
+    /**
+     * Returns the Manhattan distance between this antenna and the given player's space.
+     *
+     * @param player the player whose distance to this antenna is to be calculated
+     * @return the Manhattan distance between this antenna and the player's space
+     */
     protected int getDistanceTo(Player player){
         int xAntenna = this.position.X;
         int yAntenna = this.position.Y;
@@ -52,6 +57,12 @@ public class PriorityAntennaSpace extends Space{
         int yPlayer = player.getSpace().position.Y;
         return Math.abs(xPlayer-xAntenna) + Math.abs(yPlayer-yAntenna);
     }
+    /**
+     * Returns the angle between this antenna and the given player's space in radians.
+     *
+     * @param player the player whose angle to this antenna is to be calculated
+     * @return the angle between this antenna and the player's space in radians
+     */
     protected double getAngle(Player player){
         // (x1,y1) = priorityantenna
         // (x2,y2) = player

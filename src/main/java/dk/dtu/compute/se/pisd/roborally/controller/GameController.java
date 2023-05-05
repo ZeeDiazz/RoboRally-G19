@@ -134,12 +134,14 @@ public class GameController implements ISerializable {
         }
     }
 
+
     // XXX: V2
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
         int random = (int) (Math.random() * commands.length);
         return new CommandCard(commands[random]);
     }
+
 
     // XXX: V2
     public void finishProgrammingPhase() {
