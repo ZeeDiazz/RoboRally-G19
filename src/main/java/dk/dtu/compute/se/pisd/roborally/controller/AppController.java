@@ -23,20 +23,24 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
-
+import dk.dtu.compute.se.pisd.roborally.fileaccess.Transformer;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.stage.FileChooser;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -45,25 +49,43 @@ import java.util.Optional;
  * ...
  * This class is responsible for the users interaction with; staring new game, saving game, load game, stop game
  * and exit game.
- * @author Ekkart Kindler, ekki@dtu.dk
  *
+ * @author Ekkart Kindler, ekki@dtu.dk
  */
 
 
 public class AppController implements Observer {
+
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
 
-    private GameController gameController;
+    private static Transformer transformer;
+    private static GameController gameController;
+
+    @FXML
+    FileChooser fileChooser = new FileChooser();
 
     /**
      * @param roboRally The Roborally game being played
      */
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
+    }
+
+    protected void makeGame(Board board, boolean hasCards) {
+        gameController = new GameController(board);
+
+        // XXX: V2
+        // board.setCurrentPlayer(board.getPlayer(0));
+        gameController.startProgrammingPhase(!hasCards);
+
+        // Gives transformer the currentGameController
+        transformer = new Transformer(gameController);
+
+        roboRally.createBoardView(gameController);
     }
 
     /**
@@ -88,7 +110,22 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = new Board(8,8);
+
+            Board board = MapMaker.makeDizzyHighway();
+            int playerCount = result.get();
+            for (int i = 0; i < playerCount; i++) {
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Space startingSpace = board.getSpace(i % board.width, i);
+                player.setSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
+                board.addPlayer(player);
+            }
+
+            makeGame(board, false);
+            /*
+            if (true)
+            return;
+
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
@@ -96,27 +133,150 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.setSpace(startingSpace);
-                player.setRebootSpace(startingSpace);
+                player.setRebootPosition(startingSpace.position);
             }
 
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();
 
+            // Gives transformer the currentGameController
+            transformer = new Transformer(gameController);
+
             roboRally.createBoardView(gameController);
+             */
         }
     }
 
+
+    /**
+     * Saves the game to a json file. The player chooses where the file should be located on the local computer
+     * <p>The game can only be saved when in the Programming phase</p>
+     *
+     * @author Zigalow
+     */
+
+
+    @FXML
     public void saveGame() {
-        // XXX needs to be implemented eventually
+
+
+        if (gameController.board.getPhase() != Phase.PROGRAMMING) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Not in Programming phase!");
+            alert.setContentText("Please finish the current phase and reach the Programming phase before trying to save the game again");
+            alert.showAndWait();
+            return;
+
+        }
+
+        for (Player player : gameController.board.getPlayers()) {
+            for (CommandCardField commandCardField : player.getProgram()) {
+                if (commandCardField.getCard() != null) {
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setTitle("Cards in program field!");
+                    alert.setContentText("Please empty all the cards in each player's program field before trying to save the game again");
+                    alert.showAndWait();
+                    return;
+                }
+            }
+
+
+        }
+
+
+        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+
+        fileChooser.setTitle("Save Game"); // Description for action
+        fileChooser.setInitialFileName("mysave"); // Initial name of saveFile
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
+        File file = fileChooser.showSaveDialog(null);
+
+
+        if (file != null) {
+            try {
+                file.createNewFile();
+                // Saves to Json-file
+                Transformer.saveBoard(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // If the user opts out of saving
+        } else {
+            return;
+        }
+
+
+        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
+
     }
 
+
+    /**
+     * Loads a game from a json file. If the file can't be loading correctly,
+     * the player will get an alert saying that the file couldn't be load properly
+     * It then returns back to the menu
+     *
+     * @author Zigalow
+     */
+
+    @FXML
     public void loadGame() {
-        // XXX needs to be implemented eventually
-        // for now, we just create a new game
-        if (gameController == null) {
-            newGame();
+
+        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+
+        fileChooser.setTitle("Load Game"); // Description for action
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be load as a json file type
+        File file = fileChooser.showOpenDialog(null);
+
+
+        if (file == null || !file.isFile()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("File could not be loaded");
+            alert.setContentText("There was a problem with loading the given file");
+            alert.showAndWait();
+            return;
         }
+        Board board;
+
+        try {
+            board = Transformer.loadBoard(file);
+        } catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("File could not be loaded");
+            alert.setContentText("There was a problem with loading the given file");
+            alert.showAndWait();
+            return;
+        }
+
+        makeGame(board, true);
+
+        /*
+        // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
+        //gameController = transformer.getCurrentGameController();
+
+        gameController = new GameController(board);
+
+        // XXX: V2
+        // board.setCurrentPlayer(board.getPlayer(0));
+        gameController.startProgrammingPhase(false);
+
+        roboRally.createBoardView(gameController);
+
+        // Provided error pop-up if there was a problem with loading the file
+
+
+        // If the user opts out of loading
+    } else {
+        return;
+    }
+
+
+    */
+        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
     }
 
     /**
@@ -132,7 +292,7 @@ public class AppController implements Observer {
         if (gameController != null) {
 
             // here we save the game (without asking the user).
-            saveGame();
+            // saveGame();
 
             gameController = null;
             roboRally.createBoardView(null);
@@ -157,6 +317,7 @@ public class AppController implements Observer {
             }
         }
 
+
         // If the user did not cancel, the RoboRally application will exit
         // after the option to save the game
         if (gameController == null || stopGame()) {
@@ -166,6 +327,7 @@ public class AppController implements Observer {
 
     /**
      * This method checks if the game is running
+     *
      * @return True if the current state/instance of game controller is not NULL.
      */
     public boolean isGameRunning() {
@@ -177,5 +339,4 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
-
 }

@@ -21,7 +21,12 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
@@ -32,27 +37,26 @@ import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
  * (name, color, position on the board heading direction, and command card fields.)
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
-public class Player extends Subject {
+public class Player extends Subject implements ISerializable {
 
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
 
-    final public Board board;
+    public Board board;
     public int checkpointGoal = 0;
-    public int direction;
-
+    private int energyCube;
     private String name;
     private String color;
 
     private Space space;
-    private Space rebootSpace;
+    private Position rebootPosition;
     private Heading heading = SOUTH;
 
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
+    private Command prevProgramming;
 
     /**
      * Constructor to create a Player object with the given board, color, and name.
@@ -61,10 +65,12 @@ public class Player extends Subject {
      * @param color The color of the player.
      * @param name  The name of the player.
      */
-    public Player(@NotNull Board board, String color, @NotNull String name) {
+    public Player(Board board, String color, @NotNull String name) {
         this.board = board;
         this.name = name;
         this.color = color;
+        //Player starts with 5 energy cube
+        this.energyCube = 5;
 
         this.space = null;
 
@@ -98,7 +104,7 @@ public class Player extends Subject {
             this.name = name;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
@@ -121,7 +127,7 @@ public class Player extends Subject {
         this.color = color;
         notifyChange();
         if (space != null) {
-            space.playerChanged();
+            space.changed();
         }
     }
 
@@ -141,8 +147,7 @@ public class Player extends Subject {
      */
     public void setSpace(Space space) {
         Space oldSpace = this.space;
-        if (space != oldSpace &&
-                (space == null || space.board == this.board)) {
+        if (space != oldSpace) {
             this.space = space;
             if (oldSpace != null) {
                 oldSpace.setPlayer(null);
@@ -173,7 +178,7 @@ public class Player extends Subject {
             this.heading = heading;
             notifyChange();
             if (space != null) {
-                space.playerChanged();
+                space.changed();
             }
         }
     }
@@ -199,20 +204,184 @@ public class Player extends Subject {
     }
 
     /**
-     * @param space The space the player will reboot on
-     * @author Daniel Jensen
      * Set the reboot space of a player, used when the player has to reboot
+     * @param position The space the player will reboot on
+     * @author Daniel Jensen
      */
-    public void setRebootSpace(Space space) {
-        this.rebootSpace = space;
+    public void setRebootPosition(Position position) {
+        this.rebootPosition = position;
+    }
+
+    public Position getRebootPosition() {
+        return rebootPosition;
+    }
+
+    public CommandCardField[] getCards() {
+        return cards;
+    }
+
+    public CommandCardField[] getProgram() {
+        return program;
     }
 
     /**
-     * @author Daniel Jensen
      * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
+     * @author Daniel Jensen
      */
     public void reboot() {
-        setSpace(this.rebootSpace);
+        // TODO fix
         notifyChange();
+    }
+
+    /**
+     * gets the amount of energy cubes a player has
+     * @return the amount of energy cubes
+     * @author ZeeDiazz (Zaid)
+     */
+    public int getEnergyCube(){return energyCube;}
+
+    /**
+     * Takes an amount of energy cube and adds to Players energy cubes
+     * If amount is less or equal to 0 it does nothing
+     * @param amount of energy cube
+     * @author Zeediazz (Zaid)
+     */
+    public void addEnergyCube(int amount){
+        if(amount > 0) {
+            energyCube += amount;
+            notifyChange();
+        }
+    }
+
+    /**
+     * Takes an amount of energy cube and removes X amount of Players energy cubes
+     * If amount is less or equal to 0 it does nothing
+     * @param amount
+     * @author ZeeDiazz (Zaid)
+     */
+    public void removeEnergyCube(int amount){
+        if(amount > 0) {
+            energyCube -= amount;
+            notifyChange();
+        }
+    }
+
+    /**
+     * Get the programming from previous register
+     * @return
+     * @author ZeeDiazz (Zaid)
+     */
+    public Command getPrevProgramming() {
+        return prevProgramming;
+    }
+
+    /**
+     * Set a programming as previous programming
+     * @param programming
+     * @author ZeeDiazz (Zaid)
+     */
+    public void setPrevProgramming(Command programming) {
+       prevProgramming = programming;
+     }
+       
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("name", this.name);
+        jsonObject.addProperty("checkpointGoal", this.checkpointGoal);
+        jsonObject.addProperty("color", this.color);
+        jsonObject.add("space", this.space.position.serialize());
+        jsonObject.add("rebootSpace", this.rebootPosition.serialize());
+        jsonObject.addProperty("heading", this.heading.toString());
+
+        if (this.prevProgramming != null) {
+            jsonObject.addProperty("previousCommand", this.prevProgramming.toString());
+        }
+
+        JsonArray jsonArrayProgram = new JsonArray();
+        for (CommandCardField cardField : program) {
+            jsonArrayProgram.add(cardField.serialize());
+        }
+        jsonObject.add("program", jsonArrayProgram);
+
+        JsonArray jsonArrayCards = new JsonArray();
+        for (CommandCardField card : cards) {
+            jsonArrayCards.add(card.serialize());
+        }
+        jsonObject.add("cards", jsonArrayCards);
+
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        Player player = new Player(null, jsonObject.get("color").getAsString(), jsonObject.get("name").getAsString());
+        player.checkpointGoal = jsonObject.get("checkpointGoal").getAsInt();
+
+        Position position = new Position(0, 0);
+        player.setRebootPosition((Position)position.deserialize(jsonObject.get("rebootSpace")));
+        
+        String headingAsString = jsonObject.get("heading").getAsString();
+        for (Heading heading : Heading.values()) {
+            if (headingAsString.equals(player.heading.toString())) {
+                player.heading = heading;
+                break;
+            }
+        }
+
+        CommandCardField field = new CommandCardField(player);
+        int index = 0;
+        for (JsonElement cardJson : jsonObject.get("cards").getAsJsonArray()) {
+            CommandCardField savedField = (CommandCardField)field.deserialize(cardJson);
+
+            player.getCardField(index).setCard(savedField.getCard());
+            player.getCardField(index).setVisible(savedField.isVisible());
+            index++;
+        }
+
+        field = new CommandCardField(player);
+        index = 0;
+        for (JsonElement cardJson : jsonObject.get("program").getAsJsonArray()) {
+            CommandCardField savedField = (CommandCardField)field.deserialize(cardJson);
+
+            player.getProgramField(index).setCard(savedField.getCard());
+            player.getProgramField(index).setVisible(savedField.isVisible());
+            index++;
+        }
+
+        JsonElement prevProgrammingJson = jsonObject.get("previousCommand");
+        Command previous;
+        if (prevProgrammingJson == null) {
+            previous = null;
+        }
+        else {
+            previous = Command.valueOf(jsonObject.get("previousCommand").getAsString());
+        }
+        player.setPrevProgramming(previous);
+
+        return player;
+    }
+
+    /**
+     * Make a copy of this player, but on a new board.
+     * @param newBoard the board for the copied player.
+     * @return a copy of this player, but on a new board.
+     * @author Daniel Jensen
+     */
+    public Player copy(Board newBoard) {
+        Player copied = new Player(newBoard, this.color, this.name);
+        copied.setSpace(this.space);
+        copied.setRebootPosition(this.rebootPosition);
+        copied.checkpointGoal = this.checkpointGoal;
+        copied.energyCube = this.energyCube;
+        copied.heading = this.heading;
+        copied.program = this.program;
+        copied.cards = this.cards;
+        copied.prevProgramming = this.prevProgramming;
+
+        return copied;
     }
 }

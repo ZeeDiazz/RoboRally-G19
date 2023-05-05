@@ -32,11 +32,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 /**
  * ...
  * This class is combination field creation and update as well as logic for card handling
@@ -52,9 +54,9 @@ public class CardFieldView extends GridPane implements ViewObserver {
 
     final public static int CARDFIELD_WIDTH = 50;
     final public static int CARDFIELD_HEIGHT = 80;
+    public ImageView imageView;
 
-    final public static Border BORDER = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(2)));
-
+    final public static Border BORDER = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(0)));
     final public static Background BG_DEFAULT = new Background(new BackgroundFill(Color.WHITE, null, null));
     final public static Background BG_DRAG = new Background(new BackgroundFill(Color.GRAY, null, null));
     final public static Background BG_DROP = new Background(new BackgroundFill(Color.LIGHTGRAY, null, null));
@@ -91,10 +93,17 @@ public class CardFieldView extends GridPane implements ViewObserver {
         this.setMinHeight(CARDFIELD_HEIGHT);
         this.setMaxHeight(CARDFIELD_HEIGHT);
 
-        label = new Label("This is a slightly longer text");
+        label = new Label();
         label.setWrapText(true);
         label.setMouseTransparent(true);
         this.add(label, 0, 0);
+
+        // ZeeDiazz (Zaid) {
+        imageView = new ImageView();
+        //Set the size of image
+        imageView.setFitWidth(CARDFIELD_WIDTH);
+        imageView.setFitHeight(CARDFIELD_HEIGHT);
+        // } ZeeDiazz (Zaid)
 
         this.setOnDragDetected(new OnDragDetectedHandler());
         this.setOnDragOver(new OnDragOverHandler());
@@ -148,7 +157,8 @@ public class CardFieldView extends GridPane implements ViewObserver {
     }
 
     /**
-     * This method updates the view with the cards current name
+     * @author ZeeDiazz (Zaid)
+     * This method updates the view with the cards image.
       * @param subject Subject is the field
      */
     @Override
@@ -156,7 +166,10 @@ public class CardFieldView extends GridPane implements ViewObserver {
         if (subject == field && subject != null) {
             CommandCard card = field.getCard();
             if (card != null && field.isVisible()) {
-                label.setText(card.getName());
+                //loads an image from resources
+                Image image = new Image(card.getName() + ".png");
+                imageView.setImage(image);
+                label.setGraphic(imageView);
             } else {
                 label.setText("");
             }
@@ -173,9 +186,9 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 CommandCardField cardField = source.field;
                 if (cardField != null &&
                         cardField.getCard() != null &&
-                        cardField.player != null &&
+                        cardField.player != null /*&&
                         cardField.player.board != null &&
-                        cardField.player.board.getPhase().equals(Phase.PROGRAMMING)) {
+                        cardField.player.board.getPhase().equals(Phase.PROGRAMMING)*/) {
                     Dragboard db = source.startDragAndDrop(TransferMode.MOVE);
                     Image image = source.snapshot(null, null);
                     db.setDragView(image);
@@ -204,8 +217,8 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 CommandCardField cardField = target.field;
                 if (cardField != null &&
                         (cardField.getCard() == null || event.getGestureSource() == target) &&
-                        cardField.player != null &&
-                        cardField.player.board != null) {
+                        cardField.player != null /*&&
+                        cardField.player.board != null*/) {
                     if (event.getDragboard().hasContent(ROBO_RALLY_CARD)) {
                         event.acceptTransferModes(TransferMode.MOVE);
                     }
@@ -226,8 +239,8 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 CommandCardField cardField = target.field;
                 if (cardField != null &&
                         cardField.getCard() == null &&
-                        cardField.player != null &&
-                        cardField.player.board != null) {
+                        cardField.player != null /*&&
+                        cardField.player.board != null*/) {
                     if (event.getGestureSource() != target &&
                             event.getDragboard().hasContent(ROBO_RALLY_CARD)) {
                         target.setBackground(BG_DROP);
@@ -249,11 +262,12 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 CommandCardField cardField = target.field;
                 if (cardField != null &&
                         cardField.getCard() == null &&
-                        cardField.player != null &&
-                        cardField.player.board != null) {
+                        cardField.player != null /*&&
+                        cardField.player.board != null*/) {
                     if (event.getGestureSource() != target &&
                             event.getDragboard().hasContent(ROBO_RALLY_CARD)) {
                         target.setBackground(BG_DEFAULT);
+                        target.imageView.setImage(null);
                     }
                 }
             }
@@ -275,8 +289,8 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 boolean success = false;
                 if (cardField != null &&
                         cardField.getCard() == null &&
-                        cardField.player != null &&
-                        cardField.player.board != null) {
+                        cardField.player != null /*&&
+                        cardField.player.board != null*/) {
                     if (event.getGestureSource() != target &&
                             db.hasContent(ROBO_RALLY_CARD)) {
                         Object object = db.getContent(ROBO_RALLY_CARD);
@@ -294,7 +308,12 @@ public class CardFieldView extends GridPane implements ViewObserver {
                     }
                 }
                 event.setDropCompleted(success);
-                target.setBackground(BG_DEFAULT);
+                //ZeeDiazz (Zaid) {
+                if(success) {
+                    target.setBackground(BG_DEFAULT);
+                    imageView.getImage();
+                }
+                // } ZeeDiazz (Zaid)
             }
             event.consume();
         }
@@ -309,6 +328,12 @@ public class CardFieldView extends GridPane implements ViewObserver {
             if (t instanceof CardFieldView) {
                 CardFieldView source = (CardFieldView) t;
                 source.setBackground(BG_DEFAULT);
+
+                // ZeeDiazz (Zaid) {
+                if(event.isAccepted()) {
+                    source.imageView.setImage(null);
+                }
+                // } ZeeDiazz (Zaid)
             }
             event.consume();
         }

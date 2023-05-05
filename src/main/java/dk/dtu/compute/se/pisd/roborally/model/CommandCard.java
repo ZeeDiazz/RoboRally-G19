@@ -21,7 +21,11 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.ISerializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -29,9 +33,8 @@ import org.jetbrains.annotations.NotNull;
  * Command Card represents a specific command that can be executed in the game.
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
-public class CommandCard extends Subject {
+public class CommandCard extends Subject implements ISerializable {
     /**
      * The Command associated with this Command Card.
      */
@@ -39,6 +42,7 @@ public class CommandCard extends Subject {
 
     /**
      * Constructs a new command card, with the given command.
+     *
      * @param command The command associated with this Command Card.
      */
     public CommandCard(@NotNull Command command) {
@@ -47,6 +51,7 @@ public class CommandCard extends Subject {
 
     /**
      * Returns the command name associated with the command card.
+     *
      * @return the name of the command card.
      */
     public String getName() {
@@ -54,4 +59,20 @@ public class CommandCard extends Subject {
     }
 
 
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("command", this.command.toString());
+
+        return jsonObject;
+    }
+
+    @Override
+    public ISerializable deserialize(JsonElement element) {
+        JsonObject json = element.getAsJsonObject();
+
+        Command command = Command.valueOf(json.get("command").getAsString());
+
+        return new CommandCard(command);
+    }
 }
