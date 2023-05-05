@@ -296,7 +296,7 @@ public class Player extends Subject implements ISerializable {
         jsonObject.addProperty("heading", this.heading.toString());
 
         if (this.prevProgramming != null) {
-            jsonObject.addProperty("previousCommand", this.prevProgramming.displayName);
+            jsonObject.addProperty("previousCommand", this.prevProgramming.toString());
         }
 
         JsonArray jsonArrayProgram = new JsonArray();
