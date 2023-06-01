@@ -41,6 +41,10 @@ import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
  * @author Ekkart Kindler, ekki@dtu.dk
  */
 public class Board extends Subject implements ISerializable {
+
+    /**
+     * Represents the total amount of steps in the current game
+     */
     private int moveCounter;
 
     public final int width;
@@ -56,6 +60,9 @@ public class Board extends Subject implements ISerializable {
     private final List<Player> players = new ArrayList<>();
     private Player current;
     private Phase phase = INITIALISATION;
+    /**
+     * Represents the amount of steps in the current programming phase
+     */
     private int step = 0;
     private boolean stepMode;
     private int checkpointCount;
@@ -246,8 +253,7 @@ public class Board extends Subject implements ISerializable {
 
     /**
      * Gets the current step of the board
-     *
-     * @return the current step
+     * @return the current step of the programming phase
      */
     public int getStep() {
         return step;
@@ -376,8 +382,6 @@ public class Board extends Subject implements ISerializable {
 }*/
 
     /**
-     * Gives the current move counter
-     *
      * @return the current move counter
      */
     public int getMoveCounter() {
@@ -405,7 +409,7 @@ public class Board extends Subject implements ISerializable {
         // XXX: V2 changed the status so that it shows the phase, the player and the step
         return "Phase: " + getPhase().name() +
                 ", Player = " + getCurrentPlayer().getName() +
-                ", Step: " + getMoveCounter();
+                ", Total Steps: " + getMoveCounter();
     }
 
     /**
