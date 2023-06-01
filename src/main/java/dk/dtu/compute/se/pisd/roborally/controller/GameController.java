@@ -46,21 +46,15 @@ public class GameController implements ISerializable {
     /**
      * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
      * This is also so that the PlayerView class is able to access the interactive card in question
+     *
      * @author Zigalow
      */
     public Command currentInteractiveCard;
 
-    
+
     public GameController(@NotNull Board board) {
         this.board = board;
     }
-
-    /**
-     * This is just some dummy controller operation to make a simple move to see something
-     * happening on the board. This method should eventually be deleted!
-     *
-     * @param space the space to which the current player should move
-     */
 
     /**
      * @param space The space which the player's robot is going to be moved to
@@ -69,7 +63,6 @@ public class GameController implements ISerializable {
      */
     public void moveCurrentPlayerToSpace(@NotNull Space space) {
         Player currentPlayer = board.getCurrentPlayer();
-
 
         if (spaceIsOccupied(space)) {
             return;
@@ -121,7 +114,7 @@ public class GameController implements ISerializable {
                         field.setCard(null);
                         field.setVisible(true);
                     }
-                  
+
                 }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
@@ -134,7 +127,11 @@ public class GameController implements ISerializable {
         }
     }
 
-
+    /**
+     * Generate random commandCard from the different commands, using a random generated index.
+     *
+     * @author Daniel Weper Jensen
+     */
     // XXX: V2
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
@@ -438,6 +435,13 @@ public class GameController implements ISerializable {
         }
     }
 
+    /**
+     * Turns the players direction to the right
+     *
+     * @param player
+     * @author Daniel Weper Jensen
+     */
+
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
@@ -447,6 +451,13 @@ public class GameController implements ISerializable {
     }
 
     // TODO Assignment V2
+
+    /**
+     * Turns the players direction to the left
+     *
+     * @param player
+     * @author Daniel Weper Jensen
+     */
     public void turnLeft(@NotNull Player player) {
         Heading playerDirection = player.getHeading();
         Heading newDirection = Heading.turnLeft(playerDirection);
@@ -537,8 +548,8 @@ public class GameController implements ISerializable {
         this.board.increaseMoveCounter();
         // Daniel {
         int currentStep = this.board.getStep();
-        int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer);
-        nextPlayerNumber++;
+        int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer) + 1;
+        // nextPlayerNumber++;
         if (nextPlayerNumber >= this.board.getPlayerCount()) {
             nextPlayerNumber = 0;
             currentStep++;
