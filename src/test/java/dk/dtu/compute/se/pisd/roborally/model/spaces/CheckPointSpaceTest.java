@@ -1,12 +1,11 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Position;
+import dk.dtu.compute.se.pisd.roborally.old.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.old.model.Player;
+import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+import dk.dtu.compute.se.pisd.roborally.old.model.spaces.CheckPointSpace;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CheckPointSpaceTest {
 

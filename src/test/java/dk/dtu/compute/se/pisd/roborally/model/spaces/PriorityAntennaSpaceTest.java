@@ -1,18 +1,16 @@
 package dk.dtu.compute.se.pisd.roborally.model.spaces;
 
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Position;
-import org.jetbrains.annotations.NotNull;
+import dk.dtu.compute.se.pisd.roborally.old.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.old.model.Player;
+import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+import dk.dtu.compute.se.pisd.roborally.old.model.spaces.PriorityAntennaSpace;
+import dk.dtu.compute.se.pisd.roborally.old.model.spaces.Space;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class PriorityAntennaTest {
     @Test
