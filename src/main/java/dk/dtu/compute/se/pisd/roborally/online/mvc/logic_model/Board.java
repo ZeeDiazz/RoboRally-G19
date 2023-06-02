@@ -1,16 +1,22 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
+import dk.dtu.compute.se.pisd.roborally.old.model.CommandCardField;
+import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INITIALISATION;
 
 
-public class Board {
+public class Board extends Subject {
 
+    /**
+     * Represents the total amount of steps in the current game
+     */
     private int moveCounter;
 
     public final int width;
@@ -23,6 +29,7 @@ public class Board {
 
 
     private final Space[][] spaces;
+    private final List<Player> players = new ArrayList<>();
 
     private Player current;
     private Phase phase = INITIALISATION;
@@ -31,9 +38,9 @@ public class Board {
      */
     private int step = 0;
     private boolean stepMode;
-    private int checkpointCount;
+    private int checkpointAmount;
 
-    private Board(int moveCounter, int width, int height, String boardName, Integer gameId, Space[][] spaces, Player current, Phase phase, int step, boolean stepMode, int checkpointCount) {
+    private Board(int moveCounter, int width, int height, String boardName, Integer gameId, Space[][] spaces, Player current, Phase phase, int step, boolean stepMode, int checkpointAmount) {
         this.moveCounter = moveCounter;
         this.width = width;
         this.height = height;
@@ -44,7 +51,7 @@ public class Board {
         this.phase = phase;
         this.step = step;
         this.stepMode = stepMode;
-        this.checkpointCount = checkpointCount;
+        this.checkpointAmount = checkpointAmount;
     }
 
     public Space getSpace(Position position) {
@@ -99,5 +106,70 @@ public class Board {
         moves.add(new Move(move.start, move.direction, moveAmount, move.moving));
         return moves;
     }
+
+    public Phase getPhase() {
+        return phase;
+    }
+
+    /**
+     * Sets the current phase of the board
+     *
+     * @param phase to set the current phase
+     */
+    public void setPhase(Phase phase) {
+        if (phase != this.phase) {
+            this.phase = phase;
+            notifyChange();
+        }
+    }
+
+    /**
+     * Gets the current player on the board
+     *
+     * @return the current player
+     */
+    public Player getCurrentPlayer() {
+        return current;
+    }
+
+    /**
+     * Sets the current player on the board
+     *
+     * @param player the current player that has been set
+     */
+    public void setCurrentPlayer(Player player) {
+        if (player != this.current && players.contains(player)) {
+            this.current = player;
+            notifyChange();
+        }
+    }
+
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Player getPlayer(int index) {
+        if (index >= 0 && index < players.size()) {
+            return players.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    public int getPlayerCount() {
+        return players.size();
+    }
+
+
+    public void setStep(int step) {
+        if (step != this.step) {
+            this.step = step;
+            notifyChange();
+        }
+    }
+
+   
+
 }
 

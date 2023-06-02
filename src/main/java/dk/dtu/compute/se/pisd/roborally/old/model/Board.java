@@ -253,6 +253,7 @@ public class Board extends Subject implements ISerializable {
 
     /**
      * Gets the current step of the board
+     *
      * @return the current step of the programming phase
      */
     public int getStep() {
@@ -270,7 +271,7 @@ public class Board extends Subject implements ISerializable {
             notifyChange();
         }
     }
-
+    
     /**
      * checks if the board is in step mode
      *

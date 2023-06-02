@@ -35,12 +35,7 @@ public class CommandCard extends Subject {
      * The Command associated with this Command Card.
      */
     final public Command command;
-
-    private int moveAmount;
-
-    private HeadingDirection turnToDirection;
-
-
+    
     /**
      * Constructs a new command card, with the given command.
      *

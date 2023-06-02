@@ -6,12 +6,8 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 public class Robot extends Subject {
-
-    final public static int NUMBER_OF_REGISTERS = 5;
-    final public static int NUMBER_OF_CARDS = 8;
+    
     public int checkpointReached = 0;
-    private int energyCubes; //isn't it the player that has energy cubes?
-
 
     private Space space;
     private String color;
