@@ -1,8 +1,10 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
+
+import static dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController.performMove;
+
 
 public class ExecuteCommands {
 
@@ -68,21 +70,7 @@ public class ExecuteCommands {
         }
     }
 
-    private void performMove(Move move) {
-        for (Move resultingMove : board.resultingMoves(move)) {
-            Robot robot = resultingMove.moving;
-            Space endingSpace = board.getSpace(resultingMove.getEndingPosition());
-            // If going out of bounds
-            if (endingSpace == null) {
-                endingSpace = board.getSpace(robot.getRebootPosition());
-            }
-
-            robot.setSpace(endingSpace);
-            board.getSpace(resultingMove.start).changed();
-            endingSpace.changed();
-        }
-    }
-
+    
 
     public void backUp(@NotNull Robot robot) {
         HeadingDirection playerDirection = robot.getHeadingDirection();
