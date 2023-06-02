@@ -1,12 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dk.dtu.compute.se.pisd.roborally.old.fileaccess.ISerializable;
-import dk.dtu.compute.se.pisd.roborally.old.model.HeadingDirection;
-import dk.dtu.compute.se.pisd.roborally.old.model.Move;
-import dk.dtu.compute.se.pisd.roborally.old.model.Player;
-import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 
 public class CheckPointSpace extends Space {
     public final int id;
@@ -18,19 +13,19 @@ public class CheckPointSpace extends Space {
     }
 
     /**
-     * @param player The player to check
+     * @param robot The player to check
      * @return True if the player has passed this checkpoint, else false.
      * @author Daniel Jensen
      * Check whether a player has passed this checkpoint
      */
-    public boolean hasPassed(Player player) {
-        return player.checkpointGoal >= this.id;
+    public boolean hasPassed(Robot robot) {
+        return robot.checkpointReached >= this.id;
     }
 
     @Override
-    public Move endedRegisterOn(Player player, int registerIndex) {
-        if (hasPassed(player)) {
-            player.checkpointGoal = this.id + 1;
+    public Move endedRegisterOn(Robot robot, int registerIndex) {
+        if (hasPassed(robot)) {
+            robot.checkpointReached = this.id + 1;
             // player.setRebootSpace(this);
             changed();
         }
@@ -42,18 +37,4 @@ public class CheckPointSpace extends Space {
         return new CheckPointSpace(newPosition, this.id, this.walls.toArray(new HeadingDirection[0]));
     }
 
-
-    @Override
-    public JsonElement serialize() {
-        JsonObject jsonObject = super.serialize().getAsJsonObject();
-        jsonObject.addProperty("checkpointId", this.id);
-
-        return jsonObject;
-    }
-
-
-    @Override
-    public ISerializable deserialize(JsonElement element) {
-        return super.deserialize(element);
-    }
 }

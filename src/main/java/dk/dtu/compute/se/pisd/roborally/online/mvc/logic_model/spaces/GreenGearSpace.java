@@ -1,8 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.old.model.HeadingDirection;
-import dk.dtu.compute.se.pisd.roborally.old.model.Player;
-import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 
 public class GreenGearSpace extends GearSpace {
     public GreenGearSpace(Position position, HeadingDirection... walls) {
@@ -10,8 +10,8 @@ public class GreenGearSpace extends GearSpace {
     }
 
     @Override
-    protected void turnPlayer(Player player) {
-        player.setHeading(HeadingDirection.rightDirectionOfDirection(player.getHeading()));
+    protected void turnRobot(Robot robot) {
+        robot.setHeadingDirection(HeadingDirection.rightHeadingDirection(robot.getHeadingDirection()));
     }
 
     @Override

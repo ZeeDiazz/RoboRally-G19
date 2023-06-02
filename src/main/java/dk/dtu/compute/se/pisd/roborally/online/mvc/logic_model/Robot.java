@@ -73,5 +73,14 @@ public class Robot extends Subject {
     }
 
 
+    /**
+     * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
+     * @author Daniel Jensen
+     */
+    public void reboot() {
+        // TODO fix
+        notifyChange();
+    }
+
 }
 

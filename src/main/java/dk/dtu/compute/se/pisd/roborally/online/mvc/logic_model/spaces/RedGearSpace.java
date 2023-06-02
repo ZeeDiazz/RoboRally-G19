@@ -1,8 +1,9 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.old.model.HeadingDirection;
-import dk.dtu.compute.se.pisd.roborally.old.model.Player;
-import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 
 public class RedGearSpace extends GearSpace {
     /**
@@ -13,13 +14,13 @@ public class RedGearSpace extends GearSpace {
     }
 
     /**
-     * Rotates the given player left when they end their turn on this space.
+     * Rotates the given robot left when they end their turn on this space.
      *
-     * @param player the player to rotate left
+     * @param robot the robot to rotate left
      */
     @Override
-    protected void turnPlayer(Player player) {
-        player.setHeading(HeadingDirection.leftHeadingDirection(player.getHeading()));
+    protected void turnRobot(Robot robot) {
+        robot.setHeadingDirection(HeadingDirection.leftHeadingDirection(robot.getHeadingDirection()));
     }
 
     /**

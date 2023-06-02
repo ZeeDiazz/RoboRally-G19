@@ -1,7 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.old.model.HeadingDirection;
-import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
 
 /**
  * The class for a blue conveyor. This is also known as a fast conveyor.

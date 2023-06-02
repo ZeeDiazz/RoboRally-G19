@@ -1,9 +1,10 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.old.model.HeadingDirection;
-import dk.dtu.compute.se.pisd.roborally.old.model.Move;
-import dk.dtu.compute.se.pisd.roborally.old.model.Player;
-import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Move;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 
 public abstract class GearSpace extends Space {
 
@@ -20,21 +21,21 @@ public abstract class GearSpace extends Space {
     /**
      * Turns the player occupying this gear space.
      *
-     * @param player the player to turn
+     * @param robot the player to turn
      */
-    protected abstract void turnPlayer(Player player);
+    protected abstract void turnRobot(Robot robot);
 
     /**
      * Called when a player finishes registering on this gear space.
      * Turns the player and updates the state of the gear space.
      *
-     * @param player the player who finished registering
+     * @param robot the player who finished registering
      * @param registerIndex the index of the register that the player finished on
      * @return always returns null
      */
     @Override
-    public Move endedRegisterOn(Player player, int registerIndex) {
-        turnPlayer(player);
+    public Move endedRegisterOn(Robot robot, int registerIndex) {
+        turnRobot(robot);
         changed();
         return null;
     }

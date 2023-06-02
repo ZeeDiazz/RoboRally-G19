@@ -1,7 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.old.model.HeadingDirection;
-import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
 
 public class EnergySpace extends Space {
     public EnergySpace(Position position, HeadingDirection... walls) {

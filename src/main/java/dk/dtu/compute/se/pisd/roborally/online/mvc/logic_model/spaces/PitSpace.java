@@ -1,14 +1,14 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
-import dk.dtu.compute.se.pisd.roborally.old.model.HeadingDirection;
-import dk.dtu.compute.se.pisd.roborally.old.model.Move;
-import dk.dtu.compute.se.pisd.roborally.old.model.Player;
-import dk.dtu.compute.se.pisd.roborally.old.model.Position;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Move;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 
 public class PitSpace extends Space {
 
     /**
-     * Represents a pit space that can trap a player, forcing them to reboot.
+     * Represents a pit space that can trap a robot, forcing them to reboot.
      *
      * @param position the position of the pit space
      * @param walls an array of Heading values representing the walls surrounding the pit space
@@ -18,15 +18,15 @@ public class PitSpace extends Space {
     }
 
     /**
-     * Called when a player lands on this pit space.
+     * Called when a robot lands on this pit space.
      * Checks if the player has the upgrade to avoid being trapped and reboots them.
      *
-     * @param player the player who landed on the pit space
+     * @param robot the robot who landed on the pit space
      */
     @Override
-    public void landedOn(Player player) {
+    public void landedOn(Robot robot) {
         // TODO check if they have the upgrade
-        player.reboot();
+        robot.reboot();
         changed();
     }
 
@@ -34,13 +34,13 @@ public class PitSpace extends Space {
      * Called when a player finishes registering on this pit space.
      * Reboots the player and updates the state of the pit space.
      *
-     * @param player the player who finished registering
+     * @param robot the player who finished registering
      * @param registerIndex the index of the register that the player finished on
      * @return always returns null
      */
     @Override
-    public Move endedRegisterOn(Player player, int registerIndex) {
-        player.reboot();
+    public Move endedRegisterOn(Robot robot, int registerIndex) {
+        robot.reboot();
         changed();
         return null;
     }
