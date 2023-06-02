@@ -10,9 +10,11 @@ public abstract class PlayerType extends Subject {
     private String name;
     private int playerID;   // playerIndex
     public Robot robot;
+    
+    public static Board board;
 
-
-    private int checkpointGoal = 0;
+    // In Robot class or this class?
+    //private int checkpointReached = 0;
     private int energyCubes;
 
     private Command prevProgramming;
@@ -65,12 +67,23 @@ public abstract class PlayerType extends Subject {
         }
     }
 
-    public CommandCardField getCardAtIndexFromProgramField(int index) {
+    public CommandCardField getProgramField(int index) {
         return programField[index];
     }
 
-    public CommandCardField getCardAtIndexFromCardField(int index) {
+    public CommandCardField getCardField(int index) {
         return cards[index];
     }
 
+    public CommandCardField[] getCards() {
+        return cards;
+    }
+
+    public CommandCardField[] getProgram() {
+        return programField;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
