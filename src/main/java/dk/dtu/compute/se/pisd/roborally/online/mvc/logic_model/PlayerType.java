@@ -11,7 +11,6 @@ public abstract class PlayerType {
         this.name = name;
         this.playerID = playerID;
 
-        //save the players card both hand and register
     }
 
     //get/set robot
