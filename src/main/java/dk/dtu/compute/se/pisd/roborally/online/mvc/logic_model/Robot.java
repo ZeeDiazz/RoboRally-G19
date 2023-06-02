@@ -10,7 +10,7 @@ public class Robot extends Subject {
     final public static int NUMBER_OF_REGISTERS = 5;
     final public static int NUMBER_OF_CARDS = 8;
     public int checkpointReached = 0;
-    private int energyCubes;
+    private int energyCubes; //isn't it the player that has energy cubes?
 
     private Space space;
     private String color;
@@ -23,5 +23,5 @@ public class Robot extends Subject {
 //    private CommandCardField[] cards;
 //    private Command prevProgramming;
 
-
+    //methods = damage, get pos, move
 }
