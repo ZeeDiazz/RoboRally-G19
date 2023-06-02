@@ -26,8 +26,6 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.old.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.old.fileaccess.Transformer;
 import dk.dtu.compute.se.pisd.roborally.old.model.*;
-
-import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.old.model.spaces.Space;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

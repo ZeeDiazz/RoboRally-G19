@@ -3,7 +3,6 @@ package dk.dtu.compute.se.pisd.roborally.old.model.spaces;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.old.fileaccess.ISerializable;
-import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.old.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.old.model.Move;
 import dk.dtu.compute.se.pisd.roborally.old.model.Player;
