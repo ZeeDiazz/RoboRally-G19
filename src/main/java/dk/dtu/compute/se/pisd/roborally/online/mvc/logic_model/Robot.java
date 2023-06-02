@@ -6,11 +6,13 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 public class Robot extends Subject {
-    
+
     public int checkpointReached = 0;
 
     private Space space;
     private String color;
+
+    public Player owner;
 
 
     public Position rebootPosition;
@@ -78,5 +80,12 @@ public class Robot extends Subject {
         notifyChange();
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public Player getOwner() {
+        return owner;
+    }
 }
 
