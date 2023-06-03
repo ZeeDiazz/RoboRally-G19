@@ -52,7 +52,6 @@ import java.util.Optional;
 
 public class AppController implements Observer {
 
-
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
@@ -76,7 +75,7 @@ public class AppController implements Observer {
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase(!hasCards);
-        
+
         roboRally.createBoardView(gameController);
     }
 
@@ -114,161 +113,14 @@ public class AppController implements Observer {
             }
 
             makeGame(board, false);
-            /*
-            if (true)
-            return;
-
-            gameController = new GameController(board);
-            int no = result.get();
-            for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                board.addPlayer(player);
-                Space startingSpace = board.getSpace(i % board.width, i);
-                player.setSpace(startingSpace);
-                player.setRebootPosition(startingSpace.position);
-            }
-
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
-
-            // Gives transformer the currentGameController
-            transformer = new Transformer(gameController);
-
-            roboRally.createBoardView(gameController);
-             */
         }
     }
 
-
-    /**
-     * Saves the game to a json file. The player chooses where the file should be located on the local computer
-     * <p>The game can only be saved when in the Programming phase</p>
-     *
-     * @author Zigalow
-     */
-
-
-    @FXML
     public void saveGame() {
-
-
-        if (gameController.board.getPhase() != Phase.PROGRAMMING) {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Not in Programming phase!");
-            alert.setContentText("Please reach the Programming phase before trying to save the game again");
-            alert.showAndWait();
-            return;
-
-        }
-
-        for (Player player : gameController.board.getPlayers()) {
-            for (CommandCardField commandCardField : player.getProgram()) {
-                if (commandCardField.getCard() != null) {
-                    Alert alert = new Alert(AlertType.WARNING);
-                    alert.setTitle("Cards in program field!");
-                    alert.setContentText("Please empty all the cards in each player's program field");
-                    alert.showAndWait();
-                    return;
-                }
-            }
-
-
-        }
-
-
-        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
-
-
-        fileChooser.setTitle("Save Game"); // Description for action
-        fileChooser.setInitialFileName("mysave"); // Initial name of saveFile
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
-        File file = fileChooser.showSaveDialog(null);
-
-
-        if (file != null) {
-            try {
-                file.createNewFile();
-                // Saves to Json-file
-                Transformer.saveBoard(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            // If the user opts out of saving
-        } else {
-            return;
-        }
-
-
-        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
-
+        
     }
 
-
-    /**
-     * Loads a game from a json file. If the file can't be loading correctly,
-     * the player will get an alert saying that the file couldn't be load properly
-     * It then returns back to the menu
-     *
-     * @author Zigalow
-     */
-
-    @FXML
     public void loadGame() {
-
-        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
-
-
-        fileChooser.setTitle("Load Game"); // Description for action
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be load as a json file type
-        File file = fileChooser.showOpenDialog(null);
-
-
-        if (file == null || !file.isFile()) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("File could not be loaded");
-            alert.setContentText("There was a problem with loading the given file");
-            alert.showAndWait();
-            return;
-        }
-        Board board;
-
-        try {
-            board = Transformer.loadBoard(file);
-        } catch (Exception e) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("File could not be loaded");
-            alert.setContentText("There was a problem with loading the given file");
-            alert.showAndWait();
-            return;
-        }
-
-        makeGame(board, true);
-
-        /*
-        // New approach for loading game. This sets the current GameController, to the one loaded in the transformer
-        //gameController = transformer.getCurrentGameController();
-
-        gameController = new GameController(board);
-
-        // XXX: V2
-        // board.setCurrentPlayer(board.getPlayer(0));
-        gameController.startProgrammingPhase(false);
-
-        roboRally.createBoardView(gameController);
-
-        // Provided error pop-up if there was a problem with loading the file
-
-
-        // If the user opts out of loading
-    } else {
-        return;
-    }
-
-
-    */
-        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
     }
 
     /**
