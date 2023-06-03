@@ -21,11 +21,8 @@
  */
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.old.fileaccess.ISerializable;
-import dk.dtu.compute.se.pisd.roborally.old.model.Player;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
+import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 
 /**
  * A class representing a Command Card Field, that extends the Subject class.
@@ -38,7 +35,7 @@ public class CommandCardField extends Subject  {
     /**
      * The Player associated with this Command Card Field.
      */
-    final public dk.dtu.compute.se.pisd.roborally.old.model.Player player;
+    final public PlayerType player;
 
     /**
      * The class represent a command card, that exstends the Subject class.
@@ -53,7 +50,7 @@ public class CommandCardField extends Subject  {
      *
      * @param player The Player associated with this Command Card Field.
      */
-    public CommandCardField(Player player) {
+    public CommandCardField(PlayerType player) {
         this.player = player;
         this.card = null;
         this.visible = true;
