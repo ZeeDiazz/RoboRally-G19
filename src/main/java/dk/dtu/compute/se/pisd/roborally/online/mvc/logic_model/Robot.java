@@ -84,6 +84,14 @@ public class Robot extends Subject {
         return color;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+        notifyChange();
+        if (space != null) {
+            space.changed();
+        }
+    }
+
     public Player getOwner() {
         return owner;
     }
