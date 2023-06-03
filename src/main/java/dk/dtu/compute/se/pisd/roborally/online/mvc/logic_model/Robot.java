@@ -10,13 +10,13 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class Robot extends Subject {
-
+    
     public int checkpointReached = 0;
 
     private Space space;
     private String color;
 
-    final public static Player owner = null;
+    final public Player owner;
 
 
     public Position rebootPosition;
@@ -29,6 +29,12 @@ public class Robot extends Subject {
     //methods = damage, get pos, move
 
 
+    public Robot(String color, Player player) {
+        this.color = color;
+        this.owner = player;
+    }
+    
+    
     public Space getSpace() {
         return space;
     }
