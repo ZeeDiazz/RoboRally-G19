@@ -58,8 +58,8 @@ public class PlayersView extends TabPane implements ViewObserver {
             playerViews[i] = new PlayerView(gameController, game.getPlayer(i));
             this.getTabs().add(playerViews[i]);
         }
-        board.attach(this);
-        update(board);
+        game.attach(this);
+        update(game);
     }
 
     /**
@@ -69,7 +69,7 @@ public class PlayersView extends TabPane implements ViewObserver {
     @Override
     public void updateView(Subject subject) {
         //ZeeDiazz Added game instead of board
-        if (subject == game.board) {
+        if (subject == game) {
             Player current = game.getCurrentPlayer();
             this.getSelectionModel().select(game.getPlayerNumber(current));
         }

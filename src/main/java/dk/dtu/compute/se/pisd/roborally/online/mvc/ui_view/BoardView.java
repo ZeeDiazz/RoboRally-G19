@@ -43,7 +43,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BoardView extends VBox implements ViewObserver {
 
-    private Board board;
+    private static Board board;
     private Game game;
 
     private GridPane mainBoardPane;
@@ -98,7 +98,7 @@ public class BoardView extends VBox implements ViewObserver {
     @Override
     public void updateView(Subject subject) {
         //ZeeDaizz Added game instead of board
-        if (subject == game.board) {
+        if (subject == game) {
             Phase phase = game.getPhase();
             statusLabel.setText(game.getStatusMessage());
         }
