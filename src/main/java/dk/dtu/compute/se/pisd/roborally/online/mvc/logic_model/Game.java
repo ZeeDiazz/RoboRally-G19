@@ -1,7 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 
-import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +13,7 @@ import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INIT
 /**
  * @author ZeeDiazz (Zaid)
  */
-public class Game extends Subject{
+public class Game extends Subject {
     public /*final*/ Board board;
     private Integer gameId;
 
@@ -30,7 +30,6 @@ public class Game extends Subject{
     private Phase phase = INITIALISATION;
 
 
-
     public Game(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter) {
         this.board = board;
         this.gameId = gameId;
@@ -40,12 +39,14 @@ public class Game extends Subject{
         this.stepMode = stepMode;
         this.moveCounter = moveCounter;
     }
+
     public Game(Board board) {
         this.board = board;
     }
 
     /**
      * Gets the games ID related to the board.
+     *
      * @return The game ID
      */
     public Integer getGameId() {
@@ -54,6 +55,7 @@ public class Game extends Subject{
 
     /**
      * Gives the game board its ID, and cant be changed.
+     *
      * @param gameId sets the game ID
      * @throws IllegalStateException dosnt allow the ID to change
      */
@@ -69,6 +71,7 @@ public class Game extends Subject{
 
     /**
      * Gets the correct number of the player in the game
+     *
      * @return number of player
      */
     public int getPlayerCount() {
@@ -77,6 +80,7 @@ public class Game extends Subject{
 
     /**
      * Adds a player to the game
+     *
      * @param player the added player
      */
     public void addPlayer(@NotNull Player player) {
@@ -88,6 +92,7 @@ public class Game extends Subject{
 
     /**
      * Gets the index of the player in the list of players
+     *
      * @param index index of the player
      * @return the players index, else null if the index is out of bounds
      */
@@ -102,6 +107,7 @@ public class Game extends Subject{
 
     /**
      * Gets the current player on the board
+     *
      * @return the current player
      */
     public Player getCurrentPlayer() {
@@ -110,6 +116,7 @@ public class Game extends Subject{
 
     /**
      * Sets the current player on the board
+     *
      * @param player the current player that has been set
      */
     public void setCurrentPlayer(Player player) {
@@ -122,8 +129,10 @@ public class Game extends Subject{
     public List<Player> getPlayers() {
         return players;
     }
+
     /**
      * Gets the current phase of the board.
+     *
      * @return the current phase
      */
     public Phase getPhase() {
@@ -212,6 +221,7 @@ public class Game extends Subject{
     /**
      * Returns a string of the current status of the game
      * (returns phase, player and step of the game)
+     *
      * @return the current status of the game
      */
     public String getStatusMessage() {
