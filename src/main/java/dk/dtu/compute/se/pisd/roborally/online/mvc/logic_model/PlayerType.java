@@ -1,8 +1,28 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class PlayerType extends Subject {
+
+
+    public PlayerType(Board board, String color, @NotNull String name) {
+        this.board = board;
+        this.name = name;
+        this.robot.setColor(color);
+        //Player starts with 5 energy cube
+        this.energyCubes = 5;
+        programField = new CommandCardField[NUMBER_OF_REGISTERS];
+        for (int i = 0; i < programField.length; i++) {
+            programField[i] = new CommandCardField(this);
+        }
+
+        cards = new CommandCardField[NUMBER_OF_CARDS];
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = new CommandCardField(this);
+        }
+    }
+
 
     final public static int NUMBER_OF_REGISTERS = 5;
     final public static int NUMBER_OF_CARDS = 8;
@@ -10,7 +30,7 @@ public abstract class PlayerType extends Subject {
     private String name;
     private int playerID;   // playerIndex
     public Robot robot;
-    
+
     public static Board board;
 
     // In Robot class or this class?
