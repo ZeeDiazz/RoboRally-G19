@@ -1,6 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
-import dk.dtu.compute.se.pisd.roborally.old.model.CommandCardField;
+
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
@@ -48,15 +48,10 @@ public class Board extends Subject {
     /**
      * A constructor for internal use, which has literally all the parts of the Board given. Used for deserialization
      *
-     * @param moveCounter
      * @param width
      * @param height
      * @param boardName
      * @param spaces
-     * @param current
-     * @param phase
-     * @param step
-     * @param stepMode
      * @param checkpointAmount
      * @author Daniel Jensen
      */
