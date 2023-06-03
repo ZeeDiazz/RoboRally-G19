@@ -3,12 +3,35 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *
+ * @author Zigalow & ZeeDiazz (Zaid)
+ */
 public abstract class PlayerType extends Subject {
 
+    final public static int NUMBER_OF_REGISTERS = 5;
+    final public static int NUMBER_OF_CARDS = 8;
 
-    public PlayerType(Board board, String color, @NotNull String name) {
-        this.board = board;
+    private String name;
+    private int playerID;   // playerIndex
+    public Robot robot;
+
+    //public static Board board;
+    public static Game game;
+
+    // In Robot class or this class?
+    //private int checkpointReached = 0;
+    private int energyCubes;
+
+    private Command prevProgramming;
+
+    private CommandCardField[] programField;
+    private CommandCardField[] cards;
+
+    public PlayerType(Game game, String color, @NotNull String name) {
+        this.game = game;
         this.name = name;
+        this.robot = new Robot();
         this.robot.setColor(color);
         //Player starts with 5 energy cube
         this.energyCubes = 5;
@@ -24,24 +47,29 @@ public abstract class PlayerType extends Subject {
     }
 
 
-    final public static int NUMBER_OF_REGISTERS = 5;
-    final public static int NUMBER_OF_CARDS = 8;
+    /**
+     * Gets the name of the player
+     *
+     * @return players name
+     */
+    public String getName() {
+        return name;
+    }
 
-    private String name;
-    private int playerID;   // playerIndex
-    public Robot robot;
-
-    public static Board board;
-
-    // In Robot class or this class?
-    //private int checkpointReached = 0;
-    private int energyCubes;
-
-    private Command prevProgramming;
-
-    private CommandCardField[] programField;
-    private CommandCardField[] cards;
-
+    /**
+     * Set the name of the player
+     *
+     * @param name Sets the players name
+     */
+    public void setName(String name) {
+        if (name != null && !name.equals(this.name)) {
+            this.name = name;
+            notifyChange();
+            /*if (space != null) {
+                space.changed();
+            }*/
+        }
+    }
 
     //get/set robot
 
@@ -103,7 +131,4 @@ public abstract class PlayerType extends Subject {
         return programField;
     }
 
-    public String getName() {
-        return name;
-    }
 }

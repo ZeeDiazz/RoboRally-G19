@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.ui_view;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
 import javafx.scene.control.TabPane;
 
@@ -37,6 +38,8 @@ import javafx.scene.control.TabPane;
 public class PlayersView extends TabPane implements ViewObserver {
 
     private Board board;
+    //ZeeDiazz (Zaid)
+    private Game game;
 
     private PlayerView[] playerViews;
 
@@ -45,13 +48,14 @@ public class PlayersView extends TabPane implements ViewObserver {
      * @param gameController The controller of the game
      */
     public PlayersView(GameController gameController) {
-        board = gameController.board;
+        game = gameController.game;
+        board = game.board;
 
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
-        playerViews = new PlayerView[board.getPlayerCount()];
-        for (int i = 0; i < board.getPlayerCount(); i++) {
-            playerViews[i] = new PlayerView(gameController, board.getPlayer(i));
+        playerViews = new PlayerView[game.getPlayerCount()];
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            playerViews[i] = new PlayerView(gameController, game.getPlayer(i));
             this.getTabs().add(playerViews[i]);
         }
         board.attach(this);
@@ -64,9 +68,10 @@ public class PlayersView extends TabPane implements ViewObserver {
      */
     @Override
     public void updateView(Subject subject) {
-        if (subject == board) {
-            Player current = board.getCurrentPlayer();
-            this.getSelectionModel().select(board.getPlayerNumber(current));
+        //ZeeDiazz Added game instead of board
+        if (subject == game.board) {
+            Player current = game.getCurrentPlayer();
+            this.getSelectionModel().select(game.getPlayerNumber(current));
         }
     }
 

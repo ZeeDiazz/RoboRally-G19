@@ -11,9 +11,17 @@ import java.util.Hashtable;
 public class GameController {
 
     public static Board board = null;
+    public static Game game = null;
     private static ExecuteCommands executeCommands;
 
     public Command currentInteractiveCard;
+
+    public GameController(@NotNull Game game/*, @NotNull Board board*/) {
+        this.game = game;
+        executeCommands = new ExecuteCommands(game.board);
+        //this.board = board;
+        //executeCommands = new ExecuteCommands(board);
+    }
 
     public GameController(@NotNull Board board) {
         this.board = board;
@@ -21,7 +29,7 @@ public class GameController {
     }
 
     public void executePrograms() {
-        board.setStepMode(false);
+        game.setStepMode(false);
         continuePrograms();
     }
 
@@ -30,34 +38,32 @@ public class GameController {
      * @author Zigalow
      * This method starts the Player Interaction phase
      */
-
-
     // XXX: V3
     private void startPlayerInteractionPhase(Command options) {
         this.currentInteractiveCard = options;
-        this.board.setPhase(Phase.PLAYER_INTERACTION);
+        this.game.setPhase(Phase.PLAYER_INTERACTION);
     }
 
     public void executeStep() {
-        board.setStepMode(true);
+        game.setStepMode(true);
         continuePrograms();
     }
 
     private void continuePrograms() {
         do {
             executeNextStep();
-            if (this.board.getPhase() != Phase.PLAYER_INTERACTION) {
-                nextPlayer(board.getCurrentPlayer());
+            if (this.game.getPhase() != Phase.PLAYER_INTERACTION) {
+                nextPlayer(game.getCurrentPlayer());
             } else {
                 return;
             }
-        } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
+        } while (game.getPhase() == Phase.ACTIVATION && !game.isStepMode());
     }
 
     private void executeNextStep() {
-        Player currentPlayer = board.getCurrentPlayer();
-        if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
-            int step = board.getStep();
+        Player currentPlayer = game.getCurrentPlayer();
+        if (game.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
+            int step = game.getStep();
             if (step >= 0 && step < Player.NUMBER_OF_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
@@ -87,10 +93,10 @@ public class GameController {
      * they will continue to do so after an option has been chosen</p>
      */
     public void executeCommandOptionAndContinue(Command option) {
-        executeCommands.executeCommand(board.getCurrentPlayer(), option);
-        this.board.setPhase(Phase.ACTIVATION);
-        nextPlayer(this.board.getCurrentPlayer());
-        if (!this.board.isStepMode()) {
+        executeCommands.executeCommand(game.getCurrentPlayer(), option);
+        this.game.setPhase(Phase.ACTIVATION);
+        nextPlayer(this.game.getCurrentPlayer());
+        if (!this.game.isStepMode()) {
             this.executePrograms();
         }
     }
@@ -100,14 +106,14 @@ public class GameController {
      *
      * @param randomCards True if cards needs to be randomly generated
      */
-    // Should probably be game that has the references instead of board
-    public void startProgrammingPhase(boolean randomCards) {
-        board.setPhase(Phase.PROGRAMMING);
-        board.setCurrentPlayer(board.getPlayer(0));
-        board.setStep(0);
 
-        for (int i = 0; i < board.getPlayerCount(); i++) {
-            Player player = board.getPlayer(i);
+    public void startProgrammingPhase(boolean randomCards) {
+        game.setPhase(Phase.PROGRAMMING);
+        game.setCurrentPlayer(game.getPlayer(0));
+        game.setStep(0);
+
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            Player player = game.getPlayer(i);
             if (player != null) {
                 for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
@@ -131,33 +137,30 @@ public class GameController {
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
-        board.setPhase(Phase.ACTIVATION);
-        board.setCurrentPlayer(board.getPlayer(0));
-        board.setStep(0);
+        game.setPhase(Phase.ACTIVATION);
+        game.setCurrentPlayer(game.getPlayer(0));
+        game.setStep(0);
     }
 
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NUMBER_OF_REGISTERS) {
-            for (int i = 0; i < board.getPlayerCount(); i++) {
-                Player player = board.getPlayer(i);
+            for (int i = 0; i < game.getPlayerCount(); i++) {
+                Player player = game.getPlayer(i);
                 CommandCardField field = player.getProgramField(register);
                 field.setVisible(true);
             }
         }
     }
-
     // XXX: V2
     private void makeProgramFieldsInvisible() {
-        for (int i = 0; i < board.getPlayerCount(); i++) {
-            Player player = board.getPlayer(i);
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            Player player = game.getPlayer(i);
             for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                 CommandCardField field = player.getProgramField(j);
                 field.setVisible(false);
             }
         }
     }
-
-
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
         int random = (int) (Math.random() * commands.length);
@@ -166,13 +169,13 @@ public class GameController {
     }
 
     /**
-     * @author ZeeDiazz (Zaid)
      * It checks if a player is on an obstacle, and executes the obstacles action.
+     * @author ZeeDiazz (Zaid)
      */
     public void obstacleAction() {
-        Move[] moves = new Move[board.getPlayerCount()];
-        for (int i = 0; i < board.getPlayerCount(); i++) {
-            Player player = board.getPlayer(i);
+        Move[] moves = new Move[game.getPlayerCount()];
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            Player player = game.getPlayer(i);
             moves[i] = player.robot.getSpace().endedRegisterOn(player.robot, 0);
         }
         performSimultaneousMoves(moves);
@@ -203,16 +206,16 @@ public class GameController {
     }
 
     public static void performMove(Move move) {
-        for (Move resultingMove : board.resultingMoves(move)) {
+        for (Move resultingMove : game.resultingMoves(move)) {
             Robot robot = resultingMove.moving;
-            Space endingSpace = board.getSpace(resultingMove.getEndingPosition());
+            Space endingSpace = game.board.getSpace(resultingMove.getEndingPosition());
             // If going out of bounds
             if (endingSpace == null) {
-                endingSpace = board.getSpace(robot.getRebootPosition());
+                endingSpace = game.board.getSpace(robot.getRebootPosition());
             }
 
             robot.setSpace(endingSpace);
-            board.getSpace(resultingMove.start).changed();
+            game.board.getSpace(resultingMove.start).changed();
             endingSpace.changed();
         }
     }
@@ -227,12 +230,12 @@ public class GameController {
      */
 
     public void nextPlayer(Player currentPlayer) {
-        this.board.increaseMoveCounter();
+        this.game.increaseMoveCounter();
         // Daniel {
-        int currentStep = this.board.getStep();
-        int nextPlayerNumber = this.board.getPlayerNumber(currentPlayer) + 1;
+        int currentStep = this.game.getStep();
+        int nextPlayerNumber = this.game.getPlayerNumber(currentPlayer) + 1;
         // nextPlayerNumber++;
-        if (nextPlayerNumber >= this.board.getPlayerCount()) {
+        if (nextPlayerNumber >= this.game.getPlayerCount()) {
             nextPlayerNumber = 0;
             currentStep++;
             if (currentStep < Player.NUMBER_OF_REGISTERS) {
@@ -258,16 +261,14 @@ public class GameController {
                 //Felix723 (Felix Schmidt)}
                 */
 
-                board.setStep(currentStep);
+                game.setStep(currentStep);
             } else {
                 startProgrammingPhase(true);
             }
-
-
             // Daniel }
 
         }
-        this.board.setCurrentPlayer(this.board.getPlayer(nextPlayerNumber));
+        this.game.setCurrentPlayer(this.game.getPlayer(nextPlayerNumber));
     }
 
 
@@ -301,7 +302,7 @@ public class GameController {
     }
 
     public void moveCurrentPlayerToSpace(@NotNull Space space) {
-        Player currentPlayer = board.getCurrentPlayer();
+        Player currentPlayer = game.getCurrentPlayer();
 
         if (spaceIsOccupied(space)) {
             return;

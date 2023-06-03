@@ -137,9 +137,9 @@ public class PlayerView extends Tab implements ViewObserver {
         top.getChildren().add(cardsLabel);
         top.getChildren().add(cardsPane);
 
-        if (player.board != null) {
-            player.board.attach(this);
-            update(player.board);
+        if (player.game.board != null) {
+            player.game.board.attach(this);
+            update(player.game.board);
         }
     }
 
@@ -150,20 +150,20 @@ public class PlayerView extends Tab implements ViewObserver {
      */
     @Override
     public void updateView(Subject subject) {
-        if (subject == player.board) {
+        if (subject == player.game.board) {
             for (int i = 0; i < Player.NUMBER_OF_REGISTERS; i++) {
                 CardFieldView cardFieldView = programCardViews[i];
                 if (cardFieldView != null) {
-                    if (player.board.getPhase() == Phase.PROGRAMMING) {
+                    if (player.game.getPhase() == Phase.PROGRAMMING) {
                         cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
                         cardFieldView.imageView.setImage(null);
                     } else {
-                        if (i < player.board.getStep()) {
+                        if (i < player.game.getStep()) {
                             cardFieldView.setBackground(CardFieldView.BG_DONE);
-                        } else if (i == player.board.getStep()) {
-                            if (player.board.getCurrentPlayer() == player) {
+                        } else if (i == player.game.getStep()) {
+                            if (player.game.getCurrentPlayer() == player) {
                                 cardFieldView.setBackground(CardFieldView.BG_ACTIVE);
-                            } else if (player.board.getPlayerNumber(player.board.getCurrentPlayer()) > player.board.getPlayerNumber(player)) {
+                            } else if (player.game.getPlayerNumber(player.game.getCurrentPlayer()) > player.game.getPlayerNumber(player)) {
                                 cardFieldView.setBackground(CardFieldView.BG_DONE);
                             } else {
                                 cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
@@ -176,12 +176,12 @@ public class PlayerView extends Tab implements ViewObserver {
                 }
             }
 
-            if (player.board.getPhase() != Phase.PLAYER_INTERACTION) {
+            if (player.game.getPhase() != Phase.PLAYER_INTERACTION) {
                 if (!programPane.getChildren().contains(buttonPanel)) {
                     programPane.getChildren().remove(playerInteractionPanel);
                     programPane.add(buttonPanel, Player.NUMBER_OF_REGISTERS, 0);
                 }
-                switch (player.board.getPhase()) {
+                switch (player.game.getPhase()) {
                     case INITIALISATION:
                         finishButton.setDisable(true);
                         // XXX just to make sure that there is a way for the player to get
@@ -218,7 +218,7 @@ public class PlayerView extends Tab implements ViewObserver {
 
 
                 // Zigalow {
-                if (player.board.getCurrentPlayer() == player && this.player.board.getPhase() == Phase.PLAYER_INTERACTION) {
+                if (player.game.getCurrentPlayer() == player && this.player.game.getPhase() == Phase.PLAYER_INTERACTION) {
                     // Makes buttons for all the different options relating to the interactive card
 
                     for (Command option : this.gameController.currentInteractiveCard.getOptions()) {

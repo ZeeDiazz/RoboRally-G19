@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.ui_view;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import javafx.event.EventHandler;
@@ -43,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 public class BoardView extends VBox implements ViewObserver {
 
     private Board board;
+    private Game game;
 
     private GridPane mainBoardPane;
     private SpaceView[][] spaces;
@@ -59,7 +61,8 @@ public class BoardView extends VBox implements ViewObserver {
      * @param gameController The controller of the game
      */
     public BoardView(@NotNull GameController gameController) {
-        board = gameController.board;
+        game = gameController.game;
+        board = game.board;
 
         mainBoardPane = new GridPane();
         playersView = new PlayersView(gameController);
@@ -94,10 +97,15 @@ public class BoardView extends VBox implements ViewObserver {
      */
     @Override
     public void updateView(Subject subject) {
-        if (subject == board) {
+        //ZeeDaizz Added game instead of board
+        if (subject == game.board) {
+            Phase phase = game.getPhase();
+            statusLabel.setText(game.getStatusMessage());
+        }
+        /*if (subject == board) {
             Phase phase = board.getPhase();
             statusLabel.setText(board.getStatusMessage());
-        }
+        }*/
     }
 
     // XXX this handler and its uses should eventually be deleted! This is just to help test the

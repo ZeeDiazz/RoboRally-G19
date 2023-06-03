@@ -1,4 +1,266 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
-public class Game {
+
+import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INITIALISATION;
+
+/**
+ * @author ZeeDiazz (Zaid)
+ */
+public class Game extends Subject{
+    public /*final*/ Board board;
+    private Integer gameId;
+
+    private final List<Player> players = new ArrayList<>();
+    private Player current;
+
+    //Represents the total amount of steps in the current game
+    private int moveCounter;
+
+    //Represents the amount of steps in the current programming phase
+    private int step = 0;
+    private boolean stepMode;
+
+    private Phase phase = INITIALISATION;
+
+
+
+    public Game(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter) {
+        this.board = board;
+        this.gameId = gameId;
+        this.current = current;
+        this.phase = phase;
+        this.step = step;
+        this.stepMode = stepMode;
+        this.moveCounter = moveCounter;
+    }
+    public Game(Board board) {
+        this.board = board;
+    }
+
+    /**
+     * Gets the games ID related to the board.
+     * @return The game ID
+     */
+    public Integer getGameId() {
+        return gameId;
+    }
+
+    /**
+     * Gives the game board its ID, and cant be changed.
+     * @param gameId sets the game ID
+     * @throws IllegalStateException dosnt allow the ID to change
+     */
+    public void setGameId(int gameId) {
+        if (this.gameId == null) {
+            this.gameId = gameId;
+        } else {
+            if (!this.gameId.equals(gameId)) {
+                throw new IllegalStateException("A game with a set id may not be assigned a new id!");
+            }
+        }
+    }
+
+    /**
+     * Gets the correct number of the player in the game
+     * @return number of player
+     */
+    public int getPlayerCount() {
+        return players.size();
+    }
+
+    /**
+     * Adds a player to the game
+     * @param player the added player
+     */
+    public void addPlayer(@NotNull Player player) {
+        if (/*player.board == this &&*/ !players.contains(player)) {
+            players.add(player);
+            notifyChange();
+        }
+    }
+
+    /**
+     * Gets the index of the player in the list of players
+     * @param index index of the player
+     * @return the players index, else null if the index is out of bounds
+     */
+
+    public Player getPlayer(int index) {
+        if (index >= 0 && index < players.size()) {
+            return players.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Gets the current player on the board
+     * @return the current player
+     */
+    public Player getCurrentPlayer() {
+        return current;
+    }
+
+    /**
+     * Sets the current player on the board
+     * @param player the current player that has been set
+     */
+    public void setCurrentPlayer(Player player) {
+        if (player != this.current && players.contains(player)) {
+            this.current = player;
+            notifyChange();
+        }
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+    /**
+     * Gets the current phase of the board.
+     * @return the current phase
+     */
+    public Phase getPhase() {
+        return phase;
+    }
+
+    /**
+     * Sets the current phase of the board
+     *
+     * @param phase to set the current phase
+     */
+    public void setPhase(Phase phase) {
+        if (phase != this.phase) {
+            this.phase = phase;
+            notifyChange();
+        }
+    }
+
+    /**
+     * Gets the current step of the board
+     *
+     * @return the current step of the programming phase
+     */
+    public int getStep() {
+        return step;
+    }
+
+    /**
+     * Sets the current step of the board
+     *
+     * @param step to set the current step
+     */
+    public void setStep(int step) {
+        if (step != this.step) {
+            this.step = step;
+            notifyChange();
+        }
+    }
+
+    /**
+     * checks if the board is in step mode
+     *
+     * @return ture if the board is in step mode, false if not
+     */
+    public boolean isStepMode() {
+        return stepMode;
+    }
+
+    /**
+     * Sets the step mode of the board
+     *
+     * @param stepMode if true, enable step mode
+     *                 if false, disable step mode
+     */
+    public void setStepMode(boolean stepMode) {
+        if (stepMode != this.stepMode) {
+            this.stepMode = stepMode;
+            notifyChange();
+        }
+    }
+
+    /**
+     * Gets the player on the boards number
+     *
+     * @param player for the player to get the number
+     * @return the players number, or -1 if player are not on the board
+     */
+    public int getPlayerNumber(@NotNull Player player) {
+        return players.indexOf(player);
+    }
+
+    /**
+     * @return the current move counter
+     */
+    public int getMoveCounter() {
+        return moveCounter;
+    }
+
+    /**
+     * Increasing the move counter by 1
+     */
+    public void increaseMoveCounter() {
+        this.moveCounter++;
+    }
+
+    /**
+     * Returns a string of the current status of the game
+     * (returns phase, player and step of the game)
+     * @return the current status of the game
+     */
+    public String getStatusMessage() {
+        // this is actually a view aspect, but for making assignment V1 easy for
+        // the students, this method gives a string representation of the current
+        // status of the game
+
+        // XXX: V2 changed the status so that it shows the phase, the player and the step
+        return "Phase: " + getPhase().name() +
+                ", Player = " + getCurrentPlayer().getName() +
+                ", Total Steps: " + getMoveCounter();
+    }
+
+    public ArrayList<Move> resultingMoves(Move move) {
+        int moveAmount = 0;
+        ArrayList<Move> moves = new ArrayList<>();
+
+        Space space = board.getSpace(move.start);
+        for (int i = 0; i < move.amount; i++) {
+            if (space.hasWall(move.direction)) {
+                break;
+            }
+
+            space = board.getNeighbour(space, move.direction);
+            if (space == null) {
+                moveAmount++;
+                break;
+            } else if (space.hasWall(HeadingDirection.oppositeHeadingDirection(move.direction))) {
+                break;
+            } else if (space.getRobot() != null) {
+                // Can maximally move the full amount, minus the part already moved
+                int moveOtherAmount = move.amount - moveAmount;
+                Move otherPlayerMove = new Move(space.position, move.direction, moveOtherAmount, space.getRobot());
+
+                int leftToMove = 0;
+                for (Move resultingMove : resultingMoves(otherPlayerMove)) {
+                    moves.add(resultingMove);
+                    leftToMove = Math.max(leftToMove, resultingMove.amount);
+                }
+                moveAmount += leftToMove;
+
+                break;
+            }
+            moveAmount++;
+        }
+
+        moves.add(new Move(move.start, move.direction, moveAmount, move.moving));
+        return moves;
+    }
+
+
 }

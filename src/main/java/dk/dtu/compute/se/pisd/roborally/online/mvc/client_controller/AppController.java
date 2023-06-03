@@ -78,6 +78,21 @@ public class AppController implements Observer {
 
         roboRally.createBoardView(gameController);
     }
+    protected void makeGame(Board board, boolean hasCards, int playerCount) {
+        Game game = new Game(board);
+        for (int i = 0; i < playerCount; i++) {
+            Player player = new Player(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
+            Space startingSpace = board.getSpace(i % board.width, i);
+            player.robot.setSpace(startingSpace);
+            player.robot.setRebootPosition(startingSpace.position);
+            game.addPlayer(player);
+        }
+        gameController = new GameController(game);
+
+        gameController.startProgrammingPhase(!hasCards);
+
+        roboRally.createBoardView(gameController);
+    }
 
     /**
      * This method firstly creates a dialog dropbox choice dialog with options for numbers of players.
@@ -104,15 +119,18 @@ public class AppController implements Observer {
 
             Board board = MapMaker.makeDizzyHighway();
             int playerCount = result.get();
-            for (int i = 0; i < playerCount; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+
+            makeGame(board, false, playerCount);
+
+            /*for (int i = 0; i < playerCount; i++) {
+                Player player = new Player(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.robot.setSpace(startingSpace);
                 player.robot.setRebootPosition(startingSpace.position);
-                board.addPlayer(player);
+                game.addPlayer(player);
             }
 
-            makeGame(board, false);
+            makeGame(board, false);*/
         }
     }
 

@@ -12,6 +12,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.ui_view;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -96,7 +97,9 @@ public class SpaceView extends StackPane implements ViewObserver {
     private void updatePlayer() {
         this.getChildren().clear();
 
-        Player player = space.getRobot().getOwner();
+        Robot robot = space.getRobot();
+
+        Player player = robot.getOwner();
         if (player != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,

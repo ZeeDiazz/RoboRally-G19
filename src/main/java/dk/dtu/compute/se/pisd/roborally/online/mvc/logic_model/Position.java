@@ -2,9 +2,9 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dk.dtu.compute.se.pisd.roborally.old.fileaccess.ISerializable;
 
-public final class Position implements ISerializable {
+
+public final class Position {
     public final int X;
     public final int Y;
 
@@ -45,25 +45,6 @@ public final class Position implements ISerializable {
         return new Position(position.X + deltaX * amount, position.Y + deltaY * amount);
     }
 
-    @Override
-    public JsonElement serialize() {
-        JsonObject jsonObject = new JsonObject();
-
-        jsonObject.addProperty("x",this.X);
-        jsonObject.addProperty("y",this.Y);
-
-        return jsonObject;
-    }
-
-    @Override
-    public ISerializable deserialize(JsonElement element) {
-        JsonObject jsonObject = element.getAsJsonObject();
-
-        int x = jsonObject.get("x").getAsInt();
-        int y = jsonObject.get("y").getAsInt();
-
-        return new Position(x, y);
-    }
 
     public static Position add(Position p1, Position p2) {
         return new Position(p1.X + p2.X, p1.Y + p2.Y);
