@@ -78,10 +78,12 @@ public class AppController implements Observer {
 
         roboRally.createBoardView(gameController);
     }
+    
+    // Uses LocalPlayer for now...
     protected void makeGame(Board board, boolean hasCards, int playerCount) {
         Game game = new Game(board);
         for (int i = 0; i < playerCount; i++) {
-            Player player = new Player(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
+            Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
             Space startingSpace = board.getSpace(i % board.width, i);
             player.robot.setSpace(startingSpace);
             player.robot.setRebootPosition(startingSpace.position);
