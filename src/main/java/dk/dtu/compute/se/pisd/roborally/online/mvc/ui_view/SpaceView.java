@@ -18,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.NotNull;
+
 public class SpaceView extends StackPane implements ViewObserver {
 
     final public static int SPACE_HEIGHT = 60; // 60; // 75;
@@ -49,26 +50,19 @@ public class SpaceView extends StackPane implements ViewObserver {
         String style;
         if (space instanceof BlueConveyorSpace) {
             style = "-fx-background-color: blue;";
-        }
-        else if (space instanceof GreenConveyorSpace) {
+        } else if (space instanceof GreenConveyorSpace) {
             style = "-fx-background-color: green;";
-        }
-        else if (space instanceof RedGearSpace) {
+        } else if (space instanceof RedGearSpace) {
             style = "-fx-background-color: red;";
-        }
-        else if (space instanceof GreenGearSpace) {
+        } else if (space instanceof GreenGearSpace) {
             style = "-fx-background-color: darkgreen;";
-        }
-        else if (space instanceof PitSpace) {
+        } else if (space instanceof PitSpace) {
             style = "-fx-background-color: black;";
-        }
-        else if (space instanceof CheckPointSpace) {
+        } else if (space instanceof CheckPointSpace) {
             style = "-fx-background-color: yellow;";
-        }
-        else if ((space.position.X + space.position.Y) % 2 == 0) {
+        } else if ((space.position.X + space.position.Y) % 2 == 0) {
             style = "-fx-background-color: white;";
-        }
-        else {
+        } else {
             style = "-fx-background-color: gray;";
         }
         this.setStyle(style);
@@ -97,10 +91,11 @@ public class SpaceView extends StackPane implements ViewObserver {
     private void updatePlayer() {
         this.getChildren().clear();
 
+        Player player;
         Robot robot = space.getRobot();
-
-        Player player = robot.getOwner();
-        if (player != null) {
+        
+        if (robot != null && robot.getOwner() != null) {
+            player = robot.getOwner();
             Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,
                     20.0, 0.0);
