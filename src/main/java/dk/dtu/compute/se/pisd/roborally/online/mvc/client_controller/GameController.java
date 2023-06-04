@@ -2,30 +2,33 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 
 
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import javafx.scene.control.Alert;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class GameController {
 
     public static Board board = null;
     public static Game game = null;
-    private static ExecuteCommands executeCommands;
+    private static ExecuteCommands commandExecution;
 
     public Command currentInteractiveCard;
 
     public GameController(@NotNull Game game/*, @NotNull Board board*/) {
         this.game = game;
-        executeCommands = new ExecuteCommands(game.board);
+        commandExecution = new ExecuteCommands(game.board);
         //this.board = board;
         //executeCommands = new ExecuteCommands(board);
     }
 
     public GameController(@NotNull Board board) {
         this.board = board;
-        executeCommands = new ExecuteCommands(board);
+        commandExecution = new ExecuteCommands(board);
     }
 
     public void executePrograms() {
@@ -72,7 +75,7 @@ public class GameController {
                         startPlayerInteractionPhase(command);
                         return;
                     }
-                    executeCommands.executeCommand(currentPlayer, command);
+                    commandExecution.executeCardCommand(currentPlayer, command);
                 }
 
             } else {
@@ -93,7 +96,7 @@ public class GameController {
      * they will continue to do so after an option has been chosen</p>
      */
     public void executeCommandOptionAndContinue(Command option) {
-        executeCommands.executeCommand(game.getCurrentPlayer(), option);
+        commandExecution.executeCardCommand(game.getCurrentPlayer(), option);
         this.game.setPhase(Phase.ACTIVATION);
         nextPlayer(this.game.getCurrentPlayer());
         if (!this.game.isStepMode()) {
@@ -151,6 +154,7 @@ public class GameController {
             }
         }
     }
+
     // XXX: V2
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < game.getPlayerCount(); i++) {
@@ -161,6 +165,7 @@ public class GameController {
             }
         }
     }
+
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
         int random = (int) (Math.random() * commands.length);
@@ -170,15 +175,31 @@ public class GameController {
 
     /**
      * It checks if a player is on an obstacle, and executes the obstacles action.
+     *
      * @author ZeeDiazz (Zaid)
      */
     public void obstacleAction() {
+        List<Robot> checkRobotsCheckpoints = new ArrayList<>();
         Move[] moves = new Move[game.getPlayerCount()];
+
         for (int i = 0; i < game.getPlayerCount(); i++) {
             Player player = game.getPlayer(i);
-            moves[i] = player.robot.getSpace().endedRegisterOn(player.robot, 0);
+            Move move = player.robot.getSpace().endedRegisterOn(player.robot, 0);
+            moves[i] = move;
+
+            if (player.robot.getSpace() instanceof CheckPointSpace) {
+                checkRobotsCheckpoints.add(player.robot);
+            }
         }
         performSimultaneousMoves(moves);
+
+        for (Robot robot : checkRobotsCheckpoints) {
+            if (allCheckPointReached(robot)) {
+                finishGame(robot);
+            }
+
+        }
+
     }
 
     private void performSimultaneousMoves(Move... moves) {
@@ -244,23 +265,6 @@ public class GameController {
                 obstacleAction();
                 //ZeeDiazz (Zaid)}
 
-                /*
-                //Felix723 (Felix Schmidt){
-                for (int i = 0; i < board.getPlayerCount(); i++) {
-                    Player checkingPlayer = board.getPlayer(i);
-                    if (checkingPlayer.getSpace() instanceof CheckPoint checkPoint) {
-                        if (!checkPoint.hasPassed(checkingPlayer)) {
-                            checkPoint.playerPassed(checkingPlayer);
-                        }
-
-                        if (checkingPlayer.checkpointGoal == board.getCheckpointCount()) {
-                            checkingPlayer.setColor("purple");
-                        }
-                    }
-                }
-                //Felix723 (Felix Schmidt)}
-                */
-
                 game.setStep(currentStep);
             } else {
                 startProgrammingPhase(true);
@@ -301,7 +305,7 @@ public class GameController {
         return space.getRobot() != null;
     }
 
-    public void moveCurrentPlayerToSpace(@NotNull Space space) {
+    public void moveCurrentPlayerToSpaceWithMouseClick(@NotNull Space space) {
         Player currentPlayer = game.getCurrentPlayer();
 
         if (spaceIsOccupied(space)) {
@@ -312,8 +316,16 @@ public class GameController {
         nextPlayer(currentPlayer);
     }
 
+    public boolean allCheckPointReached(Robot robot) {
+        return robot.checkpointReached >= game.board.getCheckpointAmount();
+    }
+
+    public void finishGame(Robot winningRobot) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Winner");
+        alert.setHeaderText("Congratulations " + winningRobot.getOwner().getName());
+        alert.setContentText(winningRobot.getOwner().getName() + " has won the game!");
+        alert.showAndWait();
+    }
+
 }
-
-
-// Needs board
-// public ExecuteCommands ()
