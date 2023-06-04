@@ -7,8 +7,6 @@ import static dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.Game
 
 
 public class ExecuteCommands {
-
-
     private static Board board;
 
     public ExecuteCommands(Board board) {
@@ -21,37 +19,38 @@ public class ExecuteCommands {
      * @author Daniel, ZeeDiazz (Zaid)
      */
 
-
-    public void executeCommand(@NotNull Player player, Command command) {
+    public void executeCardCommand(@NotNull Player player, Command command) {
         if (player.robot != null && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).
 
             switch (command) {
-                case MOVE_1, MOVE_2, MOVE_3, BACK_UP:
+                case MOVE_1, MOVE_2, MOVE_3, BACK_UP -> {
                     this.moveCommand(player.robot, command);
                     player.setPrevProgramming(command);
-                    break;
-                case LEFT, RIGHT, U_TURN:
+                }
+                case LEFT, RIGHT, U_TURN -> {
                     this.turnRobotCommand(player.robot, command);
                     player.setPrevProgramming(command);
-                    break;
-                case POWER_UP:
+                }
+                case POWER_UP -> {
                     player.addEnergyCube(1);
                     player.setPrevProgramming(command);
-                    break;
-                case AGAIN:
+                }
+                case AGAIN ->
                     //TODO: update AGAIN after the implementation of damage card and upgrade
-                    this.repeatPrevProgramming(player);
-                    //player.setPrevProgramming(command);
-                    break;
+                        this.repeatPrevProgramming(player);
+
+                //player.setPrevProgramming(command);
                 //}ZeeDiazz (Zaid)
-                default:
-                    // DO NOTHING (for now)
+                default -> {
+                }
+                // DO NOTHING (for now)
             }
         }
     }
+
 
     public void moveCommand(@NotNull Robot robot, Command moveCommand) {
         switch (moveCommand) {
@@ -70,7 +69,6 @@ public class ExecuteCommands {
         }
     }
 
-    
 
     public void backUp(@NotNull Robot robot) {
         HeadingDirection playerDirection = robot.getHeadingDirection();
@@ -111,7 +109,7 @@ public class ExecuteCommands {
     public void repeatPrevProgramming(@NotNull Player player) {
         Command previousCommand = player.getPrevProgramming();
         //if(previousCommand != Command.AGAIN) {
-        executeCommand(player, previousCommand);
+        executeCardCommand(player, previousCommand);
         //}
     }
 

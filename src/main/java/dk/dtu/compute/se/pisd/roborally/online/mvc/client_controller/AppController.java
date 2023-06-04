@@ -35,8 +35,6 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -59,8 +57,10 @@ public class AppController implements Observer {
 
     private static GameController gameController;
 
-    @FXML
-    FileChooser fileChooser = new FileChooser();
+// --Commented out by Inspection START (04-06-2023 22:42):
+//    @FXML
+//    FileChooser fileChooser = new FileChooser();
+// --Commented out by Inspection STOP (04-06-2023 22:42)
 
     /**
      * @param roboRally The Roborally game being played
@@ -69,16 +69,6 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
-    protected void makeGame(Board board, boolean hasCards) {
-        gameController = new GameController(board);
-
-        // XXX: V2
-        // board.setCurrentPlayer(board.getPlayer(0));
-        gameController.startProgrammingPhase(!hasCards);
-
-        roboRally.createBoardView(gameController);
-    }
-    
     // Uses LocalPlayer for now...
     protected void makeGame(Board board, boolean hasCards, int playerCount) {
         Game game = new Game(board);

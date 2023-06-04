@@ -37,4 +37,5 @@ public class CheckPointSpace extends Space {
         return new CheckPointSpace(newPosition, this.id, this.walls.toArray(new HeadingDirection[0]));
     }
 
+ 
 }

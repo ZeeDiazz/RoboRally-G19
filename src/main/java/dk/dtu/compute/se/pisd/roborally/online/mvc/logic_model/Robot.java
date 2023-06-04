@@ -10,14 +10,13 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class Robot extends Subject {
-    
+
     public int checkpointReached = 0;
 
     private Space space;
     private String color;
 
     final public Player owner;
-
 
     public Position rebootPosition;
     private HeadingDirection headingDirection = HeadingDirection.SOUTH;
@@ -33,8 +32,8 @@ public class Robot extends Subject {
         this.color = color;
         this.owner = player;
     }
-    
-    
+
+
     public Space getSpace() {
         return space;
     }
@@ -83,6 +82,7 @@ public class Robot extends Subject {
 
     /**
      * Reboot the player, setting their position to their reboot space (latest collected checkpoint)
+     *
      * @author Daniel Jensen
      */
     public void reboot() {

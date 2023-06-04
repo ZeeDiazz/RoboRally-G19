@@ -1,7 +1,5 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 
 public final class Position {

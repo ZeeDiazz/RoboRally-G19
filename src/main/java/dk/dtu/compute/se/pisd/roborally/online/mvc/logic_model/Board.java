@@ -7,11 +7,6 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import org.jetbrains.annotations.NotNull;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INITIALISATION;
-
 
 public class Board extends Subject {
 
@@ -143,6 +138,7 @@ public class Board extends Subject {
         Space[][] newSpaces = new Space[board.height][board.width];
         for (int x = 0; x < board.width; x++) {
             for (int y = 0; y < board.height; y++) {
+                // Todo - Does the parameters get passed correctly?
                 Position newPosition = new Position(y, board.width - x - 1);
                 Space newSpace = board.spaces[x][y].copy(newPosition);
                 newSpace.rotateLeft();
@@ -311,5 +307,9 @@ public class Board extends Subject {
     }*/
 //-------------------------- To here
 
+
+    public int getCheckpointAmount() {
+        return checkpointAmount;
+    }
 }
 

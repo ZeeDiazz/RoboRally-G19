@@ -125,7 +125,7 @@ public class BoardView extends VBox implements ViewObserver {
                 SpaceView spaceView = (SpaceView) source;
                 Space space = spaceView.space;
 
-                gameController.moveCurrentPlayerToSpace(space);
+                gameController.moveCurrentPlayerToSpaceWithMouseClick(space);
                 event.consume();
             }
         }
