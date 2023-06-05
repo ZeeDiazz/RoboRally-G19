@@ -6,10 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController.performMove;
 
 
-public class ExecuteCommands {
+public class CommandExecuter {
     private static Board board;
 
-    public ExecuteCommands(Board board) {
+    public CommandExecuter(Board board) {
         this.board = board;
     }
 
