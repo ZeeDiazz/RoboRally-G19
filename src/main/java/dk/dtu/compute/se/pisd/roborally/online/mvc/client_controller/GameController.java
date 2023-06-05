@@ -2,15 +2,23 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 
 
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.GameFinishedListener;
-import javafx.scene.control.Alert;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
+import javax.tools.Tool;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Optional;
 
 public class GameController {
 
@@ -326,15 +334,31 @@ public class GameController {
     /**
      * Finishes the game. An alert pops up and informs the players of the winning robot
      * <p>Also triggers the event, onGameFinished(), if a listener is registered</p>
+     *
      * @param winningRobot Robot that has won
      * @author Zigalow
      */
     public void finishGame(Robot winningRobot) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        ButtonType closeGameButton = new ButtonType("Close game");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", closeGameButton);
         alert.setTitle("Winner");
-        alert.setHeaderText("Congratulations " + winningRobot.getOwner().getName() + " on winning the game");
-        alert.setContentText("Close the dialogue to exit the game");
+        alert.setHeaderText("Congratulations, " + winningRobot.getOwner().getName() + ", on winning the game");
+        alert.setContentText("Close this window to exit the game");
+        alert.setResizable(true);
         alert.showAndWait();
+
+        // If you want the user to confirm that they're closing the game, before closing
+        /*while (true) {
+            alert.showAndWait();
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "Are you ready to close the game?", ButtonType.NO, ButtonType.YES);
+            Optional<ButtonType> result = confirmation.showAndWait();
+
+            if (result.get() == ButtonType.YES) {
+                break;
+            }
+        }*/
+
         if (gameFinishedListener != null) {
             gameFinishedListener.onGameFinished();
         }
