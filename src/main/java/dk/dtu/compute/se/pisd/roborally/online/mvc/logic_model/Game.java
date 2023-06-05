@@ -1,8 +1,12 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -13,23 +17,25 @@ import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INIT
 /**
  * @author ZeeDiazz (Zaid)
  */
-public class Game extends Subject {
-    public /*final*/ Board board;
-    private Integer gameId;
+public abstract class Game extends Subject implements Serializable {
 
-    private final List<Player> players = new ArrayList<>();
-    private Player current;
+
+    public /*final*/ Board board;
+    protected Integer gameId;
+
+    protected final List<Player> players = new ArrayList<>();
+    protected Player current;
 
     //Represents the total amount of steps in the current game
-    private int moveCounter;
+    protected int moveCounter;
 
     //Represents the amount of steps in the current programming phase
-    private int step = 0;
-    private boolean stepMode;
+    protected int step = 0;
+    protected boolean stepMode;
 
-    private Phase phase = INITIALISATION;
+    protected Phase phase = INITIALISATION;
 
-
+    // For serializations 
     public Game(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter) {
         this.board = board;
         this.gameId = gameId;
@@ -272,5 +278,29 @@ public class Game extends Subject {
         return moves;
     }
 
+    public abstract boolean canStartGame();
 
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("gameType", this.getClass().getSimpleName());
+        jsonObject.addProperty("gameId", this.gameId);
+        jsonObject.addProperty("moveCounter", this.moveCounter);
+        jsonObject.addProperty("step", this.step);
+        jsonObject.addProperty("stepMode", this.stepMode);
+        jsonObject.addProperty("phase", this.phase.toString());
+        jsonObject.addProperty("currentPlayer", this.current.getName());
+        jsonObject.add("board", this.board.serialize());
+        JsonArray jsonArrayPlayers = new JsonArray();
+
+        for (Player player : this.players) {
+            jsonArrayPlayers.add(player.serialize());
+        }
+        jsonObject.add("players", jsonArrayPlayers);
+
+
+        return jsonObject;
+    }
 }
