@@ -1,17 +1,20 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Zigalow & ZeeDiazz (Zaid)
  */
 
-public class Robot extends Subject {
+public class Robot extends Subject implements Serializable {
 
-    public int checkpointReached = 0;
+    public int checkpointsReached = 0;
 
     private Space space;
     private String color;
@@ -104,6 +107,26 @@ public class Robot extends Subject {
 
     public Player getOwner() {
         return owner;
+    }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("checkpointsReached", this.checkpointsReached);
+        jsonObject.addProperty("color", this.color);
+        jsonObject.add("space", this.space.position.serialize());
+        jsonObject.add("rebootSpace", this.rebootPosition.serialize());
+        jsonObject.addProperty("headingDirection", this.headingDirection.toString());
+        jsonObject.addProperty("playerName", this.owner.getName());
+
+        return jsonObject;
+
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        return null;
     }
 }
 

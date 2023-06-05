@@ -1,9 +1,12 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 
-public class CheckPointSpace extends Space {
+public class CheckPointSpace extends Space implements Serializable {
     public final int id;
 
     public CheckPointSpace(Position position, int id, HeadingDirection... walls) {
@@ -19,13 +22,13 @@ public class CheckPointSpace extends Space {
      * Check whether a player has passed this checkpoint
      */
     public boolean hasPassed(Robot robot) {
-        return robot.checkpointReached >= this.id;
+        return robot.checkpointsReached >= this.id;
     }
 
     @Override
     public Move endedRegisterOn(Robot robot, int registerIndex) {
         if (hasPassed(robot)) {
-            robot.checkpointReached = this.id + 1;
+            robot.checkpointsReached = this.id + 1;
             // player.setRebootSpace(this);
             changed();
         }
@@ -37,5 +40,11 @@ public class CheckPointSpace extends Space {
         return new CheckPointSpace(newPosition, this.id, this.walls.toArray(new HeadingDirection[0]));
     }
 
- 
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = super.serialize().getAsJsonObject();
+        jsonObject.addProperty("checkpointId", this.id);
+
+        return jsonObject;
+    }
 }

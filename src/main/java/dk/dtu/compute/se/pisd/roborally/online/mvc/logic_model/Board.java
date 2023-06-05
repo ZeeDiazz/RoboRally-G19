@@ -1,14 +1,17 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 
-
-public class Board extends Subject {
+public class Board extends Subject implements Serializable {
 
     /**
      * Represents the total amount of steps in the current game
@@ -63,6 +66,7 @@ public class Board extends Subject {
         //this.stepMode = stepMode;
         this.checkpointAmount = checkpointAmount;
     }
+
     /**
      * Creates a new board with the given board name, width and height. Also a construtor for Board, which also creates spaces and obstacles
      *
@@ -97,6 +101,7 @@ public class Board extends Subject {
 
     /**
      * Gets the given space on the board position.
+     *
      * @param position
      * @return
      * @author Daniel
@@ -107,6 +112,7 @@ public class Board extends Subject {
 
     /**
      * Gets the given coordinates space on the board.
+     *
      * @param x the x-coordinate
      * @param y the y-coordinate
      * @return the given coordinates, or null if out of bounds
@@ -123,6 +129,7 @@ public class Board extends Subject {
     public Space getNeighbour(@NotNull Space space, @NotNull HeadingDirection headingDirection) {
         return getSpace(Position.move(space.position, headingDirection));
     }
+
     public void addCheckpoint(Position position) {
         this.spaces[position.X][position.Y] = new CheckPointSpace(position, checkpointAmount++);
     }
@@ -130,6 +137,7 @@ public class Board extends Subject {
 
     /**
      * Rotate a whole board to the left.
+     *
      * @param board the board to rotate.
      * @return a rotated copy of the given board.
      * @author Daniel Jensen
@@ -151,6 +159,7 @@ public class Board extends Subject {
 
     /**
      * Rotate a whole board to the right.
+     *
      * @param board the board to rotate.
      * @return a rotated copy of the given board.
      * @author Daniel Jensen
@@ -162,6 +171,7 @@ public class Board extends Subject {
     /**
      * Add to boards together, and get the resulting board.
      * This is useful because the original game has different physical boards, which you can combine to create one large board.
+     *
      * @param board   the base board, which the other board will be added to.
      * @param adding  the board we're adding.
      * @param offset  the new position of "adding"s (0, 0).
@@ -198,6 +208,7 @@ public class Board extends Subject {
     /**
      * Add to boards together, and get the resulting board. The resulting board will have the name of "board".
      * This is useful because the original game has different physical boards, which you can combine to create one large board.
+     *
      * @param board  the base board, which the other board will be added to.
      * @param adding the board we're adding.
      * @param offset the new position of "adding"s (0, 0).
@@ -310,6 +321,33 @@ public class Board extends Subject {
 
     public int getCheckpointAmount() {
         return checkpointAmount;
+    }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("width", this.width);
+        jsonObject.addProperty("height", this.height);
+        jsonObject.addProperty("boardName", this.boardName);
+        jsonObject.addProperty("checkpointAmount", this.checkpointAmount);
+
+        JsonArray jsonArraySpaces = new JsonArray();
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                Space currentSpace = this.spaces[i][j];
+                jsonArraySpaces.add(currentSpace.serialize());
+            }
+        }
+        jsonObject.add("spaces", jsonArraySpaces);
+
+        return jsonObject;
+
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        return null;
     }
 }
 

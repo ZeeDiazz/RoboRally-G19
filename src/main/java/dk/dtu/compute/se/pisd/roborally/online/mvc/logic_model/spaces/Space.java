@@ -1,11 +1,15 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Move;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +19,7 @@ import java.util.List;
  *
  * @author Daniel Jensen
  */
-public class Space extends Subject {
+public class Space extends Subject implements Serializable {
     public final Position position;
     protected final ArrayList<HeadingDirection> walls;
     protected Robot standingOn;
@@ -47,7 +51,7 @@ public class Space extends Subject {
      * Should be called when a robot ends the register on this space.
      * This is mostly useful for the conveyor belts, gears, etc. as these have an effect on the robot if they end the register while standing there.
      *
-     * @param robot        the robot who ended the register on this space.
+     * @param robot         the robot who ended the register on this space.
      * @param registerIndex the index of the register we are currently on.
      * @return the move the space wants the robot to do, and null if no move at all.
      * @author Daniel Jensen
@@ -156,4 +160,28 @@ public class Space extends Subject {
         return standingOn;
     }
 
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("spaceType", this.getClass().getSimpleName());
+
+        jsonObject.add("boardPosition", this.position.serialize());
+
+        JsonArray jsonArrayWalls = new JsonArray();
+        for (HeadingDirection wall : walls) {
+            jsonArrayWalls.add(wall.toString());
+        }
+        jsonObject.add("walls", jsonArrayWalls);
+        if (this.standingOn != null) {
+            jsonObject.addProperty("playerOccupyingSpace", this.standingOn.getOwner().getName());
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        return null;
+    }
 }

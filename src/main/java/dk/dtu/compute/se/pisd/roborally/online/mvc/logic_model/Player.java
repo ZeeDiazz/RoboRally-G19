@@ -1,12 +1,16 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Zigalow & ZeeDiazz (Zaid)
  */
-public abstract class Player extends Subject {
+public abstract class Player extends Subject implements Serializable {
 
     final public static int NUMBER_OF_REGISTERS = 5;
     final public static int NUMBER_OF_CARDS = 8;
@@ -129,4 +133,32 @@ public abstract class Player extends Subject {
         return programField;
     }
 
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("name", this.name);
+        jsonObject.addProperty("playerID", this.playerID);
+        if (this.prevProgramming != null) {
+            jsonObject.addProperty("previousCommand", this.prevProgramming.toString());
+        }
+        jsonObject.addProperty("energyCubes", this.energyCubes);
+        JsonArray jsonArrayProgram = new JsonArray();
+        for (CommandCardField cardField : programField) {
+            jsonArrayProgram.add(cardField.serialize());
+        }
+        jsonObject.add("program", jsonArrayProgram);
+
+        JsonArray jsonArrayCards = new JsonArray();
+        for (CommandCardField card : cards) {
+            jsonArrayCards.add(card.serialize());
+        }
+        jsonObject.add("cards", jsonArrayCards);
+
+        jsonObject.add("robot", this.robot.serialize());
+
+
+        return null;
+    }
 }

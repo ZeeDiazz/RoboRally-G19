@@ -21,7 +21,10 @@
  */
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 
 /**
  * A class representing a Command Card Field, that extends the Subject class.
@@ -29,7 +32,7 @@ import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
-public class CommandCardField extends Subject  {
+public class CommandCardField extends Subject implements Serializable {
 
     /**
      * The Player associated with this Command Card Field.
@@ -99,5 +102,21 @@ public class CommandCardField extends Subject  {
             notifyChange();
         }
     }
-    
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+        if (this.card != null) {
+            jsonObject.add("commandCardField", this.card.serialize());
+            jsonObject.addProperty("isVisible", this.visible);
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        return null;
+    }
 }

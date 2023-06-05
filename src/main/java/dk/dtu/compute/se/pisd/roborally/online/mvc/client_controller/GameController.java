@@ -1,45 +1,41 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.GameFinishedListener;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import javax.tools.Tool;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Optional;
 
-public class GameController {
+public class GameController implements Serializable {
 
     private GameFinishedListener gameFinishedListener;
 
     public static Board board = null;
     public static Game game = null;
-    private static ExecuteCommands commandExecution;
+    private static CommandExecuter commandExecution;
 
     public Command currentInteractiveCard;
 
     public GameController(@NotNull Game game/*, @NotNull Board board*/) {
         this.game = game;
-        commandExecution = new ExecuteCommands(game.board);
+        commandExecution = new CommandExecuter(game.board);
         //this.board = board;
         //executeCommands = new ExecuteCommands(board);
     }
 
     public GameController(@NotNull Board board) {
         this.board = board;
-        commandExecution = new ExecuteCommands(board);
+        commandExecution = new CommandExecuter(board);
     }
 
     public void executePrograms() {
@@ -328,7 +324,7 @@ public class GameController {
     }
 
     public boolean allCheckPointReached(Robot robot) {
-        return robot.checkpointReached >= game.board.getCheckpointAmount();
+        return robot.checkpointsReached >= game.board.getCheckpointAmount();
     }
 
     /**
@@ -369,4 +365,24 @@ public class GameController {
         this.gameFinishedListener = gameFinishedListener;
     }
 
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+
+
+       // jsonObject.add("board", board.serialize());
+        jsonObject.add("game", game.serialize());
+
+
+        if (currentInteractiveCard != null) {
+            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        return null;
+    }
 }

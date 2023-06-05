@@ -21,7 +21,10 @@
  */
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,12 +33,12 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
-public class CommandCard extends Subject {
+public class CommandCard extends Subject implements Serializable {
     /**
      * The Command associated with this Command Card.
      */
     final public Command command;
-    
+
     /**
      * Constructs a new command card, with the given command.
      *
@@ -55,4 +58,16 @@ public class CommandCard extends Subject {
     }
 
 
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("command", this.command.toString());
+
+        return jsonObject;
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        return null;
+    }
 }
