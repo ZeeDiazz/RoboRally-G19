@@ -21,21 +21,28 @@
  */
 package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 
+import com.sun.javafx.fxml.builder.JavaFXSceneBuilder;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import javafx.application.Platform;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 /**
  * ...
@@ -67,20 +74,61 @@ public class AppController implements Observer, GameFinishedListener {
     }
 
     // Uses LocalPlayer for now...
-    protected void makeGame(Board board, boolean hasCards, int playerCount) {
-        Game game = new Game(board);
-        for (int i = 0; i < playerCount; i++) {
-            Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
-            Space startingSpace = board.getSpace(i % board.width, i);
-            player.robot.setSpace(startingSpace);
-            player.robot.setRebootPosition(startingSpace.position);
-            game.addPlayer(player);
+    protected void makeGame(Board board, boolean hasCards, int playerCount, boolean offlineGame) {
+
+        Game game;
+
+        if (offlineGame) {
+            game = new LocalGame(board);
+            for (int i = 0; i < playerCount; i++) {
+                Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Space startingSpace = board.getSpace(i % board.width, i);
+                player.robot.setSpace(startingSpace);
+                player.robot.setRebootPosition(startingSpace.position);
+                game.addPlayer(player);
+
+                gameController = new GameController(game);
+            }
+
+        } else {
+             // TODO: 06-06-2023 
+          /*  game = new OnlineGame(board, playerCount);
+
+
+            Alert waitingForPlayers = new Alert(AlertType.INFORMATION);
+            waitingForPlayers.setTitle("Missing players");
+            waitingForPlayers.setContentText("Please wait for the remaining players to join");
+            waitingForPlayers.setHeaderText("The game is missing " + (playerCount - game.getPlayerCount()) + " more players to start the game");
+            waitingForPlayers.getButtonTypes().clear();
+
+
+            Platform.runLater(() -> waitingForPlayers.show());
+
+
+            int currentNumberOfPlayers = game.getPlayerCount();
+            while (!game.canStartGame()) {
+                if (game.getPlayerCount() != currentNumberOfPlayers) {
+                    currentNumberOfPlayers = game.getPlayerCount();
+                    int remainingPlayers = playerCount - currentNumberOfPlayers;
+                    // Update the alert text on the JavaFX application thread
+                    Platform.runLater(() -> waitingForPlayers.setHeaderText("The game is missing " + remainingPlayers + " to start the game"));
+                }
+            }
+
+            ButtonType startGameButton = new ButtonType("Start Game");
+            Alert startGame = new Alert(AlertType.INFORMATION, "", startGameButton);
+            startGame.setTitle("Start game");
+            startGame.setHeaderText("The game can now be started");
+            startGame.setContentText("Press the button to start playing");
+            startGame.showAndWait();
+
+
+            gameController = new GameController(game);*/
         }
-        gameController = new GameController(game);
+
 
         gameController.startProgrammingPhase(!hasCards);
-        
-        
+
         // Registers the event in the GameController class
         gameController.setGameFinishedListener(this);
 
@@ -93,6 +141,18 @@ public class AppController implements Observer, GameFinishedListener {
      * and starts the programming phase
      */
     public void newGame() {
+
+        ButtonType onlineButton = new ButtonType("Online");
+        ButtonType offlineButton = new ButtonType("Offline");
+
+        Alert gameType = new Alert(AlertType.CONFIRMATION, "", onlineButton, offlineButton);
+
+        gameType.setTitle("Choose Game Mode");
+        gameType.setHeaderText("Do you wish to play online or offline?");
+
+        Optional<ButtonType> gameMode = gameType.showAndWait();
+
+
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
         dialog.setHeaderText("Select number of players");
@@ -110,20 +170,18 @@ public class AppController implements Observer, GameFinishedListener {
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
 
-            Board board = MapMaker.makeDizzyHighway();
+
+            Board board = MapMaker.makeRiskyCrossing();
+
             int playerCount = result.get();
 
-            makeGame(board, false, playerCount);
 
-            /*for (int i = 0; i < playerCount; i++) {
-                Player player = new Player(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                Space startingSpace = board.getSpace(i % board.width, i);
-                player.robot.setSpace(startingSpace);
-                player.robot.setRebootPosition(startingSpace.position);
-                game.addPlayer(player);
+            if (gameMode.get() == offlineButton) {
+                makeGame(board, false, playerCount, true);
+            } else {
+                makeGame(board, false, playerCount, false);
             }
 
-            makeGame(board, false);*/
         }
     }
 
