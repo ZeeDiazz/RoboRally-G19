@@ -4,6 +4,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.GameFinishedListener;
 import javafx.scene.control.Alert;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +13,8 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class GameController {
+
+    private GameFinishedListener gameFinishedListener;
 
     public static Board board = null;
     public static Game game = null;
@@ -320,12 +323,26 @@ public class GameController {
         return robot.checkpointReached >= game.board.getCheckpointAmount();
     }
 
+    /**
+     * Finishes the game. An alert pops up and informs the players of the winning robot
+     * <p>Also triggers the event, onGameFinished(), if a listener is registered</p>
+     * @param winningRobot Robot that has won
+     * @author Zigalow
+     */
     public void finishGame(Robot winningRobot) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Winner");
-        alert.setHeaderText("Congratulations " + winningRobot.getOwner().getName());
-        alert.setContentText(winningRobot.getOwner().getName() + " has won the game!");
+        alert.setHeaderText("Congratulations " + winningRobot.getOwner().getName() + " on winning the game");
+        alert.setContentText("Close the dialogue to exit the game");
         alert.showAndWait();
+        if (gameFinishedListener != null) {
+            gameFinishedListener.onGameFinished();
+        }
+
+    }
+
+    public void setGameFinishedListener(GameFinishedListener gameFinishedListener) {
+        this.gameFinishedListener = gameFinishedListener;
     }
 
 }
