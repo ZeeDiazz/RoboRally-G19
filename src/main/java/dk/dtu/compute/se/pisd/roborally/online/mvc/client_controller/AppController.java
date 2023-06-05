@@ -27,12 +27,10 @@ import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
-import javafx.stage.FileChooser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -47,8 +45,7 @@ import java.util.Optional;
  * @author Ekkart Kindler, ekki@dtu.dk
  */
 
-
-public class AppController implements Observer {
+public class AppController implements Observer, GameFinishedListener {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
@@ -82,6 +79,10 @@ public class AppController implements Observer {
         gameController = new GameController(game);
 
         gameController.startProgrammingPhase(!hasCards);
+        
+        
+        // Registers the event in the GameController class
+        gameController.setGameFinishedListener(this);
 
         roboRally.createBoardView(gameController);
     }
@@ -127,7 +128,7 @@ public class AppController implements Observer {
     }
 
     public void saveGame() {
-        
+
     }
 
     public void loadGame() {
@@ -192,5 +193,13 @@ public class AppController implements Observer {
     @Override
     public void update(Subject subject) {
         // XXX do nothing for now
+    }
+
+    /**
+     * Stops the game, when a onGameFinished-event occurs
+     */
+    @Override
+    public void onGameFinished() {
+        stopGame();
     }
 }
