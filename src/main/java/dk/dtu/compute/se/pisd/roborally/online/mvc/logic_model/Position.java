@@ -55,14 +55,19 @@ public final class Position implements Serializable {
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("x",this.X);
-        jsonObject.addProperty("y",this.Y);
+        jsonObject.addProperty("x", this.X);
+        jsonObject.addProperty("y", this.Y);
 
         return jsonObject;
     }
 
     @Override
     public Serializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        int x = jsonObject.get("x").getAsInt();
+        int y = jsonObject.get("y").getAsInt();
+
+        return new Position(x, y);
     }
 }

@@ -3,6 +3,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
@@ -134,14 +135,27 @@ public abstract class Player extends Subject implements Serializable {
     }
 
 
+    public static void setGame(Game game) {
+        Player.game = game;
+    }
+
+    public int getPlayerID() {
+        return this.playerID;
+    }
+
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
+    }
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
+        jsonObject.addProperty("playerType", this.getClass().getSimpleName());
         jsonObject.addProperty("name", this.name);
         jsonObject.addProperty("playerID", this.playerID);
         if (this.prevProgramming != null) {
-            jsonObject.addProperty("previousCommand", this.prevProgramming.toString());
+            jsonObject.addProperty("previousCommand", this.prevProgramming.displayName);
         }
         jsonObject.addProperty("energyCubes", this.energyCubes);
         JsonArray jsonArrayProgram = new JsonArray();
@@ -159,6 +173,61 @@ public abstract class Player extends Subject implements Serializable {
         jsonObject.add("robot", this.robot.serialize());
 
 
-        return null;
+        return jsonObject;
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+
+        String playerType = jsonObject.getAsJsonPrimitive("playerType").getAsString();
+
+        Player initialPlayer = playerType.equals("OnlinePlayer") ? new OnlinePlayer(null, "red", "") : new LocalPlayer(null, "red", "");
+
+        initialPlayer.name = jsonObject.getAsJsonPrimitive("name").getAsString();
+        initialPlayer.playerID = jsonObject.getAsJsonPrimitive("playerID").getAsInt();
+
+        JsonPrimitive jsonCommand = jsonObject.getAsJsonPrimitive("previousCommand");
+
+        String commandAsString = jsonCommand == null ? null : jsonCommand.getAsString();
+
+        Command command = commandAsString == null ? null : Command.valueOf(commandAsString);
+        initialPlayer.energyCubes = jsonObject.getAsJsonPrimitive("energyCubes").getAsInt();
+
+        initialPlayer.prevProgramming = command;
+
+
+        CommandCardField field = new CommandCardField(initialPlayer);
+        int index = 0;
+        for (JsonElement cardJson : jsonObject.get("cards").getAsJsonArray()) {
+            CommandCardField savedField = (CommandCardField) field.deserialize(cardJson);
+
+            initialPlayer.getCardField(index).setCard(savedField.getCard());
+            initialPlayer.getCardField(index).setVisible(savedField.isVisible());
+            index++;
+        }
+
+        field = new CommandCardField(initialPlayer);
+        index = 0;
+        for (JsonElement cardJson : jsonObject.get("program").getAsJsonArray()) {
+            CommandCardField savedField = (CommandCardField) field.deserialize(cardJson);
+
+            initialPlayer.getProgramField(index).setCard(savedField.getCard());
+            initialPlayer.getProgramField(index).setVisible(savedField.isVisible());
+            index++;
+        }
+
+
+        Robot robot = (Robot) initialPlayer.robot.deserialize(jsonObject.get("robot"));
+
+        initialPlayer.robot = new Robot(robot.getColor(), initialPlayer);
+
+        initialPlayer.robot.checkpointsReached = robot.checkpointsReached;
+        initialPlayer.robot.setSpace(robot.getSpace());
+        initialPlayer.robot.setRebootPosition(robot.getRebootPosition());
+        initialPlayer.robot.setHeadingDirection(robot.getHeadingDirection());
+
+        return initialPlayer;
     }
 }

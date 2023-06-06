@@ -132,6 +132,10 @@ public class Space extends Subject implements Serializable {
         }
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
     // Hack
     public void changed() {
         notifyChange();
@@ -160,6 +164,10 @@ public class Space extends Subject implements Serializable {
         return standingOn;
     }
 
+    public void setRobotOnSpace(Robot robot) {
+        this.standingOn = robot;
+    }
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
@@ -173,15 +181,51 @@ public class Space extends Subject implements Serializable {
             jsonArrayWalls.add(wall.toString());
         }
         jsonObject.add("walls", jsonArrayWalls);
-        if (this.standingOn != null) {
-            jsonObject.addProperty("playerOccupyingSpace", this.standingOn.getOwner().getName());
-        }
+
 
         return jsonObject;
     }
 
     @Override
     public Serializable deserialize(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+
+        Position position = new Position(0, 0);
+        position = (Position) position.deserialize(jsonObject.get("boardPosition"));
+
+        ArrayList<HeadingDirection> wallsList = new ArrayList<>();
+        for (JsonElement wallJson : jsonObject.get("walls").getAsJsonArray()) {
+            wallsList.add(HeadingDirection.valueOf(wallJson.getAsString()));
+        }
+        HeadingDirection[] walls = wallsList.toArray(new HeadingDirection[0]);
+
+        String type = jsonObject.get("spaceType").getAsString();
+        HeadingDirection direction;
+        switch (type) {
+            case "Space":
+                return new Space(position, walls);
+            case "EnergySpace":
+                return new EnergySpace(position, walls);
+            case "GreenGearSpace":
+                return new GreenGearSpace(position, walls);
+            case "RedGearSpace":
+                return new RedGearSpace(position, walls);
+            case "PitSpace":
+                return new PitSpace(position, walls);
+            case "CheckPointSpace":
+                int id = jsonObject.get("checkpointId").getAsInt();
+                return new CheckPointSpace(position, id, walls);
+            case "GreenConveyorSpace":
+                direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
+                return new GreenConveyorSpace(position, direction, walls);
+            case "BlueConveyorSpace":
+                direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
+                return new BlueConveyorSpace(position, direction, walls);
+        }
+
+        // Shouldn't reach this
         return null;
     }
+
 }

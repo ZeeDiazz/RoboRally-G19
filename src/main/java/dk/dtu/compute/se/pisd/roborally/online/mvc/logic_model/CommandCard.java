@@ -68,6 +68,10 @@ public class CommandCard extends Subject implements Serializable {
 
     @Override
     public Serializable deserialize(JsonElement element) {
-        return null;
+        JsonObject json = element.getAsJsonObject();
+
+        Command command = Command.valueOf(json.get("command").getAsString());
+
+        return new CommandCard(command);
     }
 }

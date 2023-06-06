@@ -341,13 +341,35 @@ public class Board extends Subject implements Serializable {
         }
         jsonObject.add("spaces", jsonArraySpaces);
 
+
         return jsonObject;
 
     }
 
     @Override
     public Serializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        int width = jsonObject.get("width").getAsInt();
+        int height = jsonObject.get("height").getAsInt();
+        String boardName = jsonObject.get("boardName").getAsString();
+        int checkPointAmount = jsonObject.get("checkpointAmount").getAsInt();
+
+
+        Space[][] spaces = new Space[width][height];
+
+        JsonArray spacesJson = jsonObject.get("spaces").getAsJsonArray();
+        Space space = new Space(new Position(0, 0));
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                JsonObject spaceJson = spacesJson.get(x * height + y).getAsJsonObject();
+                spaces[x][y] = (Space) space.deserialize(spaceJson);
+            }
+        }
+
+        return new Board(width, height, boardName, spaces, checkPointAmount);
+
+
     }
 }
-

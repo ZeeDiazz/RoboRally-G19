@@ -109,16 +109,17 @@ public class Robot extends Subject implements Serializable {
         return owner;
     }
 
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
         jsonObject.addProperty("checkpointsReached", this.checkpointsReached);
         jsonObject.addProperty("color", this.color);
-        jsonObject.add("space", this.space.position.serialize());
+        jsonObject.add("spacePosition", this.space.position.serialize());
         jsonObject.add("rebootSpace", this.rebootPosition.serialize());
         jsonObject.addProperty("headingDirection", this.headingDirection.toString());
-        jsonObject.addProperty("playerName", this.owner.getName());
+
 
         return jsonObject;
 
@@ -126,7 +127,26 @@ public class Robot extends Subject implements Serializable {
 
     @Override
     public Serializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+        Robot initialRobot = new Robot("red", null);
+
+        initialRobot.checkpointsReached = jsonObject.getAsJsonPrimitive("checkpointsReached").getAsInt();
+        initialRobot.color = jsonObject.getAsJsonPrimitive("color").getAsString();
+
+        Space space = new Space(new Position(0, 0));
+        Position position = new Position(0, 0);
+
+
+        position = (Position) space.position.deserialize(jsonObject.get("spacePosition"));
+
+        initialRobot.space = new Space(position);
+
+        initialRobot.rebootPosition = (Position) position.deserialize(jsonObject.get("rebootSpace"));
+
+        initialRobot.headingDirection = HeadingDirection.valueOf(jsonObject.getAsJsonPrimitive("headingDirection").getAsString());
+
+
+        return initialRobot;
     }
 }
 
