@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.JSONTransformer;
@@ -38,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -155,8 +157,8 @@ public class AppController implements Observer, GameFinishedListener {
      * Then creates an empty board with the required number of players(including the view)
      * and starts the programming phase
      */
-    public void newGame() {
-
+    public void newGame() throws FileNotFoundException{
+        // Zigalow {
         ButtonType onlineButton = new ButtonType("Online");
         ButtonType offlineButton = new ButtonType("Offline");
 
@@ -166,7 +168,7 @@ public class AppController implements Observer, GameFinishedListener {
         gameType.setHeaderText("Do you wish to play online or offline?");
 
         Optional<ButtonType> gameMode = gameType.showAndWait();
-
+        // Zigalow }
 
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
@@ -182,20 +184,33 @@ public class AppController implements Observer, GameFinishedListener {
                 }
             }
 
-            // XXX the board should eventually be created programmatically or loaded from a file
-            //     here we just create an empty board with the required number of players.
+            // ZeeDiazz (Zaid) {
+            ButtonType map1Button = new ButtonType("Risky Crossing");
+            ButtonType map2Button = new ButtonType("Dizzy Highway");
 
+            Alert selectMap = new Alert(Alert.AlertType.CONFIRMATION, "", map1Button, map2Button);
+            selectMap.setTitle("Select a map");
+            selectMap.setContentText("Choose the map you want to play:");
 
-            Board board = MapMaker.makeRiskyCrossing();
+            Optional<ButtonType> mapResult = selectMap.showAndWait();
+            Board board;
+
+            if(mapResult.get() == map1Button){
+                board = MapMaker.makeJsonRiskyCrossing();
+            } else {
+                board = MapMaker.makeJsonDizzyHighway();
+            }
+            // ZeeDiazz (Zaid) }
 
             int playerCount = result.get();
 
-
+            // Zigalow {
             if (gameMode.get() == offlineButton) {
                 makeGame(board, false, playerCount, true);
             } else {
                 makeGame(board, false, playerCount, false);
             }
+            // Zigalow }
 
         }
     }

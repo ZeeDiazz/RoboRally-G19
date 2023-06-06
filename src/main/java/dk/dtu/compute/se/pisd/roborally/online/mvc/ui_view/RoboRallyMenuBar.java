@@ -4,6 +4,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 
+import java.io.FileNotFoundException;
+
 /**
  * ...
  * This is a class for creating menu bars for RoboRally with options for:
@@ -38,7 +40,13 @@ public class RoboRallyMenuBar extends MenuBar {
         this.getMenus().add(controlMenu);
 
         newGame = new MenuItem("New Game");
-        newGame.setOnAction( e -> this.appController.newGame());
+        newGame.setOnAction( e -> {
+            try {
+                this.appController.newGame();
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         controlMenu.getItems().add(newGame);
 
         stopGame = new MenuItem("Stop Game");

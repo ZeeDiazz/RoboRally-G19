@@ -1,0 +1,52 @@
+{
+  "width": 10,
+  "height": 3,
+  "spaces": [
+    {
+      "type": "GreenConveyorSpace",
+      "heading": "NORTH",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "GreenConveyorSpace",
+      "heading": "NORTH",
+      "position": {
+        "x": 9,
+        "y": 0
+      }
+    }
+  ],
+  "walls": [
+    {
+      "heading": "WEST",
+      "position": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "heading": "NORTH",
+      "position": {
+        "x": 4,
+        "y": 0
+      }
+    },
+    {
+      "heading": "NORTH",
+      "position": {
+        "x": 5,
+        "y": 0
+      }
+    },
+    {
+      "heading": "EAST",
+      "position": {
+        "x": 7,
+        "y": 1
+      }
+    }
+  ]
+}

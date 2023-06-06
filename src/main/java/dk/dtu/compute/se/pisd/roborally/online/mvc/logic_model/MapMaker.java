@@ -1,9 +1,13 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.BlueConveyorSpace;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.GreenConveyorSpace;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.*;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.HashMap;
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection.*;
 
@@ -34,134 +38,120 @@ public final class MapMaker {
 
         return new Board(spaces, name);
     }
+    /**
+     * Loads a map from json fil from the map given in the parameter
+     * @param map
+     * @return
+     * @throws FileNotFoundException
+     * @author ZeeDiazz (Zaid)
+     */
+    public static Board loadJsonBoard(String map) throws FileNotFoundException {
+        JsonParser parser = new JsonParser();
 
-    public static Board makeStartA() {
-        HashMap<Position, Space> spaces = new HashMap<>();
-        // Making special spaces
-        // The spawn points
-        /*
-        addSpace(spaces, new Space(new Position(1, 1), true));
-        addSpace(spaces, new Space(new Position(3, 2), true));
-        addSpace(spaces, new Space(new Position(4, 1), true));
-        addSpace(spaces, new Space(new Position(5, 1), true));
-        addSpace(spaces, new Space(new Position(6, 2), true));
-        addSpace(spaces, new Space(new Position(8, 1), true));
-         */
+        // Load the json fil
+        JsonElement mapFile = parser.parse(new FileReader("src/main/resources/boards/"+ map +".json"));
+        JsonObject mapBoard = mapFile.getAsJsonObject();
 
-        // The two green conveyors
-        addSpace(spaces, new GreenConveyorSpace(new Position(0, 0), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(9, 0), NORTH));
+        //Get the width and height of the map
+        int width = mapBoard.get("width").getAsInt();
+        int height = mapBoard.get("height").getAsInt();
 
+        //All spaces
+        JsonArray spaces = mapBoard.get("spaces").getAsJsonArray();
+
+        //HashMap for all obstaclesSpaces in the map
+        HashMap<Position, Space> obstacleSpaces = new HashMap<>();
+        for (JsonElement obstacles : spaces){
+            JsonObject spaceObject = obstacles.getAsJsonObject();
+
+            //Get the position of the obstacle
+            int x = spaceObject.get("position").getAsJsonObject().get("x").getAsInt();
+            int y = spaceObject.get("position").getAsJsonObject().get("y").getAsInt();
+            Position position = new Position(x, y);
+
+            // Create the appropriate space object based on the "type" field in the JSON
+            Space space = null;
+            String type = spaceObject.get("type").getAsString();
+
+            switch (type){
+                case "BlueConveyorSpace" -> {
+                    String heading = spaceObject.get("heading").getAsString();
+                    HeadingDirection direction = getHeadingDirection(heading);
+                    space = new BlueConveyorSpace(position, direction);
+                }
+                case "GreenConveyorSpace" -> {
+                    String heading = spaceObject.get("heading").getAsString();
+                    HeadingDirection direction = getHeadingDirection(heading);
+                    space = new GreenConveyorSpace(position, direction);
+                }
+                case "PitSpace" -> space = new PitSpace(position, new HeadingDirection[0]);
+                case "CheckPointSpace" -> {
+                    int number = spaceObject.get("number").getAsInt();
+                    space = new CheckPointSpace(position,number);
+                }
+            }
+            //put the obstacle in the hashmap
+            obstacleSpaces.put(position, space);
+        }
+
+        JsonArray wallsArray = mapBoard.get("walls").getAsJsonArray();
         HashMap<Position, HeadingDirection[]> walls = new HashMap<>();
-        walls.put(new Position(2, 1), new HeadingDirection[] {WEST});
-        walls.put(new Position(4, 0), new HeadingDirection[] {NORTH});
-        walls.put(new Position(5, 0), new HeadingDirection[] {NORTH});
-        walls.put(new Position(7, 1), new HeadingDirection[] {EAST});
+        for (JsonElement wallObstacle : wallsArray){
+            JsonObject wallObject = wallObstacle.getAsJsonObject();
+            int x = wallObject.get("position").getAsJsonObject().get("x").getAsInt();
+            int y = wallObject.get("position").getAsJsonObject().get("y").getAsInt();
+            Position position = new Position(x, y);
 
-        return makeCustomBoard(spaces, walls, 10, 3, "Start A");
+            String heading = wallObject.get("heading").getAsString();
+            HeadingDirection direction = getHeadingDirection(heading);
+
+            walls.put(position,new HeadingDirection[]{direction});
+        }
+        //Create a board with the obstacles and walls and the width and
+        return makeCustomBoard(obstacleSpaces, walls, width, height, "5B");
     }
 
-    public static Board make5A() {
-        HashMap<Position, Space> spaces = new HashMap<>();
-        // Making special spaces
-        Position[] startingAt = new Position[] {new Position(1, 0), new Position(0, 8), new Position(9, 1), new Position(8, 9)};
-        HeadingDirection[] startHeading = new HeadingDirection[] {SOUTH, EAST, WEST, NORTH};
-        for (int i = 0; i < 4; i++) {
-            Position position = startingAt[i];
-            HeadingDirection direction = startHeading[i];
-            addSpace(spaces, new BlueConveyorSpace(position, direction));
-            position = Position.move(position, direction);
-            addSpace(spaces, new BlueConveyorSpace(position, direction));
-            position = Position.move(position, direction);
-            direction = HeadingDirection.rightHeadingDirection(direction);
-            addSpace(spaces, new BlueConveyorSpace(position, direction));
-            position = Position.move(position, direction);
-            addSpace(spaces, new BlueConveyorSpace(position, direction));
+    /**
+     * To get the heading of some of the spaces from json
+     * @param heading
+     * @return
+     * @author ZeeDiazz (Zaid)
+     */
+    private static HeadingDirection getHeadingDirection(String heading) {
+        switch (heading) {
+            case "NORTH":
+                return HeadingDirection.NORTH;
+            case "SOUTH":
+                return HeadingDirection.SOUTH;
+            case "EAST":
+                return HeadingDirection.EAST;
+            case "WEST":
+                return HeadingDirection.WEST;
         }
-
-        addSpace(spaces, new GreenConveyorSpace(new Position(5, 1), WEST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(4, 1), WEST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(3, 1), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(3, 2), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(3, 3), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(2, 3), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(2, 4), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(1, 4), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(1, 5), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(1, 6), EAST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(2, 6), EAST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(3, 6), EAST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(4, 6), WEST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(4, 7), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(4, 8), EAST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(5, 8), EAST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(6, 8), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(6, 7), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(6, 6), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(7, 6), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(7, 5), SOUTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(8, 5), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(8, 4), NORTH));
-        addSpace(spaces, new GreenConveyorSpace(new Position(8, 3), WEST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(7, 3), WEST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(6, 3), WEST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(5, 3), EAST));
-        addSpace(spaces, new GreenConveyorSpace(new Position(5, 2), NORTH));
-
-        HashMap<Position, HeadingDirection[]> walls = new HashMap<>();
-
-        return makeCustomBoard(spaces, walls, 10, 10, "5A");
+        return null;
     }
 
-    public static Board make5B() {
-        HashMap<Position, Space> spaces = new HashMap<>();
-
-        // Making special spaces
-        // The blue conveyor ring
-        for (int y = 0; y < 8; y++) {
-            addSpace(spaces, new BlueConveyorSpace(new Position(1, y), SOUTH));
-        }
-        addSpace(spaces, new BlueConveyorSpace(new Position(2, 0), SOUTH));
-        for (int x = 2; x < 10; x++) {
-            addSpace(spaces, new BlueConveyorSpace(new Position(x, 1), WEST));
-        }
-        addSpace(spaces, new BlueConveyorSpace(new Position(9, 2), WEST));
-        for (int y = 2; y < 10; y++) {
-            addSpace(spaces, new BlueConveyorSpace(new Position(8, y), NORTH));
-        }
-        addSpace(spaces, new BlueConveyorSpace(new Position(2, 0), NORTH));
-        for (int x = 0; x < 8; x++) {
-            addSpace(spaces, new BlueConveyorSpace(new Position(x, 8), EAST));
-        }
-        addSpace(spaces, new BlueConveyorSpace(new Position(0, 7), EAST));
-
-        HashMap<Position, HeadingDirection[]> walls = new HashMap<>();
-        walls.put(new Position(3, 3), new HeadingDirection[] {NORTH});
-        walls.put(new Position(3, 6), new HeadingDirection[] {WEST});
-        walls.put(new Position(6, 3), new HeadingDirection[] {EAST});
-        walls.put(new Position(6, 6), new HeadingDirection[] {SOUTH});
-
-        return makeCustomBoard(spaces, walls, 10, 10, "5B");
+    /**
+     * Create Risky Crossing map
+     * @return
+     * @throws FileNotFoundException
+     * @author ZeeDiazz (Zaid)
+     */
+    public static Board makeJsonRiskyCrossing() throws FileNotFoundException {
+        Board startA = loadJsonBoard("StartA");
+        Board startB = loadJsonBoard("5A");
+        return Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Risky Crossing");
     }
 
-    public static Board makeDizzyHighway() {
-        Board startA = makeStartA();
-        Board fiveB = make5B();
-        Board dizzyHighway = Board.add(Board.rotateRight(startA), fiveB, new Position(3, 0), "Dizzy Highway");
-        dizzyHighway.addCheckpoint(new Position(12, 3));
-        return dizzyHighway;
-    }
-
-    public static Board makeRiskyCrossing() {
-        Board startA = makeStartA();
-        Board fiveA = make5A();
-        Board riskyCrossing = Board.add(Board.rotateRight(startA), fiveA, new Position(3, 0), "Risky Crossing");
-        riskyCrossing.addCheckpoint(new Position(8, 7));
-        riskyCrossing.addCheckpoint(new Position(11, 0));
-        return riskyCrossing;
-    }
-
-    private static void addSpace(HashMap<Position, Space> spaces, Space space) {
-        spaces.put(space.position, space);
+    /**
+     * Create Dizzy Highway map
+     * @return
+     * @throws FileNotFoundException
+     * @author ZeeDiazz (Zaid)
+     */
+    public static Board makeJsonDizzyHighway() throws FileNotFoundException {
+        Board startA = loadJsonBoard("StartA");
+        Board startB = loadJsonBoard("5B");
+        return Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Dizzy Highway");
     }
 }
