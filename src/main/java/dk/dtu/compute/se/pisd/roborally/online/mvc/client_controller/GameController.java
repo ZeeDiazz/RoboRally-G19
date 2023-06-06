@@ -4,12 +4,11 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.GameFinishedListener;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -369,8 +368,11 @@ public class GameController implements Serializable {
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
-
-       // jsonObject.add("board", board.serialize());
+        jsonObject.addProperty("gameType", game.getClass().getSimpleName());
+        if (game instanceof OnlineGame) {
+            jsonObject.addProperty("numberOfPlayersToStart", ((OnlineGame) game).getNumberOfPlayersToStart());
+        }
+        // jsonObject.add("board", board.serialize());
         jsonObject.add("game", game.serialize());
 
 
@@ -383,6 +385,33 @@ public class GameController implements Serializable {
 
     @Override
     public Serializable deserialize(JsonElement element) {
-        return null;
+        JsonObject jsonObject = element.getAsJsonObject();
+
+       /* Board initialBoard = new Board(0, 0);
+        initialBoard = (Board) initialBoard.deserialize(jsonObject.get("board"));
+*/
+        String gameType = jsonObject.getAsJsonPrimitive("gameType").getAsString();
+
+
+        Game initialGame;
+        if (gameType.equals("LocalGame")) {
+            initialGame = new LocalGame(new Board(10, 10));
+            initialGame = (LocalGame) initialGame.deserialize(jsonObject.get("game"));
+        } else {
+            initialGame = new OnlineGame(new Board(0, 0), jsonObject.getAsJsonPrimitive("numberOfPlayersToStart").getAsInt());
+            initialGame = (OnlineGame) initialGame.deserialize(jsonObject.get("game"));
+        }
+
+
+        GameController gameController = new GameController(initialGame);
+
+
+        JsonElement commandCard = jsonObject.get("currentInteractiveCard");
+
+
+        gameController.currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
+
+
+        return gameController;
     }
 }
