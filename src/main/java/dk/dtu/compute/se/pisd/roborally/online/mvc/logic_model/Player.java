@@ -155,7 +155,7 @@ public abstract class Player extends Subject implements Serializable {
         jsonObject.addProperty("name", this.name);
         jsonObject.addProperty("playerID", this.playerID);
         if (this.prevProgramming != null) {
-            jsonObject.addProperty("previousCommand", this.prevProgramming.displayName);
+            jsonObject.addProperty("previousCommand", this.prevProgramming.toString());
         }
         jsonObject.addProperty("energyCubes", this.energyCubes);
         JsonArray jsonArrayProgram = new JsonArray();
