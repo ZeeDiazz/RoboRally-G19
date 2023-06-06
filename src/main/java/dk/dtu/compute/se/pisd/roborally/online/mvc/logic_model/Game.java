@@ -92,6 +92,9 @@ public abstract class Game extends Subject implements Serializable {
     public void addPlayer(@NotNull Player player) {
         if (/*player.board == this &&*/ !players.contains(player)) {
             players.add(player);
+            if (player.getPlayerID() == 0) {
+                player.setPlayerID(this.getPlayerCount());
+            }
             notifyChange();
         }
     }
@@ -236,9 +239,7 @@ public abstract class Game extends Subject implements Serializable {
         // status of the game
 
         // XXX: V2 changed the status so that it shows the phase, the player and the step
-        return "Phase: " + getPhase().name() +
-                ", Player = " + getCurrentPlayer().getName() +
-                ", Total Steps: " + getMoveCounter();
+        return "Phase: " + getPhase().name() + ", Player = " + getCurrentPlayer().getName() + ", Total Steps: " + getMoveCounter();
     }
 
     public ArrayList<Move> resultingMoves(Move move) {
@@ -285,9 +286,11 @@ public abstract class Game extends Subject implements Serializable {
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
+
         jsonObject.addProperty("gameType", this.getClass().getSimpleName());
         jsonObject.addProperty("gameId", this.gameId);
         jsonObject.addProperty("moveCounter", this.moveCounter);
+        jsonObject.addProperty("playerCount", this.getPlayerCount());
         jsonObject.addProperty("step", this.step);
         jsonObject.addProperty("stepMode", this.stepMode);
         jsonObject.addProperty("phase", this.phase.toString());
@@ -302,5 +305,68 @@ public abstract class Game extends Subject implements Serializable {
 
 
         return jsonObject;
+    }
+
+    @Override
+    public Serializable deserialize(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        JsonElement gameIdJson = jsonObject.get("gameId");
+        Integer gameId = (gameIdJson == null) ? null : gameIdJson.getAsInt();
+
+        int moveCounter = jsonObject.get("moveCounter").getAsInt();
+        int step = jsonObject.get("step").getAsInt();
+        Phase phase = Phase.valueOf(jsonObject.get("phase").getAsString());
+        boolean stepMode = jsonObject.get("stepMode").getAsBoolean();
+
+        Board board = new Board(1, 1);
+        board = (Board) board.deserialize(jsonObject.get("board"));
+
+
+        int playerCount = jsonObject.get("playerCount").getAsInt();
+
+        // Adding players
+        JsonArray playersJson = jsonObject.get("players").getAsJsonArray();
+
+        String gameType = jsonObject.getAsJsonPrimitive("gameType").getAsString();
+
+        Player playerToAdd = (gameType.equals("OnlineGame")) ? new OnlinePlayer(null, null, "") : new LocalPlayer(null, null, "");
+
+        ArrayList<Player> players = new ArrayList<>();
+        for (int i = 0; i < playerCount; i++) {
+            JsonObject playerJson = playersJson.get(i).getAsJsonObject();
+            playerToAdd = (Player) playerToAdd.deserialize(playerJson);
+            players.add(playerToAdd);
+        }
+
+        // PlayerName of current player
+        String currentPlayerName = jsonObject.get("currentPlayer").getAsString();
+        Player current = null;
+        for (Player player : players) {
+            if (currentPlayerName.equals(player.getName())) {
+                current = player;
+                break;
+            }
+        }
+
+        Game game1;
+
+        if (gameType.equals("OnlineGame")) {
+            game1 = new OnlineGame(board, gameId, current, phase, step, stepMode, moveCounter, jsonObject.getAsJsonPrimitive("numberOfPlayersToStart").getAsInt());
+        } else {
+            game1 = new LocalGame(board, gameId, current, phase, step, stepMode, moveCounter);
+        }
+        Space robotSpace;
+        Space spaceOnBoard;
+        for (Player player : players) {
+            player.setGame(game1);
+            game1.addPlayer(player);
+            robotSpace = player.robot.getSpace();
+            spaceOnBoard = game1.board.getSpace(robotSpace.getPosition());
+            player.robot.setSpace(spaceOnBoard);
+            game1.board.getSpace(spaceOnBoard.getPosition()).setRobotOnSpace(player.robot);
+        }
+
+        return game1;
     }
 }
