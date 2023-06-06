@@ -21,28 +21,26 @@
  */
 package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 
-import com.sun.javafx.fxml.builder.JavaFXSceneBuilder;
+import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.JSONTransformer;
 import javafx.application.Platform;
-import javafx.fxml.JavaFXBuilderFactory;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
-import javafx.stage.Modality;
-import javafx.stage.StageStyle;
+import javafx.stage.FileChooser;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 /**
  * ...
@@ -61,16 +59,32 @@ public class AppController implements Observer, GameFinishedListener {
 
     private static GameController gameController;
 
-// --Commented out by Inspection START (04-06-2023 22:42):
-//    @FXML
-//    FileChooser fileChooser = new FileChooser();
-// --Commented out by Inspection STOP (04-06-2023 22:42)
+    private static JSONTransformer jsonTransformer;
+    @FXML
+    FileChooser fileChooser = new FileChooser();
+
 
     /**
      * @param roboRally The Roborally game being played
      */
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
+    }
+
+    //todo
+    protected void makeLoadedGame(GameController gameController) {
+
+
+        jsonTransformer = new JSONTransformer(gameController);
+
+        AppController.gameController = gameController;
+
+        // Registers the event in the GameController class
+        gameController.setGameFinishedListener(this);
+
+        roboRally.createBoardView(gameController);
+
+
     }
 
     // Uses LocalPlayer for now...
@@ -91,7 +105,7 @@ public class AppController implements Observer, GameFinishedListener {
             }
 
         } else {
-             // TODO: 06-06-2023 
+            // TODO: 06-06-2023 
           /*  game = new OnlineGame(board, playerCount);
 
 
@@ -125,6 +139,7 @@ public class AppController implements Observer, GameFinishedListener {
 
             gameController = new GameController(game);*/
         }
+        jsonTransformer = new JSONTransformer(gameController);
 
 
         gameController.startProgrammingPhase(!hasCards);
@@ -185,12 +200,105 @@ public class AppController implements Observer, GameFinishedListener {
         }
     }
 
+    /**
+     * Saves the game to a json file. The player chooses where the file should be located on the local computer
+     * <p>The game can only be saved when in the Programming phase</p>
+     *
+     * @author Zigalow
+     */
+
+    @FXML
     public void saveGame() {
 
+
+        /*if (gameController.game.getPhase() != Phase.PROGRAMMING) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Not in Programming phase!");
+            alert.setContentText("Please reach the Programming phase before trying to save the game again");
+            alert.showAndWait();
+            return;
+        }
+
+        for (Player player : gameController.game.getPlayers()) {
+            for (CommandCardField commandCardField : player.getProgram()) {
+                if (commandCardField.getCard() != null) {
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setTitle("Cards in program field!");
+                    alert.setContentText("Please empty all the cards in each player's program field");
+                    alert.showAndWait();
+                    return;
+                }
+            }
+
+
+        }*/
+
+
+        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+        fileChooser.setTitle("Save Game"); // Description for action
+        fileChooser.setInitialFileName("RoboRally_SaveFile"); // Initial name of saveFile
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
+        File file = fileChooser.showSaveDialog(null);
+
+
+        if (file != null) {
+            try {
+                file.createNewFile();
+                // Saves to Json-file
+                JSONTransformer.saveBoard(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // If the user opts out of saving
+        } else {
+            return;
+        }
+
+
+        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
+
     }
 
+    @FXML
     public void loadGame() {
+
+
+        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+
+        fileChooser.setTitle("Load Game"); // Description for action
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be load as a json file type
+        File file = fileChooser.showOpenDialog(null);
+
+
+        if (file == null || !file.isFile()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("File could not be loaded");
+            alert.setContentText("There was a problem with loading the given file");
+            alert.showAndWait();
+            return;
+        }
+        GameController gameController1 = null;
+
+        try {
+            gameController1 = JSONTransformer.loadBoard(file);
+        } catch (Exception e) {
+          /*  Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("File could not be loaded");
+            alert.setContentText("There was a problem with loading the given file");
+            alert.showAndWait();
+            return;*/
+        }
+
+
+        makeLoadedGame(gameController1);
+
+
+        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
     }
+
 
     /**
      * Stop playing the current game, giving the user the option to save
