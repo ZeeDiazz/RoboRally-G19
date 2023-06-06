@@ -2,7 +2,6 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 
 public class OnlineGame extends Game {
 
@@ -10,8 +9,9 @@ public class OnlineGame extends Game {
     private int numberOfPlayersToStart;
 
 
-    public OnlineGame(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter) {
+    public OnlineGame(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter, int numberOfPlayersToStart) {
         super(board, gameId, current, phase, step, stepMode, moveCounter);
+        this.numberOfPlayersToStart = numberOfPlayersToStart;
     }
 
     @Override
@@ -24,17 +24,15 @@ public class OnlineGame extends Game {
         this.numberOfPlayersToStart = numberOfPlayersToStart;
     }
 
+    public int getNumberOfPlayersToStart() {
+        return numberOfPlayersToStart;
+    }
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = super.serialize().getAsJsonObject();
 
-        jsonObject.addProperty("numberOfPlayersToStart", this.numberOfPlayersToStart);
-
+        jsonObject.addProperty("numberOfPlayersToStart", getNumberOfPlayersToStart());
         return jsonObject;
-    }
-
-    @Override
-    public Serializable deserialize(JsonElement element) {
-        return null;
     }
 }
