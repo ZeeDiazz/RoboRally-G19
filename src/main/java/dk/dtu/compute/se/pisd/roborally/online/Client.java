@@ -10,9 +10,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@RestController
+//@RestController
 public class Client {
 
+    private RequestMaker requestMaker;
     private ResourceLocation resourceLocation;
     private Game game;
     // private int clientId;
@@ -22,7 +23,6 @@ public class Client {
      * @param requestMaker
      * @author ZeeDiazz (Zaid)
      */
-    private RequestMaker requestMaker;
     public Client(RequestMaker requestMaker){
         this.requestMaker = requestMaker;
     }
