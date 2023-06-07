@@ -2,16 +2,21 @@ package dk.dtu.compute.se.pisd.roborally.online;
 
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
+import dk.dtu.compute.se.pisd.roborally.restful.RequestMaker;
 
-public interface Client {
+public class Client {
 
+    private RequestMaker requestMaker;
     // private Game game;
     // private int clientId;
 
+    public Client(RequestMaker requestMaker){
+        this.requestMaker = requestMaker;
+    }
 
     // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
     // If not, a valid gameID should be used to create the game
-    Game createGame(int gameId);
+    /*Game createGame(int gameId);
 
     // If the player doesn't prefer to choose the gameID
     // Game will include the Player who makes the game
@@ -41,5 +46,5 @@ public interface Client {
     void loadGame();
 
     // (to perform the move of the other players, when activationPhase can begin)
-    void simulateActivationPhase();
+    void simulateActivationPhase();*/
 }
