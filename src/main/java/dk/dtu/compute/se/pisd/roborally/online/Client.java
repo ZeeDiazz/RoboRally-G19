@@ -6,8 +6,6 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
 public interface Client {
 
     // private Game game;
-
-
     // private int clientId;
 
 
@@ -24,10 +22,24 @@ public interface Client {
 
     boolean canStartGame();
 
-    void finishedProgramming();
+    void finishedProgrammingPhase();
 
-    boolean startActivationPhase();
+    boolean canStartActivationPhase();
 
-    boolean finishedWithRegister();
+    void sendStatusInfo();
 
+    // (Ask if the game is finished)
+    boolean gameIsFinished();
+
+    // (To get the clientId of the player, from the server)
+    boolean getPlayerId();
+
+    // (save game)
+    void saveGame();
+
+    // (load game)
+    void loadGame();
+
+    // (to perform the move of the other players, when activationPhase can begin)
+    void simulateActivationPhase();
 }
