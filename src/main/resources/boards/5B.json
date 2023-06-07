@@ -3,7 +3,7 @@
   "height": 10,
   "spaces": [
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -11,7 +11,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -19,7 +19,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -27,7 +27,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -35,7 +35,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -43,7 +43,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -51,7 +51,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -59,7 +59,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 1,
@@ -67,7 +67,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 2,
@@ -75,7 +75,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 2,
@@ -83,7 +83,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 3,
@@ -91,7 +91,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 4,
@@ -99,7 +99,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 5,
@@ -107,7 +107,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 6,
@@ -115,7 +115,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 7,
@@ -123,7 +123,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 8,
@@ -131,7 +131,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 9,
@@ -139,7 +139,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "WEST",
       "position": {
         "x": 9,
@@ -147,7 +147,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -155,7 +155,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -163,7 +163,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -171,7 +171,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -179,7 +179,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -187,7 +187,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -195,7 +195,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -203,7 +203,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "SOUTH",
       "position": {
         "x": 2,
@@ -211,7 +211,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 0,
@@ -219,7 +219,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 1,
@@ -227,7 +227,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 2,
@@ -235,7 +235,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 3,
@@ -243,7 +243,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 4,
@@ -251,7 +251,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 5,
@@ -259,7 +259,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 6,
@@ -267,7 +267,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 7,
@@ -275,7 +275,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "EAST",
       "position": {
         "x": 0,
@@ -283,7 +283,7 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 8,
@@ -291,20 +291,12 @@
       }
     },
     {
-      "type": "BlueConveyorSpace",
+      "obstacleType": "BlueConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 7,
         "y": 9
       }
-    },
-    {
-      "type": "CheckPointSpace",
-      "position": {
-        "x": 9,
-        "y": 3
-      },
-      "number": 0
     }
   ],
   "walls": [

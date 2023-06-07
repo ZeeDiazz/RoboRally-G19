@@ -12,7 +12,7 @@ import java.util.HashMap;
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection.*;
 
 public final class MapMaker {
-    public static Board makeCustomBoard(HashMap<Position, Space> specialSpaces, HashMap<Position, HeadingDirection[]> walls, int width, int height, String name, int checkPointNum) {
+    public static Board makeCustomBoard(HashMap<Position, Space> specialSpaces, HashMap<Position, HeadingDirection[]> walls, int width, int height, String name) {
         Space[][] spaces = new Space[width][height];
 
         // Fill up the slots
@@ -36,7 +36,7 @@ public final class MapMaker {
             }
         }
 
-        return new Board(width, height, name, spaces, checkPointNum);
+        return new Board(spaces, name);
     }
     /**
      * Loads a map from json fil from the map given in the parameter
@@ -55,9 +55,10 @@ public final class MapMaker {
         //Get the width and height of the map
         int width = mapBoard.get("width").getAsInt();
         int height = mapBoard.get("height").getAsInt();
+
         //All spaces
         JsonArray spaces = mapBoard.get("spaces").getAsJsonArray();
-        int checkPointNumber = 0;
+
         //HashMap for all obstaclesSpaces in the map
         HashMap<Position, Space> obstacleSpaces = new HashMap<>();
         for (JsonElement obstacles : spaces){
@@ -70,7 +71,7 @@ public final class MapMaker {
 
             // Create the appropriate space object based on the "type" field in the JSON
             Space space = null;
-            String type = spaceObject.get("type").getAsString();
+            String type = spaceObject.get("obstacleType").getAsString();
 
             switch (type){
                 case "BlueConveyorSpace" -> {
@@ -84,10 +85,7 @@ public final class MapMaker {
                     space = new GreenConveyorSpace(position, direction);
                 }
                 case "PitSpace" -> space = new PitSpace(position, new HeadingDirection[0]);
-                case "CheckPointSpace" -> {
-                    checkPointNumber = spaceObject.get("number").getAsInt();
-                    space = new CheckPointSpace(position,checkPointNumber, new HeadingDirection[0]);
-                }
+
             }
             //put the obstacle in the hashmap
             obstacleSpaces.put(position, space);
@@ -107,7 +105,7 @@ public final class MapMaker {
             walls.put(position,new HeadingDirection[]{direction});
         }
         //Create a board with the obstacles and walls and the width and
-        return makeCustomBoard(obstacleSpaces, walls, width, height, "5B",checkPointNumber);
+        return makeCustomBoard(obstacleSpaces, walls, width, height, map);
     }
 
     /**
@@ -139,7 +137,10 @@ public final class MapMaker {
     public static Board makeJsonRiskyCrossing() throws FileNotFoundException {
         Board startA = loadJsonBoard("StartA");
         Board startB = loadJsonBoard("5A");
-        return Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Risky Crossing");
+        Board riskyCrossing = Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Risky Crossing");
+        riskyCrossing.addCheckpoint(new Position(8, 7));
+        riskyCrossing.addCheckpoint(new Position(11, 0));
+        return riskyCrossing;
     }
 
     /**
@@ -151,6 +152,8 @@ public final class MapMaker {
     public static Board makeJsonDizzyHighway() throws FileNotFoundException {
         Board startA = loadJsonBoard("StartA");
         Board startB = loadJsonBoard("5B");
-        return Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Dizzy Highway");
+        Board dizzyHighway =  Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Dizzy Highway");
+        dizzyHighway.addCheckpoint(new Position(12, 3));
+        return dizzyHighway;
     }
 }
