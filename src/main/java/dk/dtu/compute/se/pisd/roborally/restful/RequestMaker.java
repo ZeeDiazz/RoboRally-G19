@@ -2,6 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.restful;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,8 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-public abstract class RequestMaker {
+@Component
+public class RequestMaker {
     private static final HttpClient client = HttpClient.newBuilder().build();
     private static final JsonParser jsonParser = new JsonParser();
 

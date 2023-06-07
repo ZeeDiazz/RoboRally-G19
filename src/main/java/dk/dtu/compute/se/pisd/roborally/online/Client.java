@@ -3,27 +3,81 @@ package dk.dtu.compute.se.pisd.roborally.online;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
 import dk.dtu.compute.se.pisd.roborally.restful.RequestMaker;
+import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+@RestController
 public class Client {
 
-    private RequestMaker requestMaker;
-    // private Game game;
+    private ResourceLocation resourceLocation;
+    private Game game;
     // private int clientId;
 
+    /**
+     *
+     * @param requestMaker
+     * @author ZeeDiazz (Zaid)
+     */
+    private RequestMaker requestMaker;
     public Client(RequestMaker requestMaker){
         this.requestMaker = requestMaker;
     }
 
     // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
     // If not, a valid gameID should be used to create the game
-    /*Game createGame(int gameId);
+
+    /**
+     *
+     * @param gameId
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     * @author Zigalow & ZeeDiazz (Zaid)
+     */
+    Game createGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
+        //Create the request to the server to create the game
+        URI createGameURI = requestMaker.makeUri(resourceLocation.baseLocation, resourceLocation.joinGame, String.valueOf(gameId));
+
+        //Get request
+        requestMaker.getRequest(createGameURI);
+
+        //POST Request
+        String stringTest = "";
+        requestMaker.postRequest(createGameURI, stringTest);
+
+
+        return game;
+    }
+
 
     // If the player doesn't prefer to choose the gameID
     // Game will include the Player who makes the game
-    Game createGame();
+
+    /**
+     *
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     * @author Zigalow & ZeeDiazz (Zaid)
+     */
+    Game createGame() throws URISyntaxException, IOException, InterruptedException {
+        int num = 0;
+
+        URI createGameURI = requestMaker.makeUri(resourceLocation.baseLocation, resourceLocation.joinGame, String.valueOf(num));
+
+        requestMaker.getRequest(createGameURI);
+
+        return game;
+    }
 
     // Returns a game where there is the newly made player
-    Game joinGame(int gameId);
+    /*Game joinGame(int gameId);
 
     boolean canStartGame();
 

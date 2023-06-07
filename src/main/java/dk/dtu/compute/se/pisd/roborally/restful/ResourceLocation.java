@@ -1,5 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.restful;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public abstract class ResourceLocation {
     public static final String baseLocation = "http://localhost:8080";
     public static final String allGames = "/games";
