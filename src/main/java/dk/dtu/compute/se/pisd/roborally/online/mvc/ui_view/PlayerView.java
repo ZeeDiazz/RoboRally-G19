@@ -156,7 +156,7 @@ public class PlayerView extends Tab implements ViewObserver {
                 if (cardFieldView != null) {
                     if (player.game.getPhase() == Phase.PROGRAMMING) {
                         cardFieldView.setBackground(CardFieldView.BG_DEFAULT);
-                        cardFieldView.imageView.setImage(null);
+                        //cardFieldView.imageView.setImage(null);
                     } else {
                         if (i < player.game.getStep()) {
                             cardFieldView.setBackground(CardFieldView.BG_DONE);
