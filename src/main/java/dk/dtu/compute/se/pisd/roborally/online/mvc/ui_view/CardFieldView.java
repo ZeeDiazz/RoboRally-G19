@@ -169,6 +169,8 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 imageView.setImage(image);
                 label.setGraphic(imageView);
             } else {
+                imageView.setImage(null);
+                //label.setGraphic(imageView);
                 label.setText("");
             }
         }
