@@ -3,6 +3,9 @@ package dk.dtu.compute.se.pisd.roborally.restful;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
+@Component
 
 public class ResponseMaker<T> {
     public ResponseEntity<T> itemResponse(T item) {

@@ -1,4 +1,5 @@
 package dk.dtu.compute.se.pisd.roborally.server;
+import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,8 +13,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 public class Server {
     private ResponseMessage responseMessages;
-    public Server(ResponseMessage responseMessages) {
-        this.responseMessages = responseMessages;
+    private ResponseMaker responseMaker;
+    public Server(ResponseMaker responseMaker) {
+        this.responseMaker = responseMaker;
     }
     // intialize list of lobbies, not null
     List<Lobby> lobbies = new ArrayList<>();
@@ -27,8 +29,8 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @GetMapping("/greeting")
-    public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return new Greeting(counter.incrementAndGet(), responseMessages.greetingMessage(name));
+    public Response greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+        return new Response(this.responseMaker.ok());
     }
 
     /**
