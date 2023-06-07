@@ -53,17 +53,11 @@ public class Board extends Subject implements Serializable {
      * @param checkpointAmount
      * @author Daniel Jensen
      */
-    private Board(/*int moveCounter,*/ int width, int height, String boardName/*, Integer gameId*/, Space[][] spaces/*, Player current, Phase phase, int step, boolean stepMode*/, int checkpointAmount) {
-        //this.moveCounter = moveCounter;
+    private Board(int width, int height, String boardName, Space[][] spaces, int checkpointAmount) {
         this.width = width;
         this.height = height;
         this.boardName = boardName;
-        //this.gameId = gameId;
         this.spaces = spaces;
-        //this.current = current;
-        //this.phase = phase;
-        //this.step = step;
-        //this.stepMode = stepMode;
         this.checkpointAmount = checkpointAmount;
     }
 
