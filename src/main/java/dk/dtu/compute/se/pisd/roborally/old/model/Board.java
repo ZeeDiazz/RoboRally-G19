@@ -25,7 +25,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.*;
 import dk.dtu.compute.se.pisd.roborally.old.fileaccess.ISerializable;
 import dk.dtu.compute.se.pisd.roborally.old.model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.old.model.spaces.Space;
@@ -254,6 +253,7 @@ public class Board extends Subject implements ISerializable {
 
     /**
      * Gets the current step of the board
+     *
      * @return the current step of the programming phase
      */
     public int getStep() {
@@ -271,7 +271,7 @@ public class Board extends Subject implements ISerializable {
             notifyChange();
         }
     }
-
+    
     /**
      * checks if the board is in step mode
      *

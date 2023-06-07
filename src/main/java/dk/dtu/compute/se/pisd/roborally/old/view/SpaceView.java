@@ -22,7 +22,6 @@
 package dk.dtu.compute.se.pisd.roborally.old.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.spaces.*;
 import dk.dtu.compute.se.pisd.roborally.old.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.old.model.Player;
 import dk.dtu.compute.se.pisd.roborally.old.model.spaces.*;
