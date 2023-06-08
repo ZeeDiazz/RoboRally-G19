@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 public class ClientController {
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        Client client = new Client();
+        //  Client client = new Client();
         //    client.createGame(0);
     }
 }
