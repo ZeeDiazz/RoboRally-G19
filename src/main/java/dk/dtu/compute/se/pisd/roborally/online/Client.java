@@ -38,8 +38,11 @@ public class Client {
      * @throws InterruptedException
      * @author Zigalow & ZeeDiazz (Zaid)
      */
-    public Game createGame(int gameId, int numberOfPlayersToStart) throws URISyntaxException, IOException, InterruptedException {
+    // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
+
+    public Game createGame(Integer gameId, int numberOfPlayersToStart) throws URISyntaxException, IOException, InterruptedException {
         //Create the request to the server to create the game
+
         int minimumNumberOfPlayersToStart = (numberOfPlayersToStart >= 2 && numberOfPlayersToStart <= 6) ? numberOfPlayersToStart : 2;
 
         Map<String, String> values = new HashMap<>(1);
@@ -67,10 +70,7 @@ public class Client {
             return null;
         }
     }
-
-
-    // If the player doesn't prefer to choose the gameID
-    // Game will include the Player who makes the game
+    
 
     /**
      * @return
@@ -79,27 +79,14 @@ public class Client {
      * @throws InterruptedException
      * @author Zigalow & ZeeDiazz (Zaid)
      */
-    Game createGame() throws URISyntaxException, IOException, InterruptedException {
-        URI createGameURI = makeUri(baseLocation + joinGame,"gameId","");
 
-        Response<JsonObject> jsonGameFromServer = getRequestJson(createGameURI);
-
-        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
-
-            JsonObject gameFromServer = jsonGameFromServer.getItem();
-
-            Game initialGame = new OnlineGame(new Board(10, 10), 2);
-            game = (OnlineGame) initialGame.deserialize(gameFromServer);
-
-            System.out.println("Connected");
-            System.out.println("gameId: " + game.getGameId());
-
-            return game;
-        } else {
-            System.out.println("Failed connection:");
-            return null;
-        }
+    // If the player doesn't prefer to choose the gameID
+    // Game will include the Player who makes the game
+    Game createGame(int minimumNumberOfPlayersToStart) throws URISyntaxException, IOException, InterruptedException {
+        return createGame(null, minimumNumberOfPlayersToStart);
     }
+
+    // TODO - Where does the client select the board
 
     // Returns a game where there is the newly made player
     /*Game joinGame(int gameId);
