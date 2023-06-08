@@ -140,22 +140,31 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @PostMapping(ResourceLocation.joinGame)
-    public ResponseEntity<Integer> playerJoinRequest(@RequestBody Integer lobbyId) {
+    public ResponseEntity<Integer> playerJoinRequest(@RequestParam Integer lobbyId) {
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
-        AtomicLong counter = new AtomicLong();
+        for (Lobby lobby : lobbies) {
+            if (lobby.getLobbyId() == lobbyId) {
+                // check if lobby is full
+                if (lobby.getPlayers().size() >= 6) {
+                    System.out.println("Lobby is full");
+                    return (new ResponseMaker<Integer>()).forbidden();
+                }
+            }
+        }
+        // add player to lobby
+        System.out.println("Lobby not full");
         int playerId = (int) counter.incrementAndGet();
         System.out.println("Player given id: " + playerId);
         addPlayerToLobby(playerId, lobbyId);
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
         return responseMaker.itemResponse(playerId);
-        // return new Greeting(counter.incrementAndGet(),responseMessages.getLobbyJoinedMessage(playerId,lobbyId));
     }
 
     @PostMapping(ResourceLocation.leaveGame)
     public ResponseEntity<Void> playerLeaveRequest(@RequestBody JsonObject info) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-
+        // check if lobby and player exists
         if (!info.has("lobbyId")) {
             return responseMaker.methodNotAllowed();
         }
