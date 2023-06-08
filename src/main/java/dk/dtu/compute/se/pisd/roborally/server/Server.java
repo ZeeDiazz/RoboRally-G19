@@ -12,124 +12,53 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class Server {
+    // TODO: 2023-06-08 implement a way to get ALL games
+    // TODO: 2023-06-08 implement a way to get info on specific game
+    // TODO: 2023-06-08 implement a way to get info on specific player
+    // TODO: 2023-06-09 implement a way to Load game, save game, delete saved game
+
     private ResponseMessage responseMessages;
     private ResponseMaker responseMaker;
-    public Server(ResponseMaker responseMaker) {
+    public Server(ResponseMaker responseMaker, ResponseMessage responseMessages) {
         this.responseMaker = responseMaker;
+        this.responseMessages = responseMessages;
     }
     // intialize list of lobbies, not null
     List<Lobby> lobbies = new ArrayList<>();
     private int lobbySize = 0;
     private final AtomicLong counter = new AtomicLong();
 
-    /**
-     * Method for handling get requests to /greeting
-     * @param name a string value
-     * @return a Greeting object using the counter and template
-     * @auther Felix Schmidt (Felix732)
-     */
     @GetMapping("/greeting")
-    public Response greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return new Response(this.responseMaker.ok());
+    public Message greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+        return new Message(responseMaker.ok(),responseMessages.greetingMessage(name));
     }
+    /* -- resource /game -- */
 
-    /**
-     * Method for handling post requests to /api/lobby/create
-     * @param lobbyId Integer value to identify the lobby
-     * @return a Greeting object using the counter and lobbyCreated template
-     * @auther Felix Schmidt (Felix732)
-     */
-    @PostMapping(value = "/api/lobby/create")
-    public Greeting lobbyCreateRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
-
+    @PostMapping(value = "/game")
+    public Message lobbyCreateRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
+        if(lobbyAlreadyExists(lobbyId)) {
+            return new Message(responseMaker.forbidden(),responseMessages.getLobbyAlreadyExistsMessage(lobbyId));
+        }
         lobbies.add(new Lobby(lobbyId));
-        return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyCreatedMessage(lobbyId));
     }
-
-    /**
-     * Method for handling post request to /api/lobby/join
-     * @param lobbyId Integer value to identify the lobby
-     * @param playerId Integer value to identify the player
-     * @return a Greeting object using the counter and lobbyJoined template
-     * @auther Felix Schmidt (Felix732)
-     */
-    @PostMapping(value = "/api/player/join")
-    public Greeting playerJoinRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
-                                      @RequestParam(value = "playerId") Integer playerId) {
+    @DeleteMapping(value = "/game")
+    public Message lobbyDeleteRequest(@RequestParam(value = "lobbyId")Integer lobbyId) {
+        deleteLobby(lobbyId);
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyDeletedMessage(lobbyId));
+    }
+    /* -- resource /game/join -- */
+    @PostMapping(value = "/game/join")
+    public Message playerJoinRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
+                                     @RequestParam(value = "playerId") Integer playerId) {
         // get the lobby with matching id
         addPlayerToLobby(playerId, lobbyId);
-        return new Greeting(counter.incrementAndGet(),responseMessages.getLobbyJoinedMessage(playerId,lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyJoinedMessage(lobbyId,playerId));
     }
-
-    /**
-     * Method for handling post request to /api/player/ready
-     * @param lobbyId Integer value to identify the lobby
-     * @param playerId Integer value to identify the player
-     * @return  a Greeting object using the counter and playerReady template
-     */
-    @GetMapping(value = "/api/player/ready")
-    public Greeting playerSetReadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
-                                          @RequestParam(value = "playerId") Integer playerId) {
-        lobbies.get(lobbyId).setIsReady(playerId);
-        return new Greeting(counter.incrementAndGet(), responseMessages.getPlayerReadyMessage(playerId, lobbyId));
-    }
-
-    /**
-     * Method for handling post request to /api/player/unready
-     * @param lobbyId Integer value to identify the lobby
-     * @param playerId Integer value to identify the player
-     * @return a Greeting object using the counter and playerNotReady template
-     * @auther Felix Schmidt (Felix732)
-     */
-    @PutMapping(value = "/api/player/unready")
-    public Greeting playerNotreadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
-                                          @RequestParam(value = "playerId") Integer playerId){
-        lobbies.get(lobbyId).setNotReady(playerId);
-        return new Greeting(counter.incrementAndGet(), responseMessages.getPlayerNotReadyMessage(playerId, lobbyId));
-    }
-
-    /**
-     * Method for handling post request to /api/player/leave
-     * @param lobbyId Integer value to identify the lobby
-     * @param playerId Integer value to identify the player
-     * @return a Greeting object using the counter and lobbyLeaved template
-     */
-    @PutMapping(value = "/api/player/leave")
-    public Greeting playerLeaveRequest(@RequestParam(value = "lobbyId")Integer lobbyId,
-                                       @RequestParam(value = "playerId") Integer playerId ) {
-        removePlayerToLobby(playerId, lobbyId);
-        return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyLeavedMessage(playerId,lobbyId));
-    }
-
-    /**
-     * Method for handling post request to /api/lobby/delete
-     * @param lobbyId Integer value to identify the lobby
-     * @return a Greeting object using the counter and lobbyDeleted template
-     * @auther Felix Schmidt (Felix732)
-     */
-    @DeleteMapping(value = "/api/lobby/delete")
-    public Greeting lobbyDeleteRequest(@RequestParam(value = "lobbyId")Integer lobbyId) {
-        deleteLobby(lobbyId);
-        return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyDeletedMessage(lobbyId));
-    }
-
-    /* -- -- -- */
-    // simple get request to check if server is running
-    // http://localhost:8190/api/server/running
-
-    /**
-     * @auther Felix Schmidt (Felix732)
-     */
-    @GetMapping(value = "/api/server/running")
-    public Greeting serverRunningRequest() {
-        return new Greeting(counter.incrementAndGet(), "Server is running!");
-    }
+    /* -- resource /game/status -- */
     // get if lobby is ready
     // http://localhost:8190/api/lobby/ready?lobbyId=0
-    /**
-     * @auther Felix Schmidt (Felix732)
-     */
-    @GetMapping(value = "/api/lobby/ready")
+    @GetMapping(value = "/game/status")
     public Greeting lobbyReadyRequest(@RequestParam(value = "lobbyId")Integer lobbyId) {
         for (int i = 0; i < lobbies.size(); i++) {
             if (lobbies.get(i).Id == lobbyId) {
@@ -140,11 +69,48 @@ public class Server {
         }
         return new Greeting(counter.incrementAndGet(), "Lobby is not ready!");
     }
-    // get if player is ready
-    // http://localhost:8190/api/player/isReady?lobbyId=0&playerId=0
-    /**
-     * @auther Felix Schmidt (Felix732)
-     */
+    @GetMapping(value = "game/statustwo")
+    public Message playerSetReadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
+                                         @RequestParam(value = "playerId") Integer playerId) {
+        lobbies.get(lobbyId).setIsReady(playerId);
+        return new Message(responseMaker.accepted(),responseMessages.getPlayerReadyMessage(playerId,lobbyId));
+    }
+    @PutMapping(value = "/api/player/unready")
+    public Message playerNotreadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
+                                         @RequestParam(value = "playerId") Integer playerId){
+        lobbies.get(lobbyId).setNotReady(playerId);
+        return new Message(responseMaker.accepted(),responseMessages.getPlayerNotReadyMessage(playerId,lobbyId));
+    }
+    // get size of lobby
+    // http://localhost:8190/api/lobby/size?lobbyId=2
+    // TODO: move into game/status
+    @GetMapping(value = "/api/lobby/size")
+    public Greeting lobbySizeRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
+        for (int i = 0; i < lobbies.size(); i++) {
+            if (lobbies.get(i).Id == lobbyId) {
+                lobbySize = lobbies.get(i).getPlayers().size();
+                return new Greeting(counter.incrementAndGet(), "Lobby size is: " + lobbySize);
+            }
+        }
+        return new Greeting(counter.incrementAndGet(), "Lobby does not exist!");
+    }
+    /* -- resource /game/save -- */
+    // TODO
+
+    /* -- resource /player -- */
+    @DeleteMapping(value = "player")
+    public Message playerLeaveRequest(@RequestParam(value = "lobbyId")Integer lobbyId,
+                                      @RequestParam(value = "playerId") Integer playerId ) {
+        // make it so you can only delete yourself
+        removePlayerToLobby(playerId, lobbyId);
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyLeavedMessage(playerId,lobbyId));
+    }
+    @GetMapping(value = "/player")
+    public Message playerInfo(@RequestParam(value = "lobbyId")Integer lobbyId,
+                              @RequestParam(value = "playerId") Integer playerId){
+        // TODO
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyDeletedMessage(lobbyId));
+    }
     @GetMapping(value = "/api/player/isReady")
     public Greeting isPlayerReadyRequest(@RequestParam(value = "lobbyId")Integer lobbyId,
                                          @RequestParam(value = "playerId") Integer playerId) {
@@ -157,21 +123,19 @@ public class Server {
         }
         return new Greeting(counter.incrementAndGet(), "Player is not ready!");
     }
-    // get size of lobby
-    // http://localhost:8190/api/lobby/size?lobbyId=2
-    /**
-     * @auther Felix Schmidt (Felix732)
-     */
-    @GetMapping(value = "/api/lobby/size")
-    public Greeting lobbySizeRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
-        for (int i = 0; i < lobbies.size(); i++) {
-            if (lobbies.get(i).Id == lobbyId) {
-                lobbySize = lobbies.get(i).getPlayers().size();
-                return new Greeting(counter.incrementAndGet(), "Lobby size is: " + lobbySize);
-            }
-        }
-        return new Greeting(counter.incrementAndGet(), "Lobby does not exist!");
+
+    /* -- -- -- */
+    // simple get request to check if server is running
+    // http://localhost:8190/api/server/running
+
+    @GetMapping(value = "/api/server/running")
+    public Greeting serverRunningRequest() {
+        return new Greeting(counter.incrementAndGet(), "Server is running!");
     }
+
+    // get if player is ready
+    // http://localhost:8190/api/player/isReady?lobbyId=0&playerId=0
+
 
     /**
      * Method for adding a player to a lobby
@@ -212,5 +176,13 @@ public class Server {
                 lobbies.remove(i);
             }
         }
+    }
+    public boolean lobbyAlreadyExists(int lobbyId){
+        for (int i = 0; i < lobbies.size(); i++){
+            if (lobbyId == lobbies.get(i).Id) {
+                return true;
+            }
+        }
+        return false;
     }
 }
