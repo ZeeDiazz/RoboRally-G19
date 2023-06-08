@@ -100,10 +100,9 @@ public class Client {
 
     // Returns a game where there is the newly made player
     Game joinGame(int gameId) throws IOException, InterruptedException, URISyntaxException {
-        URI joinGameURI = makeUri(baseLocation + joinGame, "gameId", String.valueOf(gameId));
 
-
-        Response<JsonObject> jsonGameFromServer = postRequestJson(joinGameURI, gameId + "");
+        URI joinGameURI = makeURI(joinGame);
+        Response<JsonObject> jsonGameFromServer = postRequestJson(joinGameURI,gameId+"");
 
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             JsonObject gameFromServer = jsonGameFromServer.getItem();
