@@ -4,8 +4,8 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.Response;
-import static dk.dtu.compute.se.pisd.roborally.restful.RequestMaker.getRequest;
-import static dk.dtu.compute.se.pisd.roborally.restful.RequestMaker.makeUri;
+
+import static dk.dtu.compute.se.pisd.roborally.restful.RequestMaker.*;
 import static dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation.baseLocation;
 import static dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation.joinGame;
 
