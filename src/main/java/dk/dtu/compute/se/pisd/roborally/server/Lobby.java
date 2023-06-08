@@ -43,7 +43,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public void addPlayer(int playerId){
-        this.players.add(playerId);
+        players.add(playerId);
     }
     /**
      * Method to get the lobby id
@@ -60,7 +60,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public List<Integer> getPlayers(){
-        return this.players;
+        return players;
     }
 
     /**
@@ -69,7 +69,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public void removePlayer(int playerId){
-        this.players.remove(playerId);
+        players.remove(playerId);
     }
 
     /**

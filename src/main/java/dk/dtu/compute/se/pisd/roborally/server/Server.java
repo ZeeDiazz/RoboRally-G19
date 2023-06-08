@@ -29,31 +29,31 @@ public class Server {
     private final AtomicLong counter = new AtomicLong();
 
     @GetMapping("/greeting")
-    public Response greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return new Response(this.responseMaker.ok(),this.responseMessages.greetingMessage(name));
+    public Message greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+        return new Message(responseMaker.ok(),responseMessages.greetingMessage(name));
     }
     /* -- resource /game -- */
 
     @PostMapping(value = "/game")
-    public Response lobbyCreateRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
+    public Message lobbyCreateRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
         if(lobbyAlreadyExists(lobbyId)) {
-            return new Response(this.responseMaker.forbidden(),this.responseMessages.getLobbyAlreadyExistsMessage(lobbyId));
+            return new Message(responseMaker.forbidden(),responseMessages.getLobbyAlreadyExistsMessage(lobbyId));
         }
         lobbies.add(new Lobby(lobbyId));
-        return new Response(this.responseMaker.accepted(),this.responseMessages.getLobbyCreatedMessage(lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyCreatedMessage(lobbyId));
     }
     @DeleteMapping(value = "/game")
-    public Response lobbyDeleteRequest(@RequestParam(value = "lobbyId")Integer lobbyId) {
+    public Message lobbyDeleteRequest(@RequestParam(value = "lobbyId")Integer lobbyId) {
         deleteLobby(lobbyId);
-        return new Response(this.responseMaker.accepted(),this.responseMessages.getLobbyDeletedMessage(lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyDeletedMessage(lobbyId));
     }
     /* -- resource /game/join -- */
     @PostMapping(value = "/game/join")
-    public Response playerJoinRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
-                                      @RequestParam(value = "playerId") Integer playerId) {
+    public Message playerJoinRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
+                                     @RequestParam(value = "playerId") Integer playerId) {
         // get the lobby with matching id
         addPlayerToLobby(playerId, lobbyId);
-        return new Response(this.responseMaker.accepted(),this.responseMessages.getLobbyJoinedMessage(playerId,lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyJoinedMessage(lobbyId,playerId));
     }
     /* -- resource /game/status -- */
     // get if lobby is ready
@@ -70,16 +70,16 @@ public class Server {
         return new Greeting(counter.incrementAndGet(), "Lobby is not ready!");
     }
     @GetMapping(value = "game/statustwo")
-    public Response playerSetReadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
-                                          @RequestParam(value = "playerId") Integer playerId) {
+    public Message playerSetReadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
+                                         @RequestParam(value = "playerId") Integer playerId) {
         lobbies.get(lobbyId).setIsReady(playerId);
-        return new Response(this.responseMaker.accepted(),this.responseMessages.getPlayerReadyMessage(playerId,lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getPlayerReadyMessage(playerId,lobbyId));
     }
     @PutMapping(value = "/api/player/unready")
-    public Response playerNotreadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
-                                          @RequestParam(value = "playerId") Integer playerId){
+    public Message playerNotreadyRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
+                                         @RequestParam(value = "playerId") Integer playerId){
         lobbies.get(lobbyId).setNotReady(playerId);
-        return new Response(this.responseMaker.accepted(),this.responseMessages.getPlayerNotReadyMessage(playerId,lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getPlayerNotReadyMessage(playerId,lobbyId));
     }
     // get size of lobby
     // http://localhost:8190/api/lobby/size?lobbyId=2
@@ -99,17 +99,17 @@ public class Server {
 
     /* -- resource /player -- */
     @DeleteMapping(value = "player")
-    public Response playerLeaveRequest(@RequestParam(value = "lobbyId")Integer lobbyId,
-                                       @RequestParam(value = "playerId") Integer playerId ) {
+    public Message playerLeaveRequest(@RequestParam(value = "lobbyId")Integer lobbyId,
+                                      @RequestParam(value = "playerId") Integer playerId ) {
         // make it so you can only delete yourself
         removePlayerToLobby(playerId, lobbyId);
-        return new Response(this.responseMaker.accepted(),this.responseMessages.getLobbyLeavedMessage(playerId,lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyLeavedMessage(playerId,lobbyId));
     }
     @GetMapping(value = "/player")
-    public Response playerInfo(@RequestParam(value = "lobbyId")Integer lobbyId,
-                               @RequestParam(value = "playerId") Integer playerId){
+    public Message playerInfo(@RequestParam(value = "lobbyId")Integer lobbyId,
+                              @RequestParam(value = "playerId") Integer playerId){
         // TODO
-        return new Response(this.responseMaker.accepted(),this.responseMessages.getLobbyDeletedMessage(lobbyId));
+        return new Message(responseMaker.accepted(),responseMessages.getLobbyDeletedMessage(lobbyId));
     }
     @GetMapping(value = "/api/player/isReady")
     public Greeting isPlayerReadyRequest(@RequestParam(value = "lobbyId")Integer lobbyId,
