@@ -14,6 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Optional;
+
+/**
+ * ...
+ * This class is responsible for the users interaction with:
+ * game phases, execution of cards, execution of steps, movement, and who's the current player.
+ *
+ * @author Ekkart Kindler, ekki@dtu.dk
+ */
 
 public class GameController implements Serializable {
 
@@ -22,14 +31,19 @@ public class GameController implements Serializable {
     public static Board board = null;
     public static Game game = null;
     private static CommandExecuter commandExecution;
-
+    /**
+     * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
+     * This is also so that the PlayerView class is able to access the interactive card in question
+     *
+     * @author Zigalow
+     */
     public Command currentInteractiveCard;
 
-    public GameController(@NotNull Game game/*, @NotNull Board board*/) {
+    public GameController(@NotNull Game game) {
         this.game = game;
         commandExecution = new CommandExecuter(game.board);
-        //this.board = board;
-        //executeCommands = new ExecuteCommands(board);
+
+
     }
 
     public GameController(@NotNull Board board) {
@@ -110,13 +124,8 @@ public class GameController implements Serializable {
         }
     }
 
-    /**
-     * Starts the programming phase. If randomCards is true, random cards will be generated for each player
-     *
-     * @param randomCards True if cards needs to be randomly generated
-     */
 
-    public void startProgrammingPhase(boolean randomCards) {
+    public void startProgrammingPhase() {
         game.setPhase(Phase.PROGRAMMING);
         game.setCurrentPlayer(game.getPlayer(0));
         game.setStep(0);
@@ -126,17 +135,15 @@ public class GameController implements Serializable {
             if (player != null) {
                 for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
-                    if (randomCards) {
-                        field.setCard(null);
-                        field.setVisible(true);
-                    }
+
+                    field.setCard(null);
+                    field.setVisible(true);
+
 
                 }
                 for (int j = 0; j < Player.NUMBER_OF_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
-                    if (randomCards) {
-                        field.setCard(generateRandomCommandCard());
-                    }
+                    field.setCard(generateRandomCommandCard());
                     field.setVisible(true);
                 }
             }
@@ -273,7 +280,7 @@ public class GameController implements Serializable {
 
                 game.setStep(currentStep);
             } else {
-                startProgrammingPhase(true);
+                startProgrammingPhase();
             }
             // Daniel }
 
@@ -311,6 +318,11 @@ public class GameController implements Serializable {
         return space.getRobot() != null;
     }
 
+    /**
+     * @param space The space which the player's robot is going to be moved to
+     * @author Zigalow
+     * This method makes it possible to click on a space, and make the current player's robot move to that space
+     */
     public void moveCurrentPlayerToSpaceWithMouseClick(@NotNull Space space) {
         Player currentPlayer = game.getCurrentPlayer();
 
@@ -330,7 +342,7 @@ public class GameController implements Serializable {
      * Finishes the game. An alert pops up and informs the players of the winning robot
      * <p>Also triggers the event, onGameFinished(), if a listener is registered</p>
      *
-     * @param winningRobot Robot that has won
+     * @param winningRobot Robot of player who has won the game
      * @author Zigalow
      */
     public void finishGame(Robot winningRobot) {
@@ -342,17 +354,7 @@ public class GameController implements Serializable {
         alert.setContentText("Close this window to exit the game");
         alert.setResizable(true);
         alert.showAndWait();
-
-        // If you want the user to confirm that they're closing the game, before closing
-        /*while (true) {
-            alert.showAndWait();
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "Are you ready to close the game?", ButtonType.NO, ButtonType.YES);
-            Optional<ButtonType> result = confirmation.showAndWait();
-
-            if (result.get() == ButtonType.YES) {
-                break;
-            }
-        }*/
+        
 
         if (gameFinishedListener != null) {
             gameFinishedListener.onGameFinished();

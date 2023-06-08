@@ -73,7 +73,12 @@ public class AppController implements Observer, GameFinishedListener {
         this.roboRally = roboRally;
     }
 
-    //todo
+    /**
+     * Loads up a game that was loaded from a jsonFile
+     *
+     * @param gameController GameController which was loaded from a jsonFile
+     * @author Zigalow
+     */
     protected void makeLoadedGame(GameController gameController) {
 
 
@@ -81,7 +86,8 @@ public class AppController implements Observer, GameFinishedListener {
 
         AppController.gameController = gameController;
 
-        // Registers the event in the GameController class
+        // Registers this class as listener in the GameController class
+
         gameController.setGameFinishedListener(this);
 
         roboRally.createBoardView(gameController);
@@ -90,12 +96,25 @@ public class AppController implements Observer, GameFinishedListener {
     }
 
     // Uses LocalPlayer for now...
-    protected void makeGame(Board board, boolean hasCards, int playerCount, boolean offlineGame) {
 
+    /**
+     * Creates a game. When the game is made, a GameController is then made with the game,
+     * which is used when creating the view of the RoboRally game
+     *
+     * @param board       The used for the game
+     * @param playerCount The amount of players who will be playing the game
+     * @param offlineGame Is true, if an offline game should be made,
+     *                    and false if an online game should be made
+     * @author Zigalow, Daniel
+     */
+    protected void makeGame(Board board, int playerCount, boolean offlineGame) {
+        // Zigalow {
         Game game;
 
         if (offlineGame) {
             game = new LocalGame(board);
+            // Zigalow }
+
             for (int i = 0; i < playerCount; i++) {
                 Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
                 Space startingSpace = board.getSpace(i % board.width, i);
@@ -141,13 +160,16 @@ public class AppController implements Observer, GameFinishedListener {
 
             gameController = new GameController(game);*/
         }
+        // Zigalow {
         jsonTransformer = new JSONTransformer(gameController);
+        // Zigalow}
 
-
-        gameController.startProgrammingPhase(!hasCards);
+        gameController.startProgrammingPhase();
 
         // Registers the event in the GameController class
+        // Zigalow {
         gameController.setGameFinishedListener(this);
+        // Zigalow }
 
         roboRally.createBoardView(gameController);
     }
@@ -156,8 +178,10 @@ public class AppController implements Observer, GameFinishedListener {
      * This method firstly creates a dialog dropbox choice dialog with options for numbers of players.
      * Then creates an empty board with the required number of players(including the view)
      * and starts the programming phase
+     *
+     * @author Zigalow, Zaid
      */
-    public void newGame() throws FileNotFoundException{
+    public void newGame() throws FileNotFoundException {
         // Zigalow {
         ButtonType onlineButton = new ButtonType("Online");
         ButtonType offlineButton = new ButtonType("Offline");
@@ -195,7 +219,7 @@ public class AppController implements Observer, GameFinishedListener {
             Optional<ButtonType> mapResult = selectMap.showAndWait();
             Board board;
 
-            if(mapResult.get() == map1Button){
+            if (mapResult.get() == map1Button) {
                 board = MapMaker.makeJsonRiskyCrossing();
             } else {
                 board = MapMaker.makeJsonDizzyHighway();
@@ -206,9 +230,9 @@ public class AppController implements Observer, GameFinishedListener {
 
             // Zigalow {
             if (gameMode.get() == offlineButton) {
-                makeGame(board, false, playerCount, true);
+                makeGame(board, playerCount, true);
             } else {
-                makeGame(board, false, playerCount, false);
+                makeGame(board, playerCount, false);
             }
             // Zigalow }
 
@@ -217,37 +241,12 @@ public class AppController implements Observer, GameFinishedListener {
 
     /**
      * Saves the game to a json file. The player chooses where the file should be located on the local computer
-     * <p>The game can only be saved when in the Programming phase</p>
      *
      * @author Zigalow
      */
 
     @FXML
     public void saveGame() {
-
-
-        /*if (gameController.game.getPhase() != Phase.PROGRAMMING) {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Not in Programming phase!");
-            alert.setContentText("Please reach the Programming phase before trying to save the game again");
-            alert.showAndWait();
-            return;
-        }
-
-        for (Player player : gameController.game.getPlayers()) {
-            for (CommandCardField commandCardField : player.getProgram()) {
-                if (commandCardField.getCard() != null) {
-                    Alert alert = new Alert(AlertType.WARNING);
-                    alert.setTitle("Cards in program field!");
-                    alert.setContentText("Please empty all the cards in each player's program field");
-                    alert.showAndWait();
-                    return;
-                }
-            }
-
-
-        }*/
-
 
         fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
 
@@ -276,6 +275,13 @@ public class AppController implements Observer, GameFinishedListener {
 
     }
 
+    /**
+     * Loads a game from a json file. If the file can't be loading correctly,
+     * the player will get an alert saying that the file couldn't be loaded properly
+     * It then returns back to the menu
+     *
+     * @author Zigalow
+     */
     @FXML
     public void loadGame() {
 
@@ -300,11 +306,11 @@ public class AppController implements Observer, GameFinishedListener {
         try {
             gameController1 = JSONTransformer.loadBoard(file);
         } catch (Exception e) {
-          /*  Alert alert = new Alert(AlertType.ERROR);
+            Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("File could not be loaded");
             alert.setContentText("There was a problem with loading the given file");
             alert.showAndWait();
-            return;*/
+            return;
         }
 
 
@@ -377,7 +383,10 @@ public class AppController implements Observer, GameFinishedListener {
     }
 
     /**
-     * Stops the game, when a onGameFinished-event occurs
+     * Stops the game, when an onGameFinished-event occurs,
+     * which is when the finishGame() method in the GameController is run
+     *
+     * @author Zigalow
      */
     @Override
     public void onGameFinished() {

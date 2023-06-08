@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 
+
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.OnlineGame;
 import dk.dtu.compute.se.pisd.roborally.restful.Response;
 
@@ -26,12 +27,14 @@ public class Client {
     //TODO: CREATE a constructor with URI??
     public Client() {
 
+ ServerClient
     }
 
     // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
     // If not, a valid gameID should be used to create the game
 
     /**
+ ServerClient
      * @param gameId
      * @return
      * @throws URISyntaxException
@@ -39,6 +42,7 @@ public class Client {
      * @throws InterruptedException
      * @author Zigalow & ZeeDiazz (Zaid)
      */
+
     public Game createGame(int gameId, int numberOfPlayersToStart) throws URISyntaxException, IOException, InterruptedException {
         //Create the request to the server to create the game
         int minimumNumberOfPlayersToStart = (numberOfPlayersToStart >= 2 && numberOfPlayersToStart <= 6) ? numberOfPlayersToStart : 2;
@@ -65,13 +69,14 @@ public class Client {
             System.out.println("Failed gameId: " + gameId);
             return null;
         }
+ ServerClient
     }
 
 
     // If the player doesn't prefer to choose the gameID
     // Game will include the Player who makes the game
 
-    /**
+    /** ServerClient
      * @return
      * @throws URISyntaxException
      * @throws IOException
@@ -81,9 +86,11 @@ public class Client {
     Game createGame() throws URISyntaxException, IOException, InterruptedException {
         int num = 0;
 
+
         URI createGameURI = makeUri(baseLocation, joinGame, String.valueOf(num));
 
         getRequest(createGameURI);
+ ServerClient
 
         return game;
     }
