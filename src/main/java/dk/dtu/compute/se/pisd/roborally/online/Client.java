@@ -90,12 +90,31 @@ public class Client {
         return createGame(null, minimumNumberOfPlayersToStart, boardName);
     }
 
-    // TODO - Where does the client select the board
+    // TODO - Update JoinGame with new logic
 
     // Returns a game where there is the newly made player
-    /*Game joinGame(int gameId);
+    Game joinGame(int gameId) throws IOException, InterruptedException, URISyntaxException {
+        URI joinGameURI = makeUri(baseLocation + joinGame, "gameId", String.valueOf(gameId));
 
-    boolean canStartGame();
+
+        Response<JsonObject> jsonGameFromServer = postRequestJson(joinGameURI,gameId+"");
+
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+            JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+            Game joinedGame = new OnlineGame(new Board(10, 10), gameFromServer.getAsJsonObject("game").get("numberOfPlayersToStart").getAsInt());
+            joinedGame.deserialize(gameFromServer);
+
+            System.out.println("Joined gameId: " + joinedGame.getGameId());
+
+            return joinedGame;
+        } else {
+            System.out.println("Failed to join gameId: " + gameId);
+            return null;
+        }
+    }
+
+    /*boolean canStartGame();
 
     void finishedProgrammingPhase();
 
