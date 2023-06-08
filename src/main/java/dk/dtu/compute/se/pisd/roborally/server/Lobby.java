@@ -51,7 +51,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public int getLobbyId(){
-        return Id;
+        return this.Id;
     }
 
     /**
@@ -60,7 +60,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public List<Integer> getPlayers(){
-        return players;
+        return this.players;
     }
 
     /**
@@ -69,7 +69,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public void removePlayer(int playerId){
-        players.remove(playerId);
+        this.players.remove(playerId);
     }
 
     /**
@@ -78,9 +78,9 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public void setIsReady(int playerId){
-        for (int i = 0; i < players.size(); i++) {
-            if (playerId == players.get(i)) {
-                isReady[i] = true; //hey
+        for (int i = 0; i < this.players.size(); i++) {
+            if (playerId == this.players.get(i)) {
+                this.isReady[i] = true; //hey
             }
         }
     }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>POST Request Example</title>
+</head>
+<body>
+<form action="http://localhost:8190/api/player/join" method="POST">
+    <label for="lobbyId">Lobby Id:</label>
+    <input type="number" id="lobbyId" name="lobbyId" required><br>
+
+    <label for="playerId">Player ID:</label>
+    <input type="number" id="playerId" name="playerId" required><br>
+
+    <input type="submit" value="Join Lobby">
+</form>
+</body>
+</html>
