@@ -1,6 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.online;
 
 import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.OnlineGame;
@@ -14,20 +15,23 @@ import static dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation.joinGame
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Client{
-    private OnlineGame game;
+public class Client {
+    private Game game;
     // private int clientId;
 
     //TODO: CREATE a constructor with URI??
-    public Client(){
+    public Client() {
 
     }
 
     // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
     // If not, a valid gameID should be used to create the game
+
     /**
-     *
      * @param gameId
      * @return
      * @throws URISyntaxException
@@ -35,30 +39,32 @@ public class Client{
      * @throws InterruptedException
      * @author Zigalow & ZeeDiazz (Zaid)
      */
-    public Game createGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
+    public Game createGame(int gameId, int numberOfPlayersToStart) throws URISyntaxException, IOException, InterruptedException {
         //Create the request to the server to create the game
-        URI createGameURI = makeUri(baseLocation + joinGame, "gameId", gameId +"");
+        int minimumNumberOfPlayersToStart = (numberOfPlayersToStart >= 2 && numberOfPlayersToStart <= 6) ? numberOfPlayersToStart : 2;
 
+        Map<String, String> values = new HashMap<>(1);
+        values.put(String.valueOf(gameId), String.valueOf(numberOfPlayersToStart));
+
+        URI createGameURI = makeUri(baseLocation + joinGame, values);
+
+        // Talk with Felixo 
         //create a gameId on the server
-        Response<JsonObject> postGameId = postRequestJson(createGameURI, String.valueOf(gameId));
+        Response<JsonObject> jsonGameFromServer = postRequestJson(createGameURI, String.valueOf(gameId));
 
-        if (postGameId.getStatusCode().is2xxSuccessful()) {
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             System.out.println("gameId: " + gameId);
-            JsonObject gameFromServer = postGameId.getItem();
+            System.out.println("minimum number of players to start: " + minimumNumberOfPlayersToStart);
 
-            gameId = gameFromServer.get("gameId").getAsInt();
-            //int width = gameFromServer.get("game").getAsJsonObject().getAsJsonObject("board").get("width").getAsInt();
-            //int height = gameFromServer.get("game").getAsJsonObject().get("height").getAsInt();
-            //Board board = new Board(width,height);
+            JsonObject gameFromServer = jsonGameFromServer.getItem();
+            Game initialGame = new OnlineGame(new Board(10, 10), minimumNumberOfPlayersToStart);
+            game = (OnlineGame) initialGame.deserialize(gameFromServer);
 
-
-            //return game(board, gameId,  ,jsonObject.getAsJsonPrimitive("numberOfPlayersToStart").getAsInt());
             return game;
         } else {
             System.out.println("Failed gameId: " + gameId);
             return null;
         }
-        //return game;
     }
 
 
@@ -66,7 +72,6 @@ public class Client{
     // Game will include the Player who makes the game
 
     /**
-     *
      * @return
      * @throws URISyntaxException
      * @throws IOException
