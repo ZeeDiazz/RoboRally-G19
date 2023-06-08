@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Client {
@@ -53,12 +52,14 @@ public class Client {
         Response<JsonObject> jsonGameFromServer = postRequestJson(createGameURI, String.valueOf(gameId));
 
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
-            System.out.println("gameId: " + gameId);
-            System.out.println("minimum number of players to start: " + minimumNumberOfPlayersToStart);
-
             JsonObject gameFromServer = jsonGameFromServer.getItem();
+
             Game initialGame = new OnlineGame(new Board(10, 10), minimumNumberOfPlayersToStart);
             game = (OnlineGame) initialGame.deserialize(gameFromServer);
+
+
+            System.out.println("gameId: " + game.getGameId());
+            System.out.println("minimum number of players to start: " + minimumNumberOfPlayersToStart);
 
             return game;
         } else {
@@ -79,13 +80,25 @@ public class Client {
      * @author Zigalow & ZeeDiazz (Zaid)
      */
     Game createGame() throws URISyntaxException, IOException, InterruptedException {
-        int num = 0;
+        URI createGameURI = makeUri(baseLocation + joinGame,"gameId","");
 
-        URI createGameURI = makeUri(baseLocation, joinGame, String.valueOf(num));
+        Response<JsonObject> jsonGameFromServer = getRequestJson(createGameURI);
 
-        getRequest(createGameURI);
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
 
-        return game;
+            JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+            Game initialGame = new OnlineGame(new Board(10, 10), 2);
+            game = (OnlineGame) initialGame.deserialize(gameFromServer);
+
+            System.out.println("Connected");
+            System.out.println("gameId: " + game.getGameId());
+
+            return game;
+        } else {
+            System.out.println("Failed connection:");
+            return null;
+        }
     }
 
     // Returns a game where there is the newly made player
