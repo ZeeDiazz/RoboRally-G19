@@ -14,7 +14,7 @@ import static dk.dtu.compute.se.pisd.roborally.restful.RequestMaker.makeUri;
 public class GreetingClient {
 
     public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
-        URI requestUri = makeUri("http://localhost:8190/greeting","name","John");
+        URI requestUri = makeUri("http://localhost:8080/greeting","name","John");
         Response<String> name = getRequest(requestUri);
         if(name.hasItem()){
             System.out.println(name.getStatusCode());
