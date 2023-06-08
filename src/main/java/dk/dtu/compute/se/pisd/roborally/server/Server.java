@@ -1,9 +1,13 @@
 package dk.dtu.compute.se.pisd.roborally.server;
+import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -13,14 +17,22 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 public class Server {
     private ResponseMessage responseMessages;
-    private ResponseMaker responseMaker;
-    public Server(ResponseMaker responseMaker) {
-        this.responseMaker = responseMaker;
+    public Server() {
+
     }
     // intialize list of lobbies, not null
     List<Lobby> lobbies = new ArrayList<>();
     private int lobbySize = 0;
     private final AtomicLong counter = new AtomicLong();
+
+    public boolean hasLobby(int lobbyId) {
+        for (Lobby lobby : lobbies) {
+            if (lobby.getLobbyId() == lobbyId) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Method for handling get requests to /greeting
@@ -29,36 +41,77 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @GetMapping("/greeting")
-    public Response greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return new Response(this.responseMaker.ok());
+    public ResponseEntity<String> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+        return (new ResponseMaker<String>()).ok();
+    }
+
+    @GetMapping(ResourceLocation.allGames)
+    public ResponseEntity<Integer[]> getAllGames() {
+        ResponseMaker<Integer[]> responseMaker = new ResponseMaker<>();
+
+        Integer[] ids = new Integer[lobbies.size()];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = lobbies.get(i).getLobbyId();
+        }
+
+        return responseMaker.itemResponse(ids);
+    }
+
+    @GetMapping(ResourceLocation.specificGame)
+    public ResponseEntity<Integer> getGameInfo(@RequestParam Integer lobbyId) {
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+
+        boolean lobbyExists = hasLobby(lobbyId);
+        if (lobbyExists) {
+            return responseMaker.itemResponse(lobbyId);
+        }
+        return responseMaker.notFound();
     }
 
     /**
      * Method for handling post requests to /api/lobby/create
      * @param lobbyId Integer value to identify the lobby
      * @return a Greeting object using the counter and lobbyCreated template
-     * @auther Felix Schmidt (Felix732)
+     * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
-    @PostMapping(value = "/api/lobby/create")
-    public Greeting lobbyCreateRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
+    @PostMapping(ResourceLocation.specificGame)
+    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody(required = false) Integer lobbyId) {
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+        Random rng = new Random();
 
+        System.out.println("Requested lobby id: " + lobbyId);
+        if (lobbyId == null) {
+            lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
+        }
+        // Make a random id that we don't already use
+        while (hasLobby(lobbyId)) {
+            lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
+        }
         lobbies.add(new Lobby(lobbyId));
+
+        return responseMaker.created(lobbyId);
+        /*
         return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
+         */
     }
+
+    // TODO: insert DeleteMapping for specific game
 
     /**
      * Method for handling post request to /api/lobby/join
      * @param lobbyId Integer value to identify the lobby
-     * @param playerId Integer value to identify the player
      * @return a Greeting object using the counter and lobbyJoined template
      * @auther Felix Schmidt (Felix732)
      */
-    @PostMapping(value = "/api/player/join")
-    public Greeting playerJoinRequest(@RequestParam(value = "lobbyId") Integer lobbyId,
-                                      @RequestParam(value = "playerId") Integer playerId) {
+    @PostMapping(ResourceLocation.joinGame)
+    public ResponseEntity<Integer> playerJoinRequest(@RequestParam Integer lobbyId) {
         // get the lobby with matching id
+        Random rng = new Random();
+        int playerId = rng.nextInt();
         addPlayerToLobby(playerId, lobbyId);
-        return new Greeting(counter.incrementAndGet(),responseMessages.getLobbyJoinedMessage(playerId,lobbyId));
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+        return responseMaker.itemResponse(playerId);
+        // return new Greeting(counter.incrementAndGet(),responseMessages.getLobbyJoinedMessage(playerId,lobbyId));
     }
 
     /**
