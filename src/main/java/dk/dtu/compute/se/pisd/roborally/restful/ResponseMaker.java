@@ -18,6 +18,8 @@ public class ResponseMaker<T> {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    public ResponseEntity<T> notFound() { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
+
     public ResponseEntity<T> created(T item) {
         return new ResponseEntity<>(item, HttpStatus.CREATED);
     }
