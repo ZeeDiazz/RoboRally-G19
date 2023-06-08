@@ -1,4 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.server;
+import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
 import org.springframework.http.ResponseEntity;
@@ -80,11 +82,8 @@ public class Server {
         Random rng = new Random();
 
         System.out.println("Requested lobby id: " + lobbyId);
-        if (lobbyId == null) {
-            lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
-        }
         // Make a random id that we don't already use
-        while (hasLobby(lobbyId)) {
+        while (lobbyId == null || hasLobby(lobbyId)) {
             lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
         }
         lobbies.add(new Lobby(lobbyId));
@@ -95,7 +94,44 @@ public class Server {
          */
     }
 
-    // TODO: insert DeleteMapping for specific game
+    @DeleteMapping(ResourceLocation.specificGame)
+    public ResponseEntity<Void> deleteActiveGame(@RequestBody JsonObject info) {
+        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+
+        if (!info.has("lobbyId")) {
+            return responseMaker.methodNotAllowed();
+        }
+        else if (!info.has("playerId")) {
+            return responseMaker.unauthorized();
+        }
+
+        int lobbyId = info.get("lobbyId").getAsInt();
+        Lobby lobby = null;
+        for (Lobby l : lobbies) {
+            if (l.getLobbyId() == lobbyId) {
+                lobby = l;
+                break;
+            }
+        }
+
+        if (lobby == null) {
+            return responseMaker.notFound();
+        }
+
+        int playerId = info.get("playerId").getAsInt();
+        boolean playerInLobby = false;
+        for (Integer lobbyPlayer : lobby.getPlayers()) {
+            if (lobbyPlayer == playerId) {
+                playerInLobby = true;
+                break;
+            }
+        }
+
+        if (!playerInLobby || lobby.getPlayers().get(0) != playerId) {
+            return responseMaker.forbidden();
+        }
+        return responseMaker.ok();
+    }
 
     /**
      * Method for handling post request to /api/lobby/join
@@ -104,15 +140,150 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @PostMapping(ResourceLocation.joinGame)
-    public ResponseEntity<Integer> playerJoinRequest(@RequestParam Integer lobbyId) {
+    public ResponseEntity<Integer> playerJoinRequest(@RequestBody Integer lobbyId) {
+        System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
         Random rng = new Random();
-        int playerId = rng.nextInt();
+        int playerId = rng.nextInt(0, Integer.MAX_VALUE);
+        System.out.println("Player given id: " + playerId);
         addPlayerToLobby(playerId, lobbyId);
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
         return responseMaker.itemResponse(playerId);
         // return new Greeting(counter.incrementAndGet(),responseMessages.getLobbyJoinedMessage(playerId,lobbyId));
     }
+
+    @PostMapping(ResourceLocation.leaveGame)
+    public ResponseEntity<Void> playerLeaveRequest(@RequestBody JsonObject info) {
+        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+
+        if (!info.has("lobbyId")) {
+            return responseMaker.methodNotAllowed();
+        }
+        else if (!info.has("playerId")) {
+            return responseMaker.unauthorized();
+        }
+
+        int lobbyId = info.get("lobbyId").getAsInt();
+        Lobby lobby = null;
+        for (Lobby l : lobbies) {
+            if (l.getLobbyId() == lobbyId) {
+                lobby = l;
+                break;
+            }
+        }
+
+        if (lobby == null) {
+            return responseMaker.notFound();
+        }
+
+        int playerId = info.get("playerId").getAsInt();
+        boolean playerInLobby = false;
+        for (Integer lobbyPlayer : lobby.getPlayers()) {
+            if (lobbyPlayer == playerId) {
+                playerInLobby = true;
+                break;
+            }
+        }
+
+        if (!playerInLobby) {
+            return responseMaker.forbidden();
+        }
+
+        lobby.removePlayer(playerId);
+        return responseMaker.ok();
+    }
+
+    @GetMapping(ResourceLocation.gameStatus)
+    public ResponseEntity<Integer> getGameStatus(@RequestParam Integer lobbyId) {
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+        if (hasLobby(lobbyId)) {
+            return responseMaker.itemResponse(lobbyId);
+        }
+        return responseMaker.notFound();
+    }
+
+    @PostMapping(ResourceLocation.gameStatus)
+    public ResponseEntity<Integer> updateGameStatus(@RequestBody JsonObject info) {
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+
+        if (!info.has("lobbyId") || !info.has("status")) {
+            return responseMaker.methodNotAllowed();
+        }
+        else if (!info.has("playerId")) {
+            return responseMaker.unauthorized();
+        }
+
+        int lobbyId = info.get("lobbyId").getAsInt();
+        Lobby lobby = null;
+        for (Lobby l : lobbies) {
+            if (l.getLobbyId() == lobbyId) {
+                lobby = l;
+                break;
+            }
+        }
+
+        if (lobby == null) {
+            return responseMaker.notFound();
+        }
+
+        int playerId = info.get("playerId").getAsInt();
+        boolean playerInLobby = false;
+        for (Integer lobbyPlayer : lobby.getPlayers()) {
+            if (lobbyPlayer == playerId) {
+                playerInLobby = true;
+                break;
+            }
+        }
+
+        if (!playerInLobby) {
+            return responseMaker.forbidden();
+        }
+
+        boolean playerIsReady = info.get("status").getAsBoolean();
+        if (playerIsReady) {
+            lobby.setIsReady(playerId);
+        }
+        else {
+            lobby.setNotReady(playerId);
+        }
+        return responseMaker.ok();
+    }
+
+    @GetMapping(ResourceLocation.saveGame)
+    public ResponseEntity<Integer> loadGame(@RequestParam Integer gameId) {
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+        return responseMaker.notImplemented();
+    }
+
+    @PostMapping(ResourceLocation.saveGame)
+    public ResponseEntity<Void> saveGame(@RequestBody JsonObject game) {
+        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+        return responseMaker.notImplemented();
+    }
+
+    @DeleteMapping(ResourceLocation.saveGame)
+    public ResponseEntity<Void> deleteSavedGame(@RequestBody Integer gameId) {
+        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+        return responseMaker.notImplemented();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Method for handling post request to /api/player/ready
