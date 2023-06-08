@@ -1,5 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.online;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
@@ -8,8 +9,7 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.OnlineGame;
 import dk.dtu.compute.se.pisd.roborally.restful.Response;
 
 import static dk.dtu.compute.se.pisd.roborally.restful.RequestMaker.*;
-import static dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation.baseLocation;
-import static dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation.joinGame;
+import static dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation.*;
 
 
 import java.io.IOException;
@@ -20,11 +20,14 @@ import java.util.Map;
 
 public class Client {
     private Game game;
+    private String baseLocation;
+
+
     // private int clientId;
 
     //TODO: CREATE a constructor with URI??
-    public Client() {
-
+    public Client(String baseLocation) {
+        this.baseLocation = baseLocation;
     }
 
     // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
@@ -39,30 +42,31 @@ public class Client {
      * @author Zigalow & ZeeDiazz (Zaid)
      */
     // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
-
-    public Game createGame(Integer gameId, int numberOfPlayersToStart) throws URISyntaxException, IOException, InterruptedException {
+    public Game createGame(Integer gameId, int minimumsNumbersOfPlayers, String boardName) throws URISyntaxException, IOException, InterruptedException {
         //Create the request to the server to create the game
 
-        int minimumNumberOfPlayersToStart = (numberOfPlayersToStart >= 2 && numberOfPlayersToStart <= 6) ? numberOfPlayersToStart : 2;
+        int minimumPlayers = (minimumsNumbersOfPlayers >= 2 && minimumsNumbersOfPlayers <= 6) ? minimumsNumbersOfPlayers : 2;
 
-        Map<String, String> values = new HashMap<>(1);
-        values.put(String.valueOf(gameId), String.valueOf(numberOfPlayersToStart));
+        URI gameURI = makeURI(specificGame);
 
-        URI createGameURI = makeUri(baseLocation + joinGame, values);
 
-        // Talk with Felixo 
-        //create a gameId on the server
-        Response<JsonObject> jsonGameFromServer = postRequestJson(createGameURI, String.valueOf(gameId));
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("gameId", gameId);
+        jsonObject.addProperty("minimumsNumbersOfPlayers", minimumsNumbersOfPlayers);
+        jsonObject.addProperty("boardName", boardName);
+
+        Response<JsonObject> jsonGameFromServer = postRequestJson(gameURI, jsonObject);
+
 
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             JsonObject gameFromServer = jsonGameFromServer.getItem();
 
-            Game initialGame = new OnlineGame(new Board(10, 10), minimumNumberOfPlayersToStart);
+            Game initialGame = new OnlineGame(new Board(10, 10), minimumPlayers);
             game = (OnlineGame) initialGame.deserialize(gameFromServer);
 
 
             System.out.println("gameId: " + game.getGameId());
-            System.out.println("minimum number of players to start: " + minimumNumberOfPlayersToStart);
+            System.out.println("minimum number of players to start: " + minimumPlayers);
 
             return game;
         } else {
@@ -70,7 +74,7 @@ public class Client {
             return null;
         }
     }
-    
+
 
     /**
      * @return
@@ -82,8 +86,8 @@ public class Client {
 
     // If the player doesn't prefer to choose the gameID
     // Game will include the Player who makes the game
-    Game createGame(int minimumNumberOfPlayersToStart) throws URISyntaxException, IOException, InterruptedException {
-        return createGame(null, minimumNumberOfPlayersToStart);
+    Game createGame(int minimumNumberOfPlayersToStart, String boardName) throws URISyntaxException, IOException, InterruptedException {
+        return createGame(null, minimumNumberOfPlayersToStart, boardName);
     }
 
     // TODO - Where does the client select the board
@@ -113,4 +117,11 @@ public class Client {
 
     // (to perform the move of the other players, when activationPhase can begin)
     void simulateActivationPhase();*/
+
+
+    private URI makeURI(String destination) throws URISyntaxException {
+        return new URI(baseLocation + destination);
+    }
+
+
 }
