@@ -27,14 +27,7 @@ public class Server {
     private int lobbySize = 0;
     private final AtomicLong counter = new AtomicLong();
 
-    public boolean hasLobby(int lobbyId) {
-        for (Lobby lobby : lobbies) {
-            if (lobby.getLobbyId() == lobbyId) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     /**
      * Method for handling get requests to /greeting
@@ -66,7 +59,10 @@ public class Server {
         boolean lobbyExists = hasLobby(lobbyId);
         if (lobbyExists) {
             return responseMaker.itemResponse(lobbyId);
+        // TODO: return a more game info
+
         }
+
         return responseMaker.notFound();
     }
 
@@ -432,6 +428,14 @@ public class Server {
                 lobbies.get(i).removePlayer(playerId);
             }
         }
+    }
+    public boolean hasLobby(int lobbyId) {
+        for (Lobby lobby : lobbies) {
+            if (lobby.getLobbyId() == lobbyId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
