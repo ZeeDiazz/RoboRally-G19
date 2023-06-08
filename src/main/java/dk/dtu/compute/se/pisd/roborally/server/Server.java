@@ -39,11 +39,10 @@ public class Server {
      * @return a Greeting object using the counter and lobbyCreated template
      * @auther Felix Schmidt (Felix732)
      */
-    @PostMapping(value = "/api/lobby/create")
-    public Greeting lobbyCreateRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
-
+    @PostMapping(value = "/game")
+    public Response lobbyCreateRequest(@RequestParam(value = "lobbyId") Integer lobbyId) {
         lobbies.add(new Lobby(lobbyId));
-        return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
+        return new Response(this.responseMaker.accepted());
     }
 
     /**
