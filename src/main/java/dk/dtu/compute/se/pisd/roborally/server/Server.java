@@ -143,8 +143,8 @@ public class Server {
     public ResponseEntity<Integer> playerJoinRequest(@RequestBody Integer lobbyId) {
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
-        Random rng = new Random();
-        int playerId = rng.nextInt(0, Integer.MAX_VALUE);
+        AtomicLong counter = new AtomicLong();
+        int playerId = (int) counter.incrementAndGet();
         System.out.println("Player given id: " + playerId);
         addPlayerToLobby(playerId, lobbyId);
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
