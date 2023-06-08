@@ -34,15 +34,19 @@ public class Client {
     // If not, a valid gameID should be used to create the game
 
     /**
+     * Creates a game, where the player prefers a game with a specific gameID.
+     * If it's possible, it should make the game with given gameID
+     * If not, a random gameId will be returned with the game from Server
+     *
      * @param gameId
-     * @return
+     * @return Returns a game that has this player in it, and a gameId
      * @throws URISyntaxException
      * @throws IOException
      * @throws InterruptedException
      * @author Zigalow & ZeeDiazz (Zaid)
      */
-    // If the player prefer a game with a specific gameID. If it's possible, it should make the game with given gameID. 
-    public Game createGame(Integer gameId, int minimumsNumbersOfPlayers, String boardName) throws URISyntaxException, IOException, InterruptedException {
+    // . 
+    public Game createGame(int gameId, int minimumsNumbersOfPlayers, String boardName) throws URISyntaxException, IOException, InterruptedException {
         //Create the request to the server to create the game
 
         int minimumPlayers = (minimumsNumbersOfPlayers >= 2 && minimumsNumbersOfPlayers <= 6) ? minimumsNumbersOfPlayers : 2;
@@ -77,7 +81,9 @@ public class Client {
 
 
     /**
-     * @return
+     * Creates a game with a random gameId
+     * @param
+     * @return Returns a game that has this player in it, and a gameId
      * @throws URISyntaxException
      * @throws IOException
      * @throws InterruptedException
@@ -87,7 +93,7 @@ public class Client {
     // If the player doesn't prefer to choose the gameID
     // Game will include the Player who makes the game
     Game createGame(int minimumNumberOfPlayersToStart, String boardName) throws URISyntaxException, IOException, InterruptedException {
-        return createGame(null, minimumNumberOfPlayersToStart, boardName);
+        return createGame(-1, minimumNumberOfPlayersToStart, boardName);
     }
 
     // TODO - Update JoinGame with new logic
@@ -97,7 +103,7 @@ public class Client {
         URI joinGameURI = makeUri(baseLocation + joinGame, "gameId", String.valueOf(gameId));
 
 
-        Response<JsonObject> jsonGameFromServer = postRequestJson(joinGameURI,gameId+"");
+        Response<JsonObject> jsonGameFromServer = postRequestJson(joinGameURI, gameId + "");
 
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             JsonObject gameFromServer = jsonGameFromServer.getItem();
