@@ -45,4 +45,9 @@ public class TemplateResponseMessage implements ResponseMessage{
     public String getLobbyDeletedMessage(int lobbyId){
         return String.format(lobbyDeleted, lobbyId);
     }
+
+    @Override
+    public String getLobbyAlreadyExistsMessage(int lobbyId){
+        return String.format("Lobby %d already exists!", lobbyId);
+    }
 }

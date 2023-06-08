@@ -15,5 +15,6 @@ public interface ResponseMessage {
     String getLobbyLeavedMessage(int playerId, int lobbyId);
 
     String getLobbyDeletedMessage(int lobbyId);
+    String getLobbyAlreadyExistsMessage(int lobbyId);
 
 }

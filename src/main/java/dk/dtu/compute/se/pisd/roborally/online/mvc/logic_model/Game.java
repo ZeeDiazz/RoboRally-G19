@@ -50,6 +50,18 @@ public abstract class Game extends Subject implements Serializable {
         this.board = board;
     }
 
+    public Game() {
+
+    }
+
+    public void addBoard(Board board) {
+        this.board = board;
+    }
+
+    public Board getBoard() {
+        return this.board;
+    }
+
     /**
      * Gets the games ID related to the board.
      *

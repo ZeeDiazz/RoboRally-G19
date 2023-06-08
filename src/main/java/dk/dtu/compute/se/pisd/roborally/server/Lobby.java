@@ -43,7 +43,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public void addPlayer(int playerId){
-        this.players.add(playerId);
+        players.add(playerId);
     }
     /**
      * Method to get the lobby id
@@ -51,7 +51,7 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public int getLobbyId(){
-        return Id;
+        return this.Id;
     }
 
     /**
@@ -78,9 +78,9 @@ public class Lobby {
      * @auther Felix Schmidt (Felix732)
      */
     public void setIsReady(int playerId){
-        for (int i = 0; i < players.size(); i++) {
-            if (playerId == players.get(i)) {
-                isReady[i] = true; //hey
+        for (int i = 0; i < this.players.size(); i++) {
+            if (playerId == this.players.get(i)) {
+                this.isReady[i] = true; //hey
             }
         }
     }

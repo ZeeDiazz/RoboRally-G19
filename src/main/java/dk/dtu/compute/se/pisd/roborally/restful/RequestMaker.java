@@ -1,5 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.restful;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -66,4 +67,10 @@ public abstract class RequestMaker {
     public static Response<JsonObject> postRequestJson(URI location, String string) throws IOException, InterruptedException {
         return new JsonResponse(postRequest(location, string));
     }
+
+    public static Response<JsonObject> postRequestJson(URI location, JsonElement element) throws IOException, InterruptedException {
+        return postRequestJson(location, element.toString());
+    }
+
+
 }
