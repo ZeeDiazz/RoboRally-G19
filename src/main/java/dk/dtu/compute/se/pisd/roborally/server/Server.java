@@ -207,7 +207,7 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @PostMapping(ResourceLocation.joinGame)
-    public ResponseEntity<String> playerJoinRequest(@RequestParam String stringInfo) {
+    public ResponseEntity<String> playerJoinRequest(@RequestBody String stringInfo) {
 
         JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
         int lobbyId = info.get("gameId").getAsInt();
