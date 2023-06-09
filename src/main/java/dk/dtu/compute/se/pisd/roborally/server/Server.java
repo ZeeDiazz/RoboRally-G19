@@ -29,10 +29,13 @@ public class Server {
     // TODO: 2023-06-09 implement a way to Load game, save game, delete saved game
 
     private ResponseMessage responseMessages;
-    String filePath = "src/main/resources/games";
+    String filePath = "src/main/resources/boards/5A.json";
     String filePath2 = "src/main/resources/boards/5B.json";
+    String filePath3 = "src/main/resources/games/1.json";
+    String defaultPath = "src/main/resources/games/";
     File file = new File(filePath);
     File file2 = new File(filePath2);
+    File file3 = new File(filePath3);
 
     public Server() {
 
@@ -276,9 +279,22 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Integer> loadGame(@RequestParam Integer gameId) {
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
-        return responseMaker.notImplemented();
+    public ResponseEntity<String> loadGame(@RequestParam JsonObject info){
+        System.out.println("Trying to load game");
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
+        /*boolean newGame = info.get("newGame").getAsBoolean();
+        if (newGame) {
+            return responseMaker.itemResponse(makeJsonObject(file3));
+        }*/
+        //int filePath = info.get("gameId").getAsInt();
+        String filePath = info.get("lobbyId").getAsString();
+        File filePathGiven = new File(defaultPath + filePath+".json");
+        return responseMaker.itemResponse(makeJsonObject(filePathGiven));
+    }
+    @GetMapping(ResourceLocation.allGames)
+    public ResponseEntity<String> getAllofTheGame(){
+        ResponseMaker<String> responseMaker = new JsonResponseMaker<>();
+        return responseMaker.ok();
     }
 
     @PostMapping(ResourceLocation.saveGame)
