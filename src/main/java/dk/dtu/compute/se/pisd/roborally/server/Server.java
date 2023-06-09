@@ -31,6 +31,7 @@ public class Server {
     private ResponseMessage responseMessages;
     String filePath = "src/main/resources/games";
     String filePath2 = "src/main/resources/boards/5B.json";
+    String saveboardpath = "src/main/resources/games/";
     File file = new File(filePath);
     File file2 = new File(filePath2);
 
@@ -284,16 +285,15 @@ public class Server {
     @PostMapping(ResourceLocation.saveGame)
     public ResponseEntity<Void> saveGame(@RequestBody JsonObject game) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-
-        Integer gameId = game.get("gameId").getAsInt();
-        Lobby.SaveGame saveGame = new Lobby.SaveGame(gameId,game);
-
+        // method expect a JsonObject that has a GameId in it.
+        makeFileFromJsonObject(game);
      return responseMaker.ok();
     }
 
     @DeleteMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Void> deleteSavedGame(@RequestBody Integer gameId) {
+    public ResponseEntity<Void> deleteSavedGame(@RequestBody JsonObject game) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+
         return responseMaker.notImplemented();
     }
 
@@ -373,7 +373,8 @@ public class Server {
         }
     }
     public void makeFileFromJsonObject (JsonObject jsonObject){
-        File file = new File("src/main/resources/lobby.json");
+        int gamId = jsonObject.get("gameId").getAsInt();
+        File file = new File(saveboardpath+gamId+".json");
         try {
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(jsonObject.toString());
