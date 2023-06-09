@@ -29,13 +29,11 @@ public class Server {
     // TODO: 2023-06-09 implement a way to Load game, save game, delete saved game
 
     private ResponseMessage responseMessages;
-    String filePath = "src/main/resources/boards/5A.json";
+    String filePath = "src/main/resources/games";
     String filePath2 = "src/main/resources/boards/5B.json";
-    String filePath3 = "src/main/resources/games/1.json";
-    String defaultPath = "src/main/resources/games/";
+    String saveboardpath = "src/main/resources/games/";
     File file = new File(filePath);
     File file2 = new File(filePath2);
-    File file3 = new File(filePath3);
 
     public Server() {
 
@@ -107,7 +105,7 @@ public class Server {
 
         return responseMaker.itemResponse(lobbyId);
         /*
-        return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
+        return new Greetin+g(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
          */
     }
 
@@ -279,33 +277,23 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.saveGame)
-    public ResponseEntity<String> loadGame(@RequestParam JsonObject info){
-        System.out.println("Trying to load game");
-        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
-        /*boolean newGame = info.get("newGame").getAsBoolean();
-        if (newGame) {
-            return responseMaker.itemResponse(makeJsonObject(file3));
-        }*/
-        //int filePath = info.get("gameId").getAsInt();
-        String filePath = info.get("lobbyId").getAsString();
-        File filePathGiven = new File(defaultPath + filePath+".json");
-        return responseMaker.itemResponse(makeJsonObject(filePathGiven));
-    }
-    @GetMapping(ResourceLocation.allGames)
-    public ResponseEntity<String> getAllofTheGame(){
-        ResponseMaker<String> responseMaker = new JsonResponseMaker<>();
-        return responseMaker.ok();
+    public ResponseEntity<Integer> loadGame(@RequestParam Integer gameId) {
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+        return responseMaker.notImplemented();
     }
 
     @PostMapping(ResourceLocation.saveGame)
     public ResponseEntity<Void> saveGame(@RequestBody JsonObject game) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-        return responseMaker.notImplemented();
+        // method expect a JsonObject that has a GameId in it.
+        makeFileFromJsonObject(game);
+     return responseMaker.ok();
     }
 
     @DeleteMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Void> deleteSavedGame(@RequestBody Integer gameId) {
+    public ResponseEntity<Void> deleteSavedGame(@RequestBody JsonObject game) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+
         return responseMaker.notImplemented();
     }
 
@@ -385,7 +373,8 @@ public class Server {
         }
     }
     public void makeFileFromJsonObject (JsonObject jsonObject){
-        File file = new File("src/main/resources/lobby.json");
+        int gamId = jsonObject.get("gameId").getAsInt();
+        File file = new File(saveboardpath+gamId+".json");
         try {
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(jsonObject.toString());
