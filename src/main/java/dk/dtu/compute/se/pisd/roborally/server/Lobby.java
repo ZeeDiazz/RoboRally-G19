@@ -49,7 +49,7 @@ public class Lobby {
         playerStatus.remove(playerId);
     }
 
-    private boolean hasPlayer(int playerId) {
+    public boolean hasPlayer(int playerId) {
         return playerStatus.containsKey(playerId);
     }
 

@@ -1,13 +1,11 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
 import com.google.gson.JsonObject;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,16 +22,62 @@ public class Server {
     // TODO: 2023-06-08 implement a way to get info on specific player
     // TODO: 2023-06-09 implement a way to Load game, save game, delete saved game
 
-    private ResponseMessage responseMessages;
+    // intialize list of lobbies, not null
+    private final List<Lobby> lobbies = new ArrayList<>();
+    private final AtomicLong counter = new AtomicLong();
+    private final Random rng = new Random();
 
     public Server() {
 
     }
 
-    // intialize list of lobbies, not null
-    List<Lobby> lobbies = new ArrayList<>();
-    private int lobbySize = 0;
-    private final AtomicLong counter = new AtomicLong();
+    private int makeNewLobbyId() {
+        int id;
+        boolean takenId;
+        do {
+            id = rng.nextInt(0, Integer.MAX_VALUE);
+            takenId = false;
+
+            for (Lobby lobby : lobbies) {
+                if (lobby.getId() == id) {
+                    takenId = true;
+                    break;
+                }
+            }
+        } while (takenId);
+        return id;
+    }
+
+    private int makeNewPlayerId(Lobby lobby) {
+        int id;
+        boolean takenId;
+        do {
+            id = rng.nextInt(0, Integer.MAX_VALUE);
+            takenId = lobby.hasPlayer(id);
+        } while (takenId);
+        return id;
+    }
+
+    private int getLobbyIndex(int lobbyId) {
+        for (int i = 0; i < lobbies.size(); i++) {
+            if (lobbies.get(i).getId() == lobbyId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private boolean lobbyExists(int lobbyId) {
+        return getLobbyIndex(lobbyId) != -1;
+    }
+
+    private Lobby getLobby(int lobbyId) {
+        int index = getLobbyIndex(lobbyId);
+        if (index == -1) {
+            return null;
+        }
+        return lobbies.get(index);
+    }
 
 
     /**
@@ -54,7 +98,7 @@ public class Server {
 
         Integer[] ids = new Integer[lobbies.size()];
         for (int i = 0; i < ids.length; i++) {
-            ids[i] = lobbies.get(i).getLobbyId();
+            ids[i] = lobbies.get(i).getId();
         }
 
         return responseMaker.itemResponse(ids);
@@ -64,7 +108,7 @@ public class Server {
     public ResponseEntity<Integer> getGameInfo(@RequestParam Integer lobbyId) {
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
 
-        boolean lobbyExists = hasLobby(lobbyId);
+        boolean lobbyExists = lobbyExists(lobbyId);
         if (lobbyExists) {
             return responseMaker.itemResponse(lobbyId);
             // TODO: return a more game info
@@ -91,7 +135,7 @@ public class Server {
 
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
-        while (lobbyId == null || hasLobby(lobbyId)) {
+        while (lobbyId == null || lobbyExists(lobbyId)) {
             lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
         }
         lobbies.add(new Lobby(lobbyId));
@@ -115,7 +159,7 @@ public class Server {
         int lobbyId = info.get("lobbyId").getAsInt();
         Lobby lobby = null;
         for (Lobby l : lobbies) {
-            if (l.getLobbyId() == lobbyId) {
+            if (l.getId() == lobbyId) {
                 lobby = l;
                 break;
             }
@@ -127,14 +171,14 @@ public class Server {
 
         int playerId = info.get("playerId").getAsInt();
         boolean playerInLobby = false;
-        for (Integer lobbyPlayer : lobby.getPlayers()) {
+        for (Integer lobbyPlayer : lobby.getPlayerIds()) {
             if (lobbyPlayer == playerId) {
                 playerInLobby = true;
                 break;
             }
         }
 
-        if (!playerInLobby || lobby.getPlayers().get(0) != playerId) {
+        if (!playerInLobby || lobby.getPlayerIds().get(0) != playerId) {
             return responseMaker.forbidden();
         }
         return responseMaker.ok();
@@ -152,9 +196,9 @@ public class Server {
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
         for (Lobby lobby : lobbies) {
-            if (lobby.getLobbyId() == lobbyId) {
+            if (lobby.getId() == lobbyId) {
                 // check if lobby is full
-                if (lobby.getPlayers().size() >= 6) {
+                if (lobby.getPlayerIds().size() >= 6) {
                     System.out.println("Lobby is full");
                     return (new ResponseMaker<Integer>()).forbidden();
                 }
@@ -164,7 +208,8 @@ public class Server {
         System.out.println("Lobby not full");
         int playerId = (int) counter.incrementAndGet();
         System.out.println("Player given id: " + playerId);
-        addPlayerToLobby(playerId, lobbyId);
+        // Add player to the lobby
+        getLobby(lobbyId).addPlayer(playerId);
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
         return responseMaker.itemResponse(playerId);
     }
@@ -182,7 +227,7 @@ public class Server {
         int lobbyId = info.get("lobbyId").getAsInt();
         Lobby lobby = null;
         for (Lobby l : lobbies) {
-            if (l.getLobbyId() == lobbyId) {
+            if (l.getId() == lobbyId) {
                 lobby = l;
                 break;
             }
@@ -194,7 +239,7 @@ public class Server {
 
         int playerId = info.get("playerId").getAsInt();
         boolean playerInLobby = false;
-        for (Integer lobbyPlayer : lobby.getPlayers()) {
+        for (Integer lobbyPlayer : lobby.getPlayerIds()) {
             if (lobbyPlayer == playerId) {
                 playerInLobby = true;
                 break;
@@ -212,7 +257,7 @@ public class Server {
     @GetMapping(ResourceLocation.gameStatus)
     public ResponseEntity<Integer> getGameStatus(@RequestParam Integer lobbyId) {
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
-        if (hasLobby(lobbyId)) {
+        if (lobbyExists(lobbyId)) {
             return responseMaker.itemResponse(lobbyId);
         }
         return responseMaker.notFound();
@@ -231,7 +276,7 @@ public class Server {
         int lobbyId = info.get("lobbyId").getAsInt();
         Lobby lobby = null;
         for (Lobby l : lobbies) {
-            if (l.getLobbyId() == lobbyId) {
+            if (l.getId() == lobbyId) {
                 lobby = l;
                 break;
             }
@@ -243,7 +288,7 @@ public class Server {
 
         int playerId = info.get("playerId").getAsInt();
         boolean playerInLobby = false;
-        for (Integer lobbyPlayer : lobby.getPlayers()) {
+        for (Integer lobbyPlayer : lobby.getPlayerIds()) {
             if (lobbyPlayer == playerId) {
                 playerInLobby = true;
                 break;
@@ -279,71 +324,5 @@ public class Server {
     public ResponseEntity<Void> deleteSavedGame(@RequestBody Integer gameId) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         return responseMaker.notImplemented();
-    }
-    
-    // get if player is ready
-    // http://localhost:8190/api/player/isReady?lobbyId=0&playerId=0
-
-
-    /**
-     * Method for adding a player to a lobby
-     *
-     * @param playerId
-     * @param lobbyId
-     * @auther Felix Schmidt (Felix732)
-     */
-    public void addPlayerToLobby(int playerId, int lobbyId) {
-        for (int i = 0; i < lobbies.size(); i++) {
-            if (lobbyId == lobbies.get(i).Id) {
-                lobbies.get(i).addPlayer(playerId);
-            }
-        }
-    }
-
-    /**
-     * Method for removing a player from a lobby
-     *
-     * @param playerId
-     * @param lobbyId
-     * @auther Felix Schmidt (Felix732)
-     */
-    public void removePlayerToLobby(int playerId, int lobbyId) {
-        for (int i = 0; i < lobbies.size(); i++) {
-            if (lobbyId == lobbies.get(i).Id) {
-                lobbies.get(i).removePlayer(playerId);
-            }
-        }
-    }
-
-    public boolean hasLobby(int lobbyId) {
-        for (Lobby lobby : lobbies) {
-            if (lobby.getLobbyId() == lobbyId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Method for deleting a lobby
-     *
-     * @param lobbyId
-     * @auther Felix Schmidt (Felix732)
-     */
-    public void deleteLobby(int lobbyId) {
-        for (int i = 0; i < lobbies.size(); i++) {
-            if (lobbyId == lobbies.get(i).Id) {
-                lobbies.remove(i);
-            }
-        }
-    }
-
-    public boolean lobbyAlreadyExists(int lobbyId) {
-        for (int i = 0; i < lobbies.size(); i++) {
-            if (lobbyId == lobbies.get(i).Id) {
-                return true;
-            }
-        }
-        return false;
     }
 }
