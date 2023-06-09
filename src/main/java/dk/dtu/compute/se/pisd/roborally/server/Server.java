@@ -29,6 +29,8 @@ public class Server {
     private final AtomicLong counter = new AtomicLong();
     private final Random rng = new Random();
 
+    private final static JsonParser jsonParser = new JsonParser();
+
     public Server() {
 
     }
@@ -107,13 +109,13 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Integer> getGameInfo(@RequestParam Integer lobbyId) {
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+    public ResponseEntity<String> getGameInfo(@RequestParam Integer lobbyId) {
+        ResponseMaker<String> responseMaker = new ResponseMaker<>();
 
         boolean lobbyExists = lobbyExists(lobbyId);
         if (lobbyExists) {
-            return responseMaker.itemResponse(lobbyId);
-            // TODO: return a more game info
+            return responseMaker.itemResponse(lobbyId + "");
+            // TODO: return a more game info (as JSON)
 
         }
 
@@ -132,13 +134,7 @@ public class Server {
      */
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
-        System.out.println("Received body: '" + stringInfo + "'");
-        JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
-
-        System.out.println("JSON:");
-        System.out.println(info.keySet());
-        System.out.println(info.entrySet());
-        System.out.println("\\JSON");
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
 
         ResponseMaker<String> responseMaker = new ResponseMaker<>();
         Random rng = new Random();
@@ -162,7 +158,8 @@ public class Server {
     }
 
     @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestBody JsonObject info) {
+    public ResponseEntity<Void> deleteActiveGame(@RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
         if (!info.has("lobbyId")) {
@@ -208,8 +205,7 @@ public class Server {
      */
     @PostMapping(ResourceLocation.joinGame)
     public ResponseEntity<String> playerJoinRequest(@RequestBody String stringInfo) {
-
-        JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         int lobbyId = info.get("gameId").getAsInt();
 
         ResponseMaker<String> responseMaker = new ResponseMaker<>();
@@ -238,7 +234,8 @@ public class Server {
     }
 
     @PostMapping(ResourceLocation.leaveGame)
-    public ResponseEntity<Void> playerLeaveRequest(@RequestBody JsonObject info) {
+    public ResponseEntity<Void> playerLeaveRequest(@RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         // check if lobby and player exists
         if (!info.has("lobbyId")) {
@@ -278,17 +275,19 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.gameStatus)
-    public ResponseEntity<Integer> getGameStatus(@RequestParam Integer lobbyId) {
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+    public ResponseEntity<String> getGameStatus(@RequestParam Integer lobbyId) {
+        ResponseMaker<String> responseMaker = new ResponseMaker<>();
         if (lobbyExists(lobbyId)) {
-            return responseMaker.itemResponse(lobbyId);
+            // TODO make JSON
+            return responseMaker.itemResponse(lobbyId + "");
         }
         return responseMaker.notFound();
     }
 
     @PostMapping(ResourceLocation.gameStatus)
-    public ResponseEntity<Integer> updateGameStatus(@RequestBody JsonObject info) {
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+    public ResponseEntity<Void> updateGameStatus(@RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
+        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
         if (!info.has("lobbyId") || !info.has("status")) {
             return responseMaker.methodNotAllowed();
@@ -332,19 +331,23 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Integer> loadGame(@RequestParam Integer gameId) {
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+    public ResponseEntity<String> loadGame(@RequestParam Integer gameId) {
+        ResponseMaker<String> responseMaker = new ResponseMaker<>();
+
+        // TODO return the info as JSON
         return responseMaker.notImplemented();
     }
 
     @PostMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Void> saveGame(@RequestBody JsonObject game) {
+    public ResponseEntity<Void> saveGame(@RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         return responseMaker.notImplemented();
     }
 
     @DeleteMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Void> deleteSavedGame(@RequestBody Integer gameId) {
+    public ResponseEntity<Void> deleteSavedGame(@RequestBody String stringInfo) {
+        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         return responseMaker.notImplemented();
     }
