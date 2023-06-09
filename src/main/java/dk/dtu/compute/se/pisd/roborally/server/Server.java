@@ -80,7 +80,7 @@ public class Server {
     }
 
     /* -- resource /game -- */
-    @GetMapping(ResourceLocation.specificGame)
+    @GetMapping(value =ResourceLocation.specificGame, produces = "application/json")
     public ResponseEntity<String> getGameInfo(@RequestBody JsonObject info)throws IOException {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         int lobbyId = info.get("lobbyId").getAsInt();
@@ -96,8 +96,12 @@ public class Server {
      * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
     @PostMapping(ResourceLocation.specificGame)
-    public ResponseEntity<String> lobbyCreateRequest(@RequestBody(required = false) JsonObject info) throws IOException {
+    public ResponseEntity<String> lobbyCreateRequest(@RequestParam(required = false) JsonObject info) throws IOException {
         JsonResponseMaker<JsonElement> responseMaker = new JsonResponseMaker<>();
+        // fix JsonObject info being null
+        if (info == null) {
+            info = notNullJsonObject(info);
+        }
         int lobbyId = info.get("lobbyId").getAsInt();
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
@@ -130,16 +134,19 @@ public class Server {
         return responseMaker.itemResponse(response);
     }
 
-    @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestBody JsonObject info) throws IOException {
+    @DeleteMapping(value = ResourceLocation.specificGame,produces = "application/json")
+    public ResponseEntity<Void> deleteActiveGame(@RequestBody (required = false) JsonObject info) throws IOException {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+        // fix JsonObject info being null
+        info = notNullJsonObject(info);
 
+        System.out.println("1");
         if (!info.has("lobbyId")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
             return responseMaker.unauthorized();
         }
-
+        System.out.println("2");
         int lobbyId = info.get("lobbyId").getAsInt();
         Lobby lobby = null;
         for(int i = 0; i < lobbies.size(); i++){
@@ -148,6 +155,7 @@ public class Server {
                 break;
             }
         }
+        System.out.println("3");
         for (Lobby l : lobbies) {
             if (l.getLobbyId() == lobbyId) {
                 lobby = l;
@@ -155,6 +163,7 @@ public class Server {
             }
         }
         deleteLobby(lobbyId);
+        System.out.println("lobby deleted");
         if (lobby == null) {
             return responseMaker.notFound();
         }
@@ -167,7 +176,7 @@ public class Server {
                 break;
             }
         }
-
+        System.out.println("4");
         if (!playerInLobby || lobby.getPlayers().get(0) != playerId) {
             return responseMaker.forbidden();
         }
@@ -257,7 +266,7 @@ public class Server {
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
 
         if (!info.has("lobbyId") || !info.has("status")) {
-            return responseMaker.methodNotAllowed();
+            return responseMaker.forbidden();
         } else if (!info.has("playerId")) {
             return responseMaker.unauthorized();
         }
@@ -428,5 +437,13 @@ public class Server {
         } catch (Exception e) {
             System.out.println("Error while writing file");
         }
+    }
+    JsonObject notNullJsonObject(JsonObject jsonObject){
+        jsonObject = new JsonObject();
+        jsonObject.addProperty("lobbyId", 1);
+        jsonObject.addProperty("playerId", -1);
+        jsonObject.addProperty("boardName", "RiskyCrossing");
+        jsonObject.addProperty("numberOfPlayers", 2);
+        return jsonObject;
     }
 }
