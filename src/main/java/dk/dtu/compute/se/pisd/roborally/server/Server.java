@@ -1,8 +1,13 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.MapMaker;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.OnlineGame;
 import dk.dtu.compute.se.pisd.roborally.restful.JsonResponseMaker;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
@@ -15,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -75,59 +81,73 @@ public class Server {
 
     /* -- resource /game -- */
     @GetMapping(ResourceLocation.specificGame)
-    public ResponseEntity<String> getGameInfo(@RequestParam Integer lobbyId) throws IOException {
+    public ResponseEntity<String> getGameInfo(@RequestBody JsonObject info)throws IOException {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
-        //int lobbyId = info.get("lobbyId").getAsInt();
-        System.out.println("trying to make jsonobject");
-        JsonObject item = new JsonObject();
-        item.addProperty("lobbyId", lobbyId);
-        System.out.println("added property");
-        return responseMaker.itemResponse(makeJsonObject(file2));
+        int lobbyId = info.get("lobbyId").getAsInt();
+        File filePath = new File(defaultPath + lobbyId + ".json");
+        return responseMaker.itemResponse(makeJsonObject(filePath));
     }
 
     /**
      * Method for handling post requests to /api/lobby/create
      *
-     * @param lobbyId Integer value to identify the lobby
+     * @param info Integer value to identify the lobby
      * @return a Greeting object using the counter and lobbyCreated template
      * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
     @PostMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody(required = false) Integer lobbyId) throws IOException {
-        System.out.println("1");
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+    public ResponseEntity<String> lobbyCreateRequest(@RequestBody(required = false) JsonObject info) throws IOException {
+        JsonResponseMaker<JsonElement> responseMaker = new JsonResponseMaker<>();
+        int lobbyId = info.get("lobbyId").getAsInt();
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
-        while (lobbyId == null || hasLobby(lobbyId)) {
-            lobbyId = (int) lobbyCounter.incrementAndGet();
+        if (lobbyId < 0) {
+            Random rng = new Random();
+            lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
+        }
+        // Check if the id is already in use
+        for (Lobby l : lobbies) {
+            if (l.getLobbyId() == lobbyId) {
+                return responseMaker.forbidden();
+            }
         }
         lobbies.add(new Lobby(lobbyId));
         System.out.println("Lobby added succes");
+        lobbies.get(lobbies.size() - 1).addPlayer(0);
+        // add player to response
+        JsonObject response = new JsonObject();
+        Board board = null;
+        if(info.get("boardName").getAsString().equals("RiskyCrossing")){
+            board = MapMaker.makeJsonRiskyCrossing();
 
-        return responseMaker.itemResponse(lobbyId);
-        /*
-        return new Greetin+g(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
-         */
+        } else if(info.get("boardName").getAsString().equals("DizzyHighway")){
+            board = MapMaker.makeJsonDizzyHighway();
+        }
+        int numberOfPlayers = info.get("numberOfPlayers").getAsInt();
+        Game game = new OnlineGame(board,numberOfPlayers);
+        game.setGameId(lobbyId);
+        response.add("game", game.serialize());
+        return responseMaker.itemResponse(response);
     }
 
     @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestParam Integer lobbyId, @RequestParam(required = false) Integer playerId) {
+    public ResponseEntity<Void> deleteActiveGame(@RequestBody JsonObject info) throws IOException {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-/*
+
         if (!info.has("lobbyId")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
             return responseMaker.unauthorized();
         }
 
-        int lobbyId = info.get("lobbyId").getAsInt();*/
+        int lobbyId = info.get("lobbyId").getAsInt();
         Lobby lobby = null;
-       /* for(int i = 0; i < lobbies.size(); i++){
+        for(int i = 0; i < lobbies.size(); i++){
             if(lobbies.get(i).Id == lobbyId){
                 lobby = lobbies.get(i);
                 break;
             }
-        }*/
+        }
         for (Lobby l : lobbies) {
             if (l.getLobbyId() == lobbyId) {
                 lobby = l;
@@ -139,7 +159,7 @@ public class Server {
             return responseMaker.notFound();
         }
 
-        //int playerId = info.get("playerId").getAsInt();
+        int playerId = info.get("playerId").getAsInt();
         boolean playerInLobby = false;
         for (Integer lobbyPlayer : lobby.getPlayers()) {
             if (lobbyPlayer == playerId) {
