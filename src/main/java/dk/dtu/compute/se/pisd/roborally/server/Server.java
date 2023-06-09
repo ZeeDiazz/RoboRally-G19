@@ -129,13 +129,15 @@ public class Server {
      * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
     @PostMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody(required = false) Integer lobbyId) {
+    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody JsonObject info) {
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
         Random rng = new Random();
 
+        int lobbyId = info.get("lobbyId").getAsInt();
+
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
-        while (lobbyId == null || lobbyExists(lobbyId)) {
+        while (lobbyExists(lobbyId)) {
             lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
         }
         lobbies.add(new Lobby(lobbyId));
