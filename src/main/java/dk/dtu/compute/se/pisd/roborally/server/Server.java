@@ -130,7 +130,10 @@ public class Server {
      * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
     @PostMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody JsonObject info) {
+    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody String stringInfo) {
+        System.out.println("Received body: '" + stringInfo + "'");
+        JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
+
         System.out.println("JSON:");
         System.out.println(info.keySet());
         System.out.println(info.entrySet());
@@ -155,10 +158,9 @@ public class Server {
     }
 
     @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestBody String stringInfo) {
+    public ResponseEntity<Void> deleteActiveGame(@RequestBody JsonObject info) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
-        JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
         if (!info.has("lobbyId")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
