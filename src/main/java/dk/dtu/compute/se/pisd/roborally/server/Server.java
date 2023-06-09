@@ -31,6 +31,7 @@ public class Server {
     private ResponseMessage responseMessages;
     String filePath = "src/main/resources/games";
     String filePath2 = "src/main/resources/boards/5B.json";
+    String defaultPath = "src/main/resources/games/";
     String saveboardpath = "src/main/resources/games/";
     File file = new File(filePath);
     File file2 = new File(filePath2);
@@ -277,9 +278,17 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Integer> loadGame(@RequestParam Integer gameId) {
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
-        return responseMaker.notImplemented();
+    public ResponseEntity<String> loadGame(@RequestParam JsonObject info){
+        System.out.println("Trying to load game");
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
+        /*boolean newGame = info.get("newGame").getAsBoolean();
+        if (newGame) {
+            return responseMaker.itemResponse(makeJsonObject(file3));
+        }*/
+        //int filePath = info.get("gameId").getAsInt();
+        String filePath = info.get("lobbyId").getAsString();
+        File filePathGiven = new File(defaultPath + filePath+".json");
+        return responseMaker.itemResponse(makeJsonObject(filePathGiven));
     }
 
     @PostMapping(ResourceLocation.saveGame)
@@ -354,6 +363,12 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * @param lobbyId
+     * @return
+     * @auther Felix Schmidt (Felix732)
+     */
     public boolean lobbyAlreadyExists(int lobbyId) {
         for (int i = 0; i < lobbies.size(); i++) {
             if (lobbyId == lobbies.get(i).Id) {
@@ -362,7 +377,12 @@ public class Server {
         }
         return false;
     }
-
+    /**
+     *
+     * @param file
+     * @return
+     * @auther Felix Schmidt (Felix732)
+     */
     public JsonObject makeJsonObject(File file) {
         JsonParser parser = new JsonParser();
         try {
@@ -372,6 +392,11 @@ public class Server {
             return null;
         }
     }
+    /**
+     *
+     * @param jsonObject
+     * @auther Felix Schmidt (Felix732)
+     */
     public void makeFileFromJsonObject (JsonObject jsonObject){
         int gamId = jsonObject.get("gameId").getAsInt();
         File file = new File(saveboardpath+gamId+".json");
