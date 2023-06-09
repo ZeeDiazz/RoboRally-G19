@@ -2,6 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.server;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dk.dtu.compute.se.pisd.roborally.restful.JsonResponse;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
 import org.springframework.http.ResponseEntity;
@@ -130,7 +131,7 @@ public class Server {
      * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
     @PostMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody String stringInfo) {
+    public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
         System.out.println("Received body: '" + stringInfo + "'");
         JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
 
@@ -139,7 +140,7 @@ public class Server {
         System.out.println(info.entrySet());
         System.out.println("\\JSON");
 
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+        ResponseMaker<String> responseMaker = new ResponseMaker<>();
         Random rng = new Random();
 
         int lobbyId = info.get("gameId").getAsInt();
@@ -151,7 +152,10 @@ public class Server {
         }
         lobbies.add(new Lobby(lobbyId));
 
-        return responseMaker.created(lobbyId);
+        JsonObject response = new JsonObject();
+        response.addProperty("gameId", lobbyId);
+
+        return responseMaker.created(response.toString());
         /*
         return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
          */
@@ -203,10 +207,12 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @PostMapping(ResourceLocation.joinGame)
-    public ResponseEntity<Integer> playerJoinRequest(@RequestParam JsonObject info) {
+    public ResponseEntity<String> playerJoinRequest(@RequestParam String stringInfo) {
+
+        JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
         int lobbyId = info.get("gameId").getAsInt();
 
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
+        ResponseMaker<String> responseMaker = new ResponseMaker<>();
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
         for (Lobby lobby : lobbies) {
@@ -224,7 +230,11 @@ public class Server {
         System.out.println("Player given id: " + playerId);
         // Add player to the lobby
         getLobby(lobbyId).addPlayer(playerId);
-        return responseMaker.itemResponse(playerId);
+
+        JsonObject response = new JsonObject();
+        response.addProperty("playerId", playerId);
+
+        return responseMaker.itemResponse(response.toString());
     }
 
     @PostMapping(ResourceLocation.leaveGame)
