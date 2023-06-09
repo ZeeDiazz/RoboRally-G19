@@ -1,6 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
 import org.springframework.http.ResponseEntity;
@@ -154,9 +155,10 @@ public class Server {
     }
 
     @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestBody JsonObject info) {
+    public ResponseEntity<Void> deleteActiveGame(@RequestBody String stringInfo) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
+        JsonObject info = (JsonObject)(new JsonParser()).parse(stringInfo);
         if (!info.has("lobbyId")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
