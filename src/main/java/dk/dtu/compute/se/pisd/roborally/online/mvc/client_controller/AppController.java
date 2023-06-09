@@ -21,6 +21,10 @@
  */
 package dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller;
 
+import com.sun.javafx.scene.control.InputField;
+import com.sun.javafx.scene.control.IntegerField;
+import com.sun.jdi.IntegerValue;
+import dk.dtu.compute.se.pisd.roborally.online.Client;
 import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
@@ -28,18 +32,25 @@ import dk.dtu.compute.se.pisd.roborally.online.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.JSONTransformer;
+import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
+import jakarta.annotation.Resource;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import org.jetbrains.annotations.NotNull;
 
+import javax.xml.transform.Result;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +64,8 @@ import java.util.Optional;
  */
 
 public class AppController implements Observer, GameFinishedListener {
+
+    private Client client = new Client(ResourceLocation.baseLocation);
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
@@ -105,7 +118,7 @@ public class AppController implements Observer, GameFinishedListener {
      * @param playerCount The amount of players who will be playing the game
      * @param offlineGame Is true, if an offline game should be made,
      *                    and false if an online game should be made
-     * @author Zigalow, Daniel
+     * @author Zigalow, Zaid & Daniel
      */
     protected void makeGame(Board board, int playerCount, boolean offlineGame) {
         // Zigalow {
@@ -113,6 +126,8 @@ public class AppController implements Observer, GameFinishedListener {
 
         if (offlineGame) {
             game = new LocalGame(board);
+
+
             // Zigalow }
 
             for (int i = 0; i < playerCount; i++) {
@@ -122,14 +137,86 @@ public class AppController implements Observer, GameFinishedListener {
                 player.robot.setRebootPosition(startingSpace.position);
                 game.addPlayer(player);
 
-                gameController = new GameController(game);
             }
+            gameController = new GameController(game);
 
         } else {
-            // TODO: 06-06-2023 
-          /*  game = new OnlineGame(board, playerCount);
+
+            // Zaid & Zigalow {
+
+            // Create the custom dialog.
+            Dialog<Integer> dialog = new Dialog<>();
+            dialog.setTitle("Choose game ID");
+            dialog.setHeaderText("Please enter your preferred game ID");
+            dialog.setContentText("Press skip if you don't prefer a specific game Id");
+
+            // Set the button types.
+            ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
+            ButtonType skipButtonType = new ButtonType("Skip", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(submitButtonType, skipButtonType);
+
+            // Create the integer input field.
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(20, 150, 10, 10));
+
+            TextField integerField = new TextField();
+            integerField.setPromptText("Enter an integer");
+
+            grid.add(new Label("Integer:"), 0, 0);
+            grid.add(integerField, 1, 0);
+
+            // Enable/Disable submit button depending on whether an integer was entered.
+            Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
+            submitButton.setDisable(true);
+
+            // Do some validation (using the Java 8 lambda syntax).
+            integerField.textProperty().addListener((observable, oldValue, newValue) -> {
+                submitButton.setDisable(!isValidInteger(newValue));
+            });
 
 
+            dialog.getDialogPane().setContent(grid);
+
+            // Request focus on the integer field by default.
+
+
+            // Convert the result to an integer when the submit button is clicked.
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == submitButtonType) {
+                    return Integer.parseInt(integerField.getText());
+                } else {
+                    return -1;
+                }
+            });
+
+            Optional<Integer> result = dialog.showAndWait();
+
+            result.ifPresent(integer -> {
+                System.out.println("Entered Integer: " + integer);
+            });
+
+
+            int gameId = result.get();
+
+            // Zaid & Zigalow }
+
+            Game game1;
+            try {
+                game1 = client.createGame(gameId, playerCount, board.boardName);
+
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            
+
+            // TODO: 06-06-2023 Thread waiting for players
+            /*
             Alert waitingForPlayers = new Alert(AlertType.INFORMATION);
             waitingForPlayers.setTitle("Missing players");
             waitingForPlayers.setContentText("Please wait for the remaining players to join");
@@ -194,6 +281,7 @@ public class AppController implements Observer, GameFinishedListener {
         Optional<ButtonType> gameMode = gameType.showAndWait();
         // Zigalow }
 
+
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
         dialog.setHeaderText("Select number of players");
@@ -247,32 +335,39 @@ public class AppController implements Observer, GameFinishedListener {
 
     @FXML
     public void saveGame() {
+        if (GameController.game instanceof LocalGame) {
+            fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
 
-        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
-
-        fileChooser.setTitle("Save Game"); // Description for action
-        fileChooser.setInitialFileName("RoboRally_SaveFile"); // Initial name of saveFile
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
-        File file = fileChooser.showSaveDialog(null);
+            fileChooser.setTitle("Save Game"); // Description for action
+            fileChooser.setInitialFileName("RoboRally_SaveFile"); // Initial name of saveFile
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
+            File file = fileChooser.showSaveDialog(null);
 
 
-        if (file != null) {
-            try {
-                file.createNewFile();
-                // Saves to Json-file
-                JSONTransformer.saveBoard(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (file != null) {
+                try {
+                    file.createNewFile();
+                    // Saves to Json-file
+                    JSONTransformer.saveBoard(file);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                // If the user opts out of saving
+            } else {
+                return;
             }
 
-            // If the user opts out of saving
+
+            fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
         } else {
-            return;
+            
+          /*  if()
+            
+            File file = new File();
+
+*/
         }
-
-
-        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
-
     }
 
     /**
@@ -391,5 +486,14 @@ public class AppController implements Observer, GameFinishedListener {
     @Override
     public void onGameFinished() {
         stopGame();
+    }
+
+    private boolean isValidInteger(String text) {
+        try {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
