@@ -83,6 +83,7 @@ public class Server {
     @GetMapping(value =ResourceLocation.specificGame, produces = "application/json")
     public ResponseEntity<String> getGameInfo(@RequestBody JsonObject info)throws IOException {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
+        info = notNullJsonObject(info);
         int lobbyId = info.get("lobbyId").getAsInt();
         File filePath = new File(defaultPath + lobbyId + ".json");
         return responseMaker.itemResponse(makeJsonObject(filePath));
@@ -97,11 +98,9 @@ public class Server {
      */
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody(required = false) JsonObject info) throws IOException {
-        JsonResponseMaker<JsonElement> responseMaker = new JsonResponseMaker<>();
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         // fix JsonObject info being null
-        if (info == null) {
-            info = notNullJsonObject(info);
-        }
+        info = notNullJsonObject(info);
         int lobbyId = info.get("lobbyId").getAsInt();
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
@@ -191,7 +190,8 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @PostMapping(ResourceLocation.joinGame)
-    public ResponseEntity<Integer> playerJoinRequest(@RequestParam Integer lobbyId) {
+    public ResponseEntity<String> playerJoinRequest(@RequestParam Integer lobbyId) {
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
         for (Lobby lobby : lobbies) {
@@ -199,7 +199,7 @@ public class Server {
                 // check if lobby is full
                 if (lobby.getPlayers().size() >= 6) {
                     System.out.println("Lobby is full");
-                    return (new ResponseMaker<Integer>()).forbidden();
+                    return responseMaker.forbidden();
                 }
             }
         }
@@ -208,8 +208,10 @@ public class Server {
         int playerId = (int) counter.incrementAndGet();
         System.out.println("Player given id: " + playerId);
         addPlayerToLobby(playerId, lobbyId);
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
-        return responseMaker.itemResponse(playerId);
+        JsonObject response = new JsonObject();
+        response.addProperty("playerId", playerId);
+        response.addProperty("lobbyId", lobbyId);
+        return responseMaker.itemResponse(response);
     }
 
     @PostMapping(ResourceLocation.leaveGame)
