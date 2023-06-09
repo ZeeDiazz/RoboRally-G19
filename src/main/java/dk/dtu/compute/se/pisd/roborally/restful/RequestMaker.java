@@ -68,9 +68,15 @@ public abstract class RequestMaker {
         return new JsonResponse(postRequest(location, string));
     }
 
-    public static Response<JsonObject> postRequestJson(URI location, JsonElement element) throws IOException, InterruptedException {
-        return postRequestJson(location, element.toString());
+    public static Response<JsonObject> postRequestJson(URI location, JsonElement json) throws IOException, InterruptedException {
+        return postRequestJson(location, json.toString());
     }
 
-
+    public static Response<JsonObject> postRequestJson(URI location, Map<String, String> map) throws IOException, InterruptedException {
+        JsonObject json = new JsonObject();
+        for (String key : map.keySet()) {
+            json.addProperty(key, map.get(key));
+        }
+        return postRequestJson(location, json);
+    }
 }
