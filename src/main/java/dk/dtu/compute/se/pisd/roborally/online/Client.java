@@ -75,6 +75,7 @@ public class Client {
             System.out.println("minimum number of players to start: " + minimumPlayers);
         } else {
             System.out.println("Failed gameId: " + gameId);
+            System.out.println(jsonGameFromServer.getStatusCode());
         }
     }
 
