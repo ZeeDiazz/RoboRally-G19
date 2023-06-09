@@ -202,10 +202,8 @@ public class AppController implements Observer, GameFinishedListener {
 
             // Zaid & Zigalow }
 
-            Game game1;
             try {
-                game1 = client.createGame(gameId, playerCount, board.boardName);
-
+                client.joinGame(gameId);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
@@ -213,6 +211,11 @@ public class AppController implements Observer, GameFinishedListener {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+            while (!client.gameIsReady()) {
+                // wait
+            }
+            game = client.getGame();
             
 
             // TODO: 06-06-2023 Thread waiting for players
