@@ -104,32 +104,4 @@ public class Lobby {
         return isReady;
     }
 
-
-    public static class SaveGame {
-        private Integer gameId;
-        private JsonObject gameData;
-
-        public SaveGame(Integer gameId, JsonObject gameData) {
-            this.gameId = gameId;
-            this.gameData = gameData;
-        }
-
-        // Getters and setters
-        public Integer getGameId() {
-            return gameId;
-        }
-
-        public void setGameId(Integer gameId) {
-            this.gameId = gameId;
-        }
-
-        public JsonObject getGameData() {
-            return gameData;
-        }
-
-        public void setGameData(JsonObject gameData) {
-            this.gameData = gameData;
-        }
-    }
-
 }
