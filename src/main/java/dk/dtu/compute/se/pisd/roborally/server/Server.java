@@ -104,7 +104,7 @@ public class Server {
 
         return responseMaker.itemResponse(lobbyId);
         /*
-        return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
+        return new Greetin+g(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
          */
     }
 
@@ -284,7 +284,11 @@ public class Server {
     @PostMapping(ResourceLocation.saveGame)
     public ResponseEntity<Void> saveGame(@RequestBody JsonObject game) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-        return responseMaker.notImplemented();
+
+        Integer gameId = game.get("gameId").getAsInt();
+        Lobby.SaveGame saveGame = new Lobby.SaveGame(gameId,game);
+
+     return responseMaker.ok();
     }
 
     @DeleteMapping(ResourceLocation.saveGame)
