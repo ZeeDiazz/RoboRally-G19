@@ -1,16 +1,20 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
+import com.google.gson.JsonParser;
+import dk.dtu.compute.se.pisd.roborally.restful.JsonResponseMaker;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -25,15 +29,22 @@ public class Server {
     // TODO: 2023-06-09 implement a way to Load game, save game, delete saved game
 
     private ResponseMessage responseMessages;
+    String filePath = "src/main/resources/games";
+    String filePath2 = "src/main/resources/boards/5B.json";
+    File file = new File(filePath);
+    File file2 = new File(filePath2);
 
     public Server() {
 
     }
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     // intialize list of lobbies, not null
     List<Lobby> lobbies = new ArrayList<>();
     private int lobbySize = 0;
     private final AtomicLong counter = new AtomicLong();
+    private final AtomicLong lobbyCounter = new AtomicLong();
 
 
     /**
@@ -49,7 +60,7 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.allGames)
-    public ResponseEntity<Integer[]> getAllGames() {
+    public ResponseEntity<Integer[]> getAllGames() throws IOException {
         ResponseMaker<Integer[]> responseMaker = new ResponseMaker<>();
 
         Integer[] ids = new Integer[lobbies.size()];
@@ -60,22 +71,17 @@ public class Server {
         return responseMaker.itemResponse(ids);
     }
 
-    @GetMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Integer> getGameInfo(@RequestParam Integer lobbyId) {
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
-
-        boolean lobbyExists = hasLobby(lobbyId);
-        if (lobbyExists) {
-            return responseMaker.itemResponse(lobbyId);
-            // TODO: return a more game info
-
-        }
-
-        return responseMaker.notFound();
-
-    }
     /* -- resource /game -- */
-
+    @GetMapping(ResourceLocation.specificGame)
+    public ResponseEntity<String> getGameInfo(@RequestParam Integer lobbyId) throws IOException {
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
+        //int lobbyId = info.get("lobbyId").getAsInt();
+        System.out.println("trying to make jsonobject");
+        JsonObject item = new JsonObject();
+        item.addProperty("lobbyId", lobbyId);
+        System.out.println("added property");
+        return responseMaker.itemResponse(makeJsonObject(file2));
+    }
 
     /**
      * Method for handling post requests to /api/lobby/create
@@ -85,47 +91,53 @@ public class Server {
      * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
     @PostMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody(required = false) Integer lobbyId) {
+    public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody(required = false) Integer lobbyId) throws IOException {
+        System.out.println("1");
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
-        Random rng = new Random();
-
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
         while (lobbyId == null || hasLobby(lobbyId)) {
-            lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
+            lobbyId = (int) lobbyCounter.incrementAndGet();
         }
         lobbies.add(new Lobby(lobbyId));
+        System.out.println("Lobby added succes");
 
-        return responseMaker.created(lobbyId);
+        return responseMaker.itemResponse(lobbyId);
         /*
         return new Greeting(counter.incrementAndGet(), responseMessages.getLobbyCreatedMessage(lobbyId));
          */
     }
 
     @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestBody JsonObject info) {
+    public ResponseEntity<Void> deleteActiveGame(@RequestParam Integer lobbyId, @RequestParam(required = false) Integer playerId) {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-
+/*
         if (!info.has("lobbyId")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
             return responseMaker.unauthorized();
         }
 
-        int lobbyId = info.get("lobbyId").getAsInt();
+        int lobbyId = info.get("lobbyId").getAsInt();*/
         Lobby lobby = null;
+       /* for(int i = 0; i < lobbies.size(); i++){
+            if(lobbies.get(i).Id == lobbyId){
+                lobby = lobbies.get(i);
+                break;
+            }
+        }*/
         for (Lobby l : lobbies) {
             if (l.getLobbyId() == lobbyId) {
                 lobby = l;
                 break;
             }
         }
-
+        deleteLobby(lobbyId);
         if (lobby == null) {
             return responseMaker.notFound();
         }
 
-        int playerId = info.get("playerId").getAsInt();
+        //int playerId = info.get("playerId").getAsInt();
         boolean playerInLobby = false;
         for (Integer lobbyPlayer : lobby.getPlayers()) {
             if (lobbyPlayer == playerId) {
@@ -280,7 +292,7 @@ public class Server {
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         return responseMaker.notImplemented();
     }
-    
+
     // get if player is ready
     // http://localhost:8190/api/player/isReady?lobbyId=0&playerId=0
 
@@ -345,5 +357,26 @@ public class Server {
             }
         }
         return false;
+    }
+
+    public JsonObject makeJsonObject(File file) {
+        JsonParser parser = new JsonParser();
+        try {
+            return (JsonObject) parser.parse(new FileReader(file));
+        } catch (Exception e) {
+            System.out.println("Error while reading file");
+            return null;
+        }
+    }
+    public void makeFileFromJsonObject (JsonObject jsonObject){
+        File file = new File("src/main/resources/lobby.json");
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(jsonObject.toString());
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (Exception e) {
+            System.out.println("Error while writing file");
+        }
     }
 }
