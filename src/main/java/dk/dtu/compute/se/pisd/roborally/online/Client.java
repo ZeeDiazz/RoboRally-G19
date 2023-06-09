@@ -22,7 +22,7 @@ public class Client {
     private String baseLocation;
 
 
-    // private int clientId;
+    private int clientId;
 
     //TODO: CREATE a constructor with URI??
     public Client(String baseLocation) {
@@ -37,9 +37,9 @@ public class Client {
      * If it's possible, it should make the game with given Game ID
      * If not, a random gameId will be returned with the game from Server
      *
-     * @param gameId Game ID that the player prefers
+     * @param gameId                          Game ID that the player prefers
      * @param minimumsNumbersOfPlayersToStart Minimum amount of players to start the game
-     * @param boardName The name of the board
+     * @param boardName                       The name of the board
      * @return Returns a game that has this player in it, and a Game ID
      * @throws URISyntaxException
      * @throws IOException
@@ -50,10 +50,15 @@ public class Client {
     public Game createGame(int gameId, int minimumsNumbersOfPlayersToStart, String boardName) throws URISyntaxException, IOException, InterruptedException {
         //Create the request to the server to create the game
 
+        if (gameId < 0) {
+            this.createGame(minimumsNumbersOfPlayersToStart,boardName);
+        }
+        
         int minimumPlayers = (minimumsNumbersOfPlayersToStart >= 2 && minimumsNumbersOfPlayersToStart <= 6) ? minimumsNumbersOfPlayersToStart : 2;
 
         URI gameURI = makeURI(specificGame);
 
+        
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("gameId", gameId);
@@ -85,7 +90,7 @@ public class Client {
      * Creates a game with a random gameId
      *
      * @param minimumNumberOfPlayersToStart Minimum amount of players to start the game
-     * @param boardName The name of the board
+     * @param boardName                     The name of the board
      * @return Returns a game that has this player in it, and a Game ID
      * @throws URISyntaxException
      * @throws IOException
@@ -104,10 +109,9 @@ public class Client {
     // Returns a game where there is the newly made player
 
     // Unsure what type it should return
-    public void joinGame(int gameId) throws IOException, InterruptedException, URISyntaxException {
+    public int joinGame(int gameId) throws IOException, InterruptedException, URISyntaxException {
 
         URI joinGameURI = makeURI(joinGame);
-
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("gameId", gameId);
@@ -121,16 +125,18 @@ public class Client {
             joinedGame.deserialize(gameFromServer);*/
 
             gameId = gameFromServer.get("gameId").getAsInt();
-
+            clientId = gameFromServer.get("playerId").getAsInt(); //??
             System.out.println("Joined gameId: " + gameId);
-
+            return clientId;
         } else {
             System.out.println("Failed to join gameId: " + gameId);
+            return -1;
         }
     }
 
     /**
      * Returns whether the game can be started
+     *
      * @param gameId The game ID of the game, that needs to be checked
      * @return returns true if the game can be started, and false if it can't
      * @throws URISyntaxException
@@ -164,8 +170,11 @@ public class Client {
         return canStart;
 
     }
+
+    void finishedProgrammingPhase() {
+        
+    }
 /*
-    void finishedProgrammingPhase();
 
     boolean canStartActivationPhase();
 
