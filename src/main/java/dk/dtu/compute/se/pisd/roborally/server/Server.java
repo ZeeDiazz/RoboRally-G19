@@ -192,7 +192,10 @@ public class Server {
      * @auther Felix Schmidt (Felix732)
      */
     @PostMapping(ResourceLocation.joinGame)
-    public ResponseEntity<Integer> playerJoinRequest(@RequestParam Integer lobbyId) {
+    public ResponseEntity<Integer> playerJoinRequest(@RequestParam JsonObject info) {
+        int lobbyId = info.get("gameId").getAsInt();
+
+        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
         for (Lobby lobby : lobbies) {
@@ -200,7 +203,7 @@ public class Server {
                 // check if lobby is full
                 if (lobby.getPlayerIds().size() >= 6) {
                     System.out.println("Lobby is full");
-                    return (new ResponseMaker<Integer>()).forbidden();
+                    return responseMaker.forbidden();
                 }
             }
         }
@@ -210,7 +213,6 @@ public class Server {
         System.out.println("Player given id: " + playerId);
         // Add player to the lobby
         getLobby(lobbyId).addPlayer(playerId);
-        ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
         return responseMaker.itemResponse(playerId);
     }
 
