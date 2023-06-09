@@ -96,7 +96,7 @@ public class Server {
      * @author Felix Schmidt (Felix732) & Daniel Jensen
      */
     @PostMapping(ResourceLocation.specificGame)
-    public ResponseEntity<String> lobbyCreateRequest(@RequestParam(required = false) JsonObject info) throws IOException {
+    public ResponseEntity<String> lobbyCreateRequest(@RequestBody(required = false) JsonObject info) throws IOException {
         JsonResponseMaker<JsonElement> responseMaker = new JsonResponseMaker<>();
         // fix JsonObject info being null
         if (info == null) {
