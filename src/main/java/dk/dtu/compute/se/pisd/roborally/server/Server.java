@@ -130,10 +130,15 @@ public class Server {
      */
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<Integer> lobbyCreateRequest(@RequestBody JsonObject info) {
+        System.out.println("JSON:");
+        System.out.println(info.keySet());
+        System.out.println(info.entrySet());
+        System.out.println("\\JSON");
+
         ResponseMaker<Integer> responseMaker = new ResponseMaker<>();
         Random rng = new Random();
 
-        int lobbyId = info.get("lobbyId").getAsInt();
+        int lobbyId = info.get("gameId").getAsInt();
 
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
