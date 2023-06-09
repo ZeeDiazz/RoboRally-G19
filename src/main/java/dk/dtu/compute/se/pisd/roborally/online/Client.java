@@ -14,8 +14,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Client {
+    private int gameId;
     private Game game;
     private final String baseLocation;
     private Thread listener;
@@ -38,7 +40,7 @@ public class Client {
      * If not, a random gameId will be returned with the game from Server
      *
      * @param gameId                          Game ID that the player prefers
-     * @param minimumsNumbersOfPlayersToStart Minimum amount of players to start the game
+     * @param minimumPlayersToStart Minimum amount of players to start the game
      * @param boardName                       The name of the board
      * @return Returns a game that has this player in it, and a Game ID
      * @throws URISyntaxException
@@ -47,41 +49,32 @@ public class Client {
      * @author Zigalow & ZeeDiazz (Zaid)
      */
     // . 
-    public Game createGame(int gameId, int minimumsNumbersOfPlayersToStart, String boardName) throws URISyntaxException, IOException, InterruptedException {
+    public void createGame(int gameId, int minimumPlayersToStart, String boardName) throws URISyntaxException, IOException, InterruptedException {
         //Create the request to the server to create the game
 
         if (gameId < 0) {
-            this.createGame(minimumsNumbersOfPlayersToStart,boardName);
+            Random rng = new Random();
+            gameId = rng.nextInt(0, Integer.MAX_VALUE);
         }
         
-        int minimumPlayers = (minimumsNumbersOfPlayersToStart >= 2 && minimumsNumbersOfPlayersToStart <= 6) ? minimumsNumbersOfPlayersToStart : 2;
+        int minimumPlayers = (minimumPlayersToStart >= 2 && minimumPlayersToStart <= 6) ? minimumPlayersToStart : 2;
 
         URI gameURI = new URI(makeFullUri(ResourceLocation.specificGame));
 
-        
-
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("gameId", gameId);
-        jsonObject.addProperty("minimumsNumbersOfPlayers", minimumsNumbersOfPlayersToStart);
+        jsonObject.addProperty("minimumPlayers", minimumPlayersToStart);
         jsonObject.addProperty("boardName", boardName);
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.postRequestJson(gameURI, jsonObject);
 
 
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
-            JsonObject gameFromServer = jsonGameFromServer.getItem();
-
-            Game initialGame = new OnlineGame(new Board(10, 10), minimumPlayers);
-            game = (OnlineGame) initialGame.deserialize(gameFromServer);
-
-
-            System.out.println("gameId: " + game.getGameId());
+            gameId = jsonGameFromServer.getItem().get("gameId").getAsInt();
+            System.out.println("gameId: " + gameId);
             System.out.println("minimum number of players to start: " + minimumPlayers);
-
-            return game;
         } else {
             System.out.println("Failed gameId: " + gameId);
-            return null;
         }
     }
 
@@ -100,8 +93,8 @@ public class Client {
 
     // If the player doesn't prefer to choose the gameID
     // Game will include the Player who makes the game
-    public Game createGame(int minimumNumberOfPlayersToStart, String boardName) throws URISyntaxException, IOException, InterruptedException {
-        return createGame(-1, minimumNumberOfPlayersToStart, boardName);
+    public void createGame(int minimumNumberOfPlayersToStart, String boardName) throws URISyntaxException, IOException, InterruptedException {
+        createGame(-1, minimumNumberOfPlayersToStart, boardName);
     }
 
     // TODO - Update JoinGame with new logic
@@ -154,16 +147,7 @@ public class Client {
                 } catch (IOException | InterruptedException | URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
-                Board board = new Board(0, 0);
-                board = (Board)board.deserialize(gameInfo.get("board"));
-                int playerCount = gameInfo.get("playerCount").getAsInt();
-
-                game = new OnlineGame(board, playerCount);
-                JsonArray playerArray = gameInfo.get("players").getAsJsonArray();
-                Player playerDeserializer = new OnlinePlayer(null, "", "");
-                for (int i = 0; i < playerCount; i++) {
-                    game.addPlayer((Player)playerDeserializer.deserialize(playerArray.get(i)));
-                }
+                game = deserializeGameFromServer(gameInfo);
             });
             listener.start();
             return playerId;
@@ -245,5 +229,19 @@ public class Client {
 
     public Game getGame() {
         return this.game;
+    }
+
+    private Game deserializeGameFromServer(JsonObject gameInfo) {
+        Board board = new Board(0, 0);
+        board = (Board)board.deserialize(gameInfo.get("board"));
+        int playerCount = gameInfo.get("playerCount").getAsInt();
+
+        Game deserializedGame = new OnlineGame(board, playerCount);
+        JsonArray playerArray = gameInfo.get("players").getAsJsonArray();
+        Player playerDeserializer = new OnlinePlayer(null, "", "");
+        for (int i = 0; i < playerCount; i++) {
+            deserializedGame.addPlayer((Player)playerDeserializer.deserialize(playerArray.get(i)));
+        }
+        return deserializedGame;
     }
 }
