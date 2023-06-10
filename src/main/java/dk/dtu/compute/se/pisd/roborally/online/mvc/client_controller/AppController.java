@@ -144,65 +144,15 @@ public class AppController implements Observer, GameFinishedListener {
 
             // Zaid & Zigalow {
 
-            // Create the custom dialog.
-            Dialog<Integer> dialog = new Dialog<>();
-            dialog.setTitle("Choose game ID");
-            dialog.setHeaderText("Please enter your preferred game ID");
-            dialog.setContentText("Press skip if you don't prefer a specific game Id");
-
-            // Set the button types.
-            ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
-            ButtonType skipButtonType = new ButtonType("Skip", ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(submitButtonType, skipButtonType);
-
-            // Create the integer input field.
-            GridPane grid = new GridPane();
-            grid.setHgap(10);
-            grid.setVgap(10);
-            grid.setPadding(new Insets(20, 150, 10, 10));
-
-            TextField integerField = new TextField();
-            integerField.setPromptText("Enter an integer");
-
-            grid.add(new Label("Integer:"), 0, 0);
-            grid.add(integerField, 1, 0);
-
-            // Enable/Disable submit button depending on whether an integer was entered.
-            Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
-            submitButton.setDisable(true);
-
-            // Do some validation (using the Java 8 lambda syntax).
-            integerField.textProperty().addListener((observable, oldValue, newValue) -> {
-                submitButton.setDisable(!isValidInteger(newValue));
-            });
-
-
-            dialog.getDialogPane().setContent(grid);
-
-            // Request focus on the integer field by default.
-
-
-            // Convert the result to an integer when the submit button is clicked.
-            dialog.setResultConverter(dialogButton -> {
-                if (dialogButton == submitButtonType) {
-                    return Integer.parseInt(integerField.getText());
-                } else {
-                    return -1;
-                }
-            });
-
-            Optional<Integer> result = dialog.showAndWait();
-
-            result.ifPresent(integer -> {
-                System.out.println("Entered Integer: " + integer);
-            });
-
-
-            int gameId = result.get();
+            try {
+                client.createGame(chooseGameIdWindow(), playerCount, board.boardName);
+            } catch (URISyntaxException | IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             // Zaid & Zigalow }
 
-            try {
+           /* try {
                 client.joinGame(gameId);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
@@ -215,8 +165,8 @@ public class AppController implements Observer, GameFinishedListener {
             while (!client.gameIsReady()) {
                 // wait
             }
-            game = client.getGame();
-            
+            game = client.getGame();*/
+
 
             // TODO: 06-06-2023 Thread waiting for players
             /*
@@ -284,6 +234,69 @@ public class AppController implements Observer, GameFinishedListener {
         Optional<ButtonType> gameMode = gameType.showAndWait();
         // Zigalow }
 
+        if (gameMode.get() == onlineButton) {
+            ButtonType listAllGames = new ButtonType("See game list");
+            ButtonType getGameInfo = new ButtonType("Get game info");
+            ButtonType playGame = new ButtonType("Play game");
+
+            ButtonType option;
+
+            Alert selectOption = new Alert(AlertType.CONFIRMATION, "", playGame, listAllGames, getGameInfo);
+
+
+            selectOption.setTitle("Choose option");
+            selectOption.setHeaderText("What would you like to do?");
+            selectOption.setContentText("Select the option you would like to perform");
+
+
+            do {
+                option = selectOption.showAndWait().get();
+
+                // todo - getGameInfo and listAllGames usages
+                if (option == getGameInfo) {
+                    getGameInfo(chooseGameIdWindow());
+                } else if (option == listAllGames) {
+                    listAllGames();
+                }
+
+            } while (option != playGame);
+
+            ButtonType createGame = new ButtonType("Create new game");
+            ButtonType joinGame = new ButtonType("Join game");
+            ButtonType loadGame = new ButtonType("Load game");
+
+
+            Alert gameOptions = new Alert(AlertType.CONFIRMATION, "", createGame, joinGame, loadGame);
+
+            gameOptions.setTitle("Choose game option");
+            gameOptions.setHeaderText("How would you like to play?");
+            gameOptions.setContentText("Select the option you would like to perform");
+
+
+            do {
+                option = gameOptions.showAndWait().get();
+
+                // todo - load game usages
+                if (option == joinGame) {
+                    try {
+                        client.joinGame(chooseGameIdWindow());
+
+                        while (!client.gameIsReady()) {
+                            // wait
+                        }
+                        Game game = client.getGame();
+
+
+                    } catch (IOException | InterruptedException | URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else if (option == loadGame) {
+                    // loadGame
+                }
+            } while (option != createGame);
+        }
+
+        // Creates game
 
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
@@ -319,13 +332,8 @@ public class AppController implements Observer, GameFinishedListener {
 
             int playerCount = result.get();
 
-            // Zigalow {
-            if (gameMode.get() == offlineButton) {
-                makeGame(board, playerCount, true);
-            } else {
-                makeGame(board, playerCount, false);
-            }
-            // Zigalow }
+            makeGame(board, playerCount, gameMode.get() == offlineButton);
+
 
         }
     }
@@ -489,6 +497,72 @@ public class AppController implements Observer, GameFinishedListener {
     @Override
     public void onGameFinished() {
         stopGame();
+    }
+
+    private int chooseGameIdWindow() {
+
+        // Create the custom dialog.
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Choose game ID");
+        dialog.setHeaderText("Please enter your preferred game ID");
+        dialog.setContentText("Press skip if you don't prefer a specific game Id");
+
+        // Set the button types.
+        ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
+        ButtonType skipButtonType = new ButtonType("Skip", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(submitButtonType, skipButtonType);
+
+        // Create the integer input field.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField integerField = new TextField();
+        integerField.setPromptText("Enter a positive integer");
+
+        grid.add(new Label("Integer:"), 0, 0);
+        grid.add(integerField, 1, 0);
+
+        // Enable/Disable submit button depending on whether an integer was entered.
+        Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
+        submitButton.setDisable(true);
+
+        // Do some validation (using the Java 8 lambda syntax).
+        integerField.textProperty().addListener((observable, oldValue, newValue) -> {
+            submitButton.setDisable(!isValidInteger(newValue));
+        });
+
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the integer field by default.
+
+
+        // Convert the result to an integer when the submit button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == submitButtonType) {
+                return Integer.parseInt(integerField.getText());
+            } else {
+                return -1;
+            }
+        });
+
+        Optional<Integer> result = dialog.showAndWait();
+
+        result.ifPresent(integer -> {
+            System.out.println("Entered Integer: " + integer);
+        });
+
+        return result.get();
+    }
+
+    private void getGameInfo(int gameId) {
+        // todo - add implementation of getGameInfo
+    }
+
+    private void listAllGames() {
+        // todo - add implementation of listAllGames
     }
 
     private boolean isValidInteger(String text) {
