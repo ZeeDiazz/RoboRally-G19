@@ -3,11 +3,15 @@ package dk.dtu.compute.se.pisd.roborally.server;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dk.dtu.compute.se.pisd.roborally.restful.JsonResponse;
+import dk.dtu.compute.se.pisd.roborally.restful.JsonResponseMaker;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,7 +32,8 @@ public class Server {
     private final List<Lobby> lobbies = new ArrayList<>();
     private final AtomicLong counter = new AtomicLong();
     private final Random rng = new Random();
-
+    private final String databasePath = "src/main/resources/database/";
+    private FileWriter fileWriter;
     private final static JsonParser jsonParser = new JsonParser();
 
     public Server() {
@@ -82,15 +87,11 @@ public class Server {
         }
         return lobbies.get(index);
     }
+    private boolean notEnoughInfo(JsonObject jsonObject) {
+        return !jsonObject.has("lobbyId") || !jsonObject.has("playerId");
+    }
 
 
-    /**
-     * Method for handling get requests to /greeting
-     *
-     * @param name a string value
-     * @return a Greeting object using the counter and template
-     * @auther Felix Schmidt (Felix732)
-     */
     @GetMapping("/greeting")
     public ResponseEntity<String> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
         return (new ResponseMaker<String>()).ok();
@@ -110,7 +111,7 @@ public class Server {
 
     @GetMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> getGameInfo(@RequestParam Integer lobbyId) {
-        ResponseMaker<String> responseMaker = new ResponseMaker<>();
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
 
         boolean lobbyExists = lobbyExists(lobbyId);
         if (lobbyExists) {
@@ -124,19 +125,11 @@ public class Server {
     }
     /* -- resource /game -- */
 
-
-    /**
-     * Method for handling post requests to /api/lobby/create
-     *
-     * @param lobbyId Integer value to identify the lobby
-     * @return a Greeting object using the counter and lobbyCreated template
-     * @author Felix Schmidt (Felix732) & Daniel Jensen
-     */
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
 
-        ResponseMaker<String> responseMaker = new ResponseMaker<>();
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         Random rng = new Random();
 
         int lobbyId = info.get("gameId").getAsInt();
@@ -162,10 +155,8 @@ public class Server {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
-        if (!info.has("lobbyId")) {
-            return responseMaker.methodNotAllowed();
-        } else if (!info.has("playerId")) {
-            return responseMaker.unauthorized();
+        if(notEnoughInfo(info)) {
+            return responseMaker.forbidden();
         }
 
         int lobbyId = info.get("lobbyId").getAsInt();
@@ -195,20 +186,12 @@ public class Server {
         }
         return responseMaker.ok();
     }
-
-    /**
-     * Method for handling post request to /api/lobby/join
-     *
-     * @param lobbyId Integer value to identify the lobby
-     * @return a Greeting object using the counter and lobbyJoined template
-     * @auther Felix Schmidt (Felix732)
-     */
     @PostMapping(ResourceLocation.joinGame)
     public ResponseEntity<String> playerJoinRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         int lobbyId = info.get("gameId").getAsInt();
 
-        ResponseMaker<String> responseMaker = new ResponseMaker<>();
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
         for (Lobby lobby : lobbies) {
@@ -276,7 +259,7 @@ public class Server {
 
     @GetMapping(ResourceLocation.gameStatus)
     public ResponseEntity<String> getGameStatus(@RequestParam Integer lobbyId) {
-        ResponseMaker<String> responseMaker = new ResponseMaker<>();
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         if (lobbyExists(lobbyId)) {
             // TODO make JSON
             return responseMaker.itemResponse(lobbyId + "");
@@ -332,7 +315,7 @@ public class Server {
 
     @GetMapping(ResourceLocation.saveGame)
     public ResponseEntity<String> loadGame(@RequestParam Integer gameId) {
-        ResponseMaker<String> responseMaker = new ResponseMaker<>();
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
 
         // TODO return the info as JSON
         return responseMaker.notImplemented();
@@ -342,13 +325,33 @@ public class Server {
     public ResponseEntity<Void> saveGame(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-        return responseMaker.notImplemented();
+        if(!info.has("gameId")){
+            return responseMaker.methodNotAllowed();
+        }
+        String pathVariable = info.get("gameId").getAsString();
+        File file = new File(databasePath + pathVariable + ".json");
+        try{
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(stringInfo);
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("Error while saving game");
+            throw new RuntimeException(e);
+        }
+        return responseMaker.ok();
     }
 
     @DeleteMapping(ResourceLocation.saveGame)
     public ResponseEntity<Void> deleteSavedGame(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+        if(!info.has("gameId")){
+            return responseMaker.methodNotAllowed();
+        }
+        String pathVariable = info.get("gameId").getAsString();
+        // delete file with gameId
+
         return responseMaker.notImplemented();
     }
 }
