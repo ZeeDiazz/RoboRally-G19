@@ -324,14 +324,19 @@ public class Server {
     }
 
     @PostMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Void> saveGame(@RequestBody String stringInfo) {
+    public ResponseEntity<Void> saveGame(@RequestBody String stringInfo) throws IOException {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         if(!info.has("gameId")){
             return responseMaker.methodNotAllowed();
         }
         String pathVariable = info.get("gameId").getAsString();
-        File file = new File(databasePath + pathVariable + ".json");
+        String filename = databasePath + pathVariable + ".json";
+
+        if(Files.deleteIfExists(Paths.get(filename))){
+            System.out.println("Deleted old file");
+        }
+        File file = new File(filename);
         try{
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInfo);
