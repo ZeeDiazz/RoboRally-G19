@@ -195,29 +195,147 @@ public class Client {
 
     }
 
-    void finishedProgrammingPhase() {
-        
+    public void finishedProgrammingPhase() throws URISyntaxException, IOException, InterruptedException {
+        URI finishedProgrammingPhaseURI= new URI(makeFullUri(ResourceLocation.gameStatus));
+
+        //TODO: Send ProgrammingCards that the player has choosen
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("playerId", playerId);
+
+
+        Response<JsonObject> jsonProgrammingPhase = RequestMaker.postRequestJson(finishedProgrammingPhaseURI, jsonObject);
+
+        if (jsonProgrammingPhase.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Successfully send the ProgrammingPhase");
+        } else {
+            System.out.println("Failed to connect");
+        }
     }
-/*
 
-    boolean canStartActivationPhase();
 
-    void sendStatusInfo();
+    public boolean canStartActivationPhase() throws URISyntaxException, IOException, InterruptedException {
+        URI canStartActivationPhaseURI = new URI(makeFullUri(ResourceLocation.gameStatus));
+
+        Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(canStartActivationPhaseURI);
+
+        boolean canStartActivationPhase;
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+            JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+            canStartActivationPhase = gameFromServer.get("canStartActivationPhase").getAsBoolean();
+
+            System.out.println(canStartActivationPhase ? "The Phase is Activation" : "The Phase is not Activation");
+        }else {
+            System.out.println("Failed to connect");
+            return false;
+        }
+        return canStartActivationPhase;
+    }
+    public void sendStatusInfo() throws URISyntaxException, IOException, InterruptedException {
+        URI gameStatueURI = new URI(makeFullUri(ResourceLocation.gameStatus));
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("playerId", playerId);
+
+        Response<JsonObject> jsonGameInfoFromServer = RequestMaker.postRequestJson(gameStatueURI, jsonObject);
+        if (jsonGameInfoFromServer.getStatusCode().is2xxSuccessful()) {
+            JsonObject gameFromServer = jsonGameInfoFromServer.getItem();
+
+            int numberOfPlayers = gameFromServer.get("playerCount").getAsInt();
+            int moveCount = gameFromServer.get("moveCounter").getAsInt();
+            int step = gameFromServer.get("step").getAsInt();
+            String phaseName = gameFromServer.get("phase").getAsString();
+            boolean stepMode = gameFromServer.get("stepMode").getAsBoolean();
+
+            System.out.println("Game Status:");
+            System.out.println("Number of Players: " + numberOfPlayers);
+            System.out.println("Number of Moves: " + moveCount);
+            System.out.println("Number of steps: " + step);
+            System.out.println("Game phase: " + phaseName);
+            System.out.println("stepMode: " + stepMode);
+
+        } else {
+            System.out.println("Failed to connect");
+        }
+
+    }
 
     // (Ask if the game is finished)
-    boolean gameIsFinished();
+    public boolean gameIsFinished() throws URISyntaxException, IOException, InterruptedException {
+        URI gameIsFinishedURI = new URI(makeFullUri(ResourceLocation.gameStatus));
+
+        Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(gameIsFinishedURI);
+
+        boolean isGameFinished;
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+            JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+            isGameFinished = gameFromServer.get("isGameFinished").getAsBoolean();
+
+            System.out.println(isGameFinished ? "The game is finished" : "The game is still running");
+        }else {
+            System.out.println("Failed to connect");
+            return false;
+        }
+        return isGameFinished;
+    }
 
     // (To get the clientId of the player, from the server)
-    boolean getPlayerId();
+    public int getPlayerId() throws URISyntaxException, IOException, InterruptedException { //ask egholm: playerID shouldwe have a param
+        URI gameURI = new URI(makeFullUri(ResourceLocation.joinGame));
+
+        Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(gameURI);
+
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()){
+            JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+            playerId = gameFromServer.get("playerId").getAsInt();
+
+            System.out.println("Players Id:" + playerId);
+
+        } else {
+            System.out.println("Failed to connect");
+        }
+
+        return playerId;
+    }
 
     // (save game)
-    void saveGame();
+    public void saveGame() throws URISyntaxException, IOException, InterruptedException {
+        if(playerId == 0){
+            URI savegameURI = new URI(makeFullUri(ResourceLocation.saveGame));
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("gameId", gameId);
+
+            Response<JsonObject> jsonGameFromServer = RequestMaker.postRequestJson(savegameURI,jsonObject);
+
+            if (jsonGameFromServer.getStatusCode().is2xxSuccessful()){
+                System.out.println("Game " + gameId + "is saved");
+            } else {
+                System.out.println("Failed to connect");
+            }
+
+        }
+    }
 
     // (load game)
-    void loadGame();
+    public void loadGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
+        URI loadgameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.saveGame), "gameId",gameId + "");
 
-    // (to perform the move of the other players, when activationPhase can begin)
-    void simulateActivationPhase();*/
+        Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(loadgameURI);
+
+        if(jsonGameFromServer.getStatusCode().is2xxSuccessful()){
+            JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+            this.game = deserializeGameFromServer(gameFromServer);
+
+            System.out.println("");
+        } else {
+
+        }
+
+    }
 
 
     private String makeFullUri(String relativeDestination) {
