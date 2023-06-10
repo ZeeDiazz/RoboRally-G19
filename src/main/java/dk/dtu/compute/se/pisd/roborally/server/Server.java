@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -350,8 +352,17 @@ public class Server {
             return responseMaker.methodNotAllowed();
         }
         String pathVariable = info.get("gameId").getAsString();
-        // delete file with gameId
-
-        return responseMaker.notImplemented();
+        String fileName = databasePath + pathVariable + ".json";
+        try{
+            boolean success = Files.deleteIfExists(Paths.get(fileName));
+            if (success){
+                return responseMaker.ok();
+            }else {
+                return responseMaker.notFound();
+            }
+        } catch (IOException e) {
+            System.out.println("Error while deleting game");
+            throw new RuntimeException(e);
+        }
     }
 }
