@@ -137,7 +137,7 @@ public final class MapMaker {
     public static Board makeJsonRiskyCrossing() throws FileNotFoundException {
         Board startA = loadJsonBoard("StartA");
         Board startB = loadJsonBoard("5A");
-        Board riskyCrossing = Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Risky Crossing");
+        Board riskyCrossing = Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "RiskyCrossing");
         riskyCrossing.addCheckpoint(new Position(8, 7));
         riskyCrossing.addCheckpoint(new Position(11, 0));
         return riskyCrossing;
@@ -152,7 +152,7 @@ public final class MapMaker {
     public static Board makeJsonDizzyHighway() throws FileNotFoundException {
         Board startA = loadJsonBoard("StartA");
         Board startB = loadJsonBoard("5B");
-        Board dizzyHighway =  Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "Dizzy Highway");
+        Board dizzyHighway =  Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "DizzyHighway");
         dizzyHighway.addCheckpoint(new Position(12, 3));
         return dizzyHighway;
     }
