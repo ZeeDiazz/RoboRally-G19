@@ -143,16 +143,17 @@ public class AppController implements Observer, GameFinishedListener {
         } else {
 
             // Zaid & Zigalow {
-
+            int gameId;
             try {
-                client.createGame(chooseGameIdWindow(), playerCount, board.boardName);
+                 gameId = chooseGameIdWindow();
+                client.createGame(gameId, playerCount, board.boardName);
             } catch (URISyntaxException | IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
             // Zaid & Zigalow }
 
-           /* try {
+            /*try {
                 client.joinGame(gameId);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
@@ -501,43 +502,39 @@ public class AppController implements Observer, GameFinishedListener {
 
     private int chooseGameIdWindow() {
 
-        // Create the custom dialog.
+        // Create the dialog for choosing a gameId
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Choose game ID");
         dialog.setHeaderText("Please enter your preferred game ID");
         dialog.setContentText("Press skip if you don't prefer a specific game Id");
 
-        // Set the button types.
+        // add the Buttons Submit & skip
         ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
         ButtonType skipButtonType = new ButtonType("Skip", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(submitButtonType, skipButtonType);
 
-        // Create the integer input field.
+        //
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setPadding(new Insets(10, 150, 10, 10)); //10 height & 150 width
+
 
         TextField integerField = new TextField();
-        integerField.setPromptText("Enter a positive integer");
+        integerField.setPromptText("Enter a positive integer"); //a text prompt telling the player to write an int
 
-        grid.add(new Label("Integer:"), 0, 0);
+        grid.add(new Label("Game ID:"), 0, 0);
         grid.add(integerField, 1, 0);
 
         // Enable/Disable submit button depending on whether an integer was entered.
         Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
         submitButton.setDisable(true);
 
-        // Do some validation (using the Java 8 lambda syntax).
+        // Do some validation.
         integerField.textProperty().addListener((observable, oldValue, newValue) -> {
             submitButton.setDisable(!isValidInteger(newValue));
         });
 
 
         dialog.getDialogPane().setContent(grid);
-
-        // Request focus on the integer field by default.
-
 
         // Convert the result to an integer when the submit button is clicked.
         dialog.setResultConverter(dialogButton -> {
