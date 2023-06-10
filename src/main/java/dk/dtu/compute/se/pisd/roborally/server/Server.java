@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -317,11 +318,26 @@ public class Server {
 
     @GetMapping(ResourceLocation.saveGame)
     public ResponseEntity<String> loadGame(@RequestParam Integer gameId) {
+        String filename = databasePath + gameId + ".json";
+        File file = new File(filename);
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
 
-        // TODO return the info as JSON
-        return responseMaker.notImplemented();
+        if (!file.exists()) {
+            return responseMaker.notFound();
+
+        }
+
+        try (FileReader fileReader = new FileReader(file)) {
+            JsonObject loadedInfo = jsonParser.parse(fileReader).getAsJsonObject();
+
+            return ResponseEntity.ok(loadedInfo.toString());
+
+        } catch (IOException e) {
+            System.out.println("Error while loading game");
+            throw new RuntimeException(e);
+        }
     }
+
 
     @PostMapping(ResourceLocation.saveGame)
     public ResponseEntity<Void> saveGame(@RequestBody String stringInfo) throws IOException {
