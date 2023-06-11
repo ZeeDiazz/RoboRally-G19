@@ -400,4 +400,8 @@ public class Client extends OnlinePlayer {
         }
         return deserializedGame;
     }
+
+    public void setClientGame(Game game) {
+        this.game = game;
+    }
 }
