@@ -186,7 +186,7 @@ public class Client {
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             JsonObject gameFromServer = jsonGameFromServer.getItem();
 
-            canStart = gameFromServer.get("canStartGame").getAsBoolean();
+            canStart = gameFromServer.get("status").getAsBoolean();
 
             if (canStart) {
                 System.out.println("The game can be started");
