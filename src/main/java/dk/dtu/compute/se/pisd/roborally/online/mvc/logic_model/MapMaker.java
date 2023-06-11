@@ -94,11 +94,6 @@ public final class MapMaker {
                     HeadingDirection direction = getHeadingDirection(heading);
                     space = new GreenGearSpace(position,direction);
                 }
-                case "PriorityAntennaSpace" ->{
-                    String heading = spaceObject.get("heading").getAsString();
-                    HeadingDirection direction = getHeadingDirection(heading);
-                    space = new PriorityAntennaSpace(position,direction);
-                }
             }
             //put the obstacle in the hashmap
             obstacleSpaces.put(position, space);
