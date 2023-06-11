@@ -3,10 +3,14 @@ package dk.dtu.compute.se.pisd.roborally.server;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
 
 public class Lobby {
     private final int id;
     private int readyCount = 0;
+    private int minimumPlayers = 0;
+    private final AtomicLongArray counter = new AtomicLongArray(6);
     private final Map<Integer, Boolean> playerStatus;
 
     /**
@@ -105,8 +109,11 @@ public class Lobby {
         }
     }
 
-    public boolean isReady() {
+    public boolean isReady(){
         return readyCount == playerStatus.size();
+    }
+    public boolean canLaunch(){
+        return playerStatus.size() >= minimumPlayers;
     }
 
     public void resetReadyStatus() {
@@ -114,4 +121,20 @@ public class Lobby {
             setNotReady(playerId);
         }
     }
+    public int getMinimumPlayers() {
+        return minimumPlayers;
+    }
+    public void setMinimumPlayers(int minimumPlayers) {
+        this.minimumPlayers = minimumPlayers;
+    }
+    public int getNumberOfPlayers() {
+        return playerStatus.size();
+    }
+    public AtomicLongArray getCounter() {
+        return counter;
+    }
+    public long givePlayerId() {
+        return counter.getAndIncrement(1);
+    }
+
 }

@@ -2,7 +2,6 @@ package dk.dtu.compute.se.pisd.roborally.server;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dk.dtu.compute.se.pisd.roborally.restful.JsonResponse;
 import dk.dtu.compute.se.pisd.roborally.restful.JsonResponseMaker;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
@@ -33,10 +32,8 @@ public class Server {
 
     // intialize list of lobbies, not null
     private final List<Lobby> lobbies = new ArrayList<>();
-    private final AtomicLong counter = new AtomicLong();
     private final Random rng = new Random();
     private final String databasePath = "src/main/resources/database/";
-    private FileWriter fileWriter;
     private final static JsonParser jsonParser = new JsonParser();
 
     public Server() {
@@ -115,10 +112,15 @@ public class Server {
     @GetMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> getGameInfo(@RequestParam Integer lobbyId) {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
-
-        boolean lobbyExists = lobbyExists(lobbyId);
-        if (lobbyExists) {
-            return responseMaker.itemResponse(lobbyId + "");
+        JsonObject response = new JsonObject();
+        if(lobbyId == null){
+            return responseMaker.forbidden();
+        }
+        if (lobbyExists(lobbyId)) {
+            response.addProperty("lobbyId", lobbyId);
+            List players = getLobby(lobbyId).getPlayerIds();
+            response.add("players", (new JsonParser()).parse(players.toString()));
+            return responseMaker.itemResponse(response);
             // TODO: return a more game info (as JSON)
 
         }
@@ -134,15 +136,21 @@ public class Server {
 
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         Random rng = new Random();
-
+        if(!info.has("gameId") || !info.has("minimumPlayers")){
+            return responseMaker.forbidden();
+        }
         int lobbyId = info.get("gameId").getAsInt();
+        int minimumPlayers = info.get("minimumPlayers").getAsInt();
 
         System.out.println("Requested lobby id: " + lobbyId);
         // Make a random id that we don't already use
         while (lobbyExists(lobbyId)) {
-            lobbyId = rng.nextInt(0, Integer.MAX_VALUE);
+            lobbyId = makeNewLobbyId();
         }
         lobbies.add(new Lobby(lobbyId));
+        int lobbyIndex = lobbies.size() - 1;
+        lobbies.get(lobbyIndex).addPlayer(0);
+        lobbies.get(lobbyIndex).setMinimumPlayers(minimumPlayers);
 
         JsonObject response = new JsonObject();
         response.addProperty("gameId", lobbyId);
@@ -164,9 +172,9 @@ public class Server {
 
         int lobbyId = info.get("lobbyId").getAsInt();
         Lobby lobby = null;
-        for (Lobby l : lobbies) {
-            if (l.getId() == lobbyId) {
-                lobby = l;
+        for (int i = 0; i < lobbies.size(); i++) {
+            if (lobbies.get(i).getId() == lobbyId) {
+                lobby = lobbies.get(i);
                 break;
             }
         }
@@ -197,18 +205,13 @@ public class Server {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
-        for (Lobby lobby : lobbies) {
-            if (lobby.getId() == lobbyId) {
-                // check if lobby is full
-                if (lobby.getPlayerIds().size() >= 6) {
-                    System.out.println("Lobby is full");
-                    return responseMaker.forbidden();
-                }
-            }
+        int playersInLobby = getLobby(lobbyId).getNumberOfPlayers();
+        if(playersInLobby >= 6){
+            return responseMaker.forbidden();
         }
         // add player to lobby
-        System.out.println("Lobby not full");
-        int playerId = (int) counter.incrementAndGet();
+        Lobby currentLobby = getLobby(lobbyId);
+        int playerId = (int)getLobby(lobbyId).givePlayerId();
         System.out.println("Player given id: " + playerId);
         // Add player to the lobby
         getLobby(lobbyId).addPlayer(playerId);
@@ -263,9 +266,21 @@ public class Server {
     @GetMapping(ResourceLocation.gameStatus)
     public ResponseEntity<String> getGameStatus(@RequestParam Integer lobbyId) {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
+        JsonObject response = new JsonObject();
+        Lobby lobby = getLobby(lobbyId);
         if (lobbyExists(lobbyId)) {
             // TODO make JSON
-            return responseMaker.itemResponse(lobbyId + "");
+            if(lobby.canLaunch()) {
+                if (lobby.isReady()) {
+                    response.addProperty("status", "ready");
+                } else {
+                    response.addProperty("status", "not ready");
+                }
+                return responseMaker.itemResponse(response);
+            } else {
+                response.addProperty("status", "waiting");
+                return responseMaker.itemResponse(response);
+            }
         }
         return responseMaker.notFound();
     }
@@ -285,7 +300,7 @@ public class Server {
         Lobby lobby = null;
         for (Lobby l : lobbies) {
             if (l.getId() == lobbyId) {
-                lobby = l;
+                lobby = l; //
                 break;
             }
         }
