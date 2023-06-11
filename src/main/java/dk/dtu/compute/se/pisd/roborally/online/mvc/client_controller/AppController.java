@@ -214,10 +214,9 @@ public class AppController implements Observer, GameFinishedListener {
 
             ButtonType createGame = new ButtonType("Create new game");
             ButtonType joinGame = new ButtonType("Join game");
-            ButtonType loadGame = new ButtonType("Load game");
 
 
-            Alert gameOptions = new Alert(AlertType.CONFIRMATION, "", createGame, joinGame, loadGame);
+            Alert gameOptions = new Alert(AlertType.CONFIRMATION, "", createGame, joinGame);
 
             gameOptions.setTitle("Choose game option");
             gameOptions.setHeaderText("How would you like to play?");
@@ -235,8 +234,8 @@ public class AppController implements Observer, GameFinishedListener {
                         gameId = chooseGameIdWindow();
 
                         // If player closes window
-                        if (gameId < 0) {
-                            return;
+                        if (gameId == -2) {
+                            continue;
                         }
                         int initialPlayerId = client.joinGame(gameId);
 
@@ -263,34 +262,6 @@ public class AppController implements Observer, GameFinishedListener {
 
 
                     } catch (IOException | InterruptedException | URISyntaxException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else if (option == loadGame) {
-                    try {
-
-                        gameId = chooseGameIdWindow();
-
-                        Game initialGame = client.loadGame(gameId);
-
-                        if (initialGame.getGameId() == -1) {
-                            errorAlert.setTitle("Game doesn't exist");
-                            errorAlert.setHeaderText("Game doesn't exist");
-                            errorAlert.setContentText("There isn't any available game, that matches the entered game Id of " + gameId);
-                            continue;
-                        } else if (initialGame.getGameId() == 0) {
-                            errorAlert.setTitle("Game is full");
-                            errorAlert.setHeaderText("Game is full");
-                            errorAlert.setContentText("The game of game ID " + gameId + " is already filled up");
-                            continue;
-                        } else {
-                            // TODO: 11-06-2023 - waiting for players usage 
-                            game = initialGame;
-                            waitingForPlayers();
-                            createBoardView();
-                            return;
-                        }
-
-                    } catch (URISyntaxException | InterruptedException | IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -396,39 +367,90 @@ public class AppController implements Observer, GameFinishedListener {
     @FXML
     public void loadGame() {
 
+        // Zigalow {
+        ButtonType onlineButton = new ButtonType("Online");
+        ButtonType offlineButton = new ButtonType("Offline");
 
-        fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+        Alert gameType = new Alert(AlertType.CONFIRMATION, "", onlineButton, offlineButton);
+
+        gameType.setTitle("Choose Game Mode");
+        gameType.setHeaderText("Do you wish to play online or offline?");
+
+        Optional<ButtonType> gameMode = gameType.showAndWait();
+        // Zigalow }
+
+        if (gameMode.get() == onlineButton) {
+            do {
+                Alert errorAlert = new Alert(AlertType.ERROR);
+                int gameId = chooseGameIdWindow();
+                // Closes the window
+                if (gameId == -2) {
+                    return;
+                }
+                try {
+                    Game initialGame = client.loadGame(gameId);
+                    if (initialGame.getGameId() == -1) {
+                        errorAlert.setTitle("Game doesn't exist");
+                        errorAlert.setHeaderText("Game doesn't exist");
+                        errorAlert.setContentText("There isn't any available game, that matches the entered game Id of " + gameId);
+                        continue;
+                    } else if (initialGame.getGameId() == 0) {
+                        errorAlert.setTitle("Game is full");
+                        errorAlert.setHeaderText("Game is full");
+                        errorAlert.setContentText("The game of game ID " + gameId + " is already filled up");
+                        continue;
+                    } else if (initialGame.getGameId() > 0) {
+                        // TODO: 11-06-2023 - waiting for players usage 
+                        game = initialGame;
+                        waitingForPlayers();
+                        createBoardView();
+                        return;
+                    }
+
+                } catch (URISyntaxException | InterruptedException | IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } while (true);
 
 
-        fileChooser.setTitle("Load Game"); // Description for action
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be load as a json file type
-        File file = fileChooser.showOpenDialog(null);
+        } else if (gameMode.get() == offlineButton) {
 
 
-        if (file == null || !file.isFile()) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("File could not be loaded");
-            alert.setContentText("There was a problem with loading the given file");
-            alert.showAndWait();
-            return;
+            fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+
+            fileChooser.setTitle("Load Game"); // Description for action
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be load as a json file type
+            File file = fileChooser.showOpenDialog(null);
+
+
+            if (file == null || !file.isFile()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("File could not be loaded");
+                alert.setHeaderText("Invalid or no file chosen");
+                alert.showAndWait();
+                return;
+            }
+            GameController gameController1 = null;
+
+            try {
+                gameController1 = JSONTransformer.loadBoard(file);
+            } catch (Exception e) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("File could not be loaded");
+                alert.setHeaderText("There was a problem with loading the given file");
+                alert.setContentText("Is the json file you're trying to load made from this game?");
+                alert.showAndWait();
+                return;
+            }
+
+
+            makeLoadedGame(gameController1);
+
+
+            fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
         }
-        GameController gameController1 = null;
 
-        try {
-            gameController1 = JSONTransformer.loadBoard(file);
-        } catch (Exception e) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("File could not be loaded");
-            alert.setContentText("There was a problem with loading the given file");
-            alert.showAndWait();
-            return;
-        }
-
-
-        makeLoadedGame(gameController1);
-
-
-        fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
     }
 
 
@@ -600,7 +622,7 @@ public class AppController implements Observer, GameFinishedListener {
             if (dialogButton == submitButtonType) {
                 return Integer.parseInt(integerField.getText());
             } else {
-                return -1;
+                return -2;
             }
         });
         Optional<Integer> result = dialog.showAndWait();
