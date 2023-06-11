@@ -32,6 +32,24 @@ public abstract class Player extends Subject implements Serializable {
     private CommandCardField[] programField;
     private CommandCardField[] cards;
 
+    protected Player() {
+        // todo: make implementation of default constructor, so that client can make use of it 
+        
+   /*     this.name = "Jørgen";
+        this.robot = new Robot("red", this);*/
+        // Player starts with 5 energy cube
+        this.energyCubes = 5;
+        programField = new CommandCardField[NUMBER_OF_REGISTERS];
+        for (int i = 0; i < programField.length; i++) {
+            programField[i] = new CommandCardField(this);
+        }
+
+        cards = new CommandCardField[NUMBER_OF_CARDS];
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = new CommandCardField(this);
+        }
+    }
+
     public Player(Game game, String color, @NotNull String name) {
         this.game = game;
         this.name = name;

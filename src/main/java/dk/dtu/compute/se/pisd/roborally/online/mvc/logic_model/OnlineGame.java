@@ -14,6 +14,9 @@ public class OnlineGame extends Game {
         this.numberOfPlayersToStart = numberOfPlayersToStart;
     }
 
+    // todo - make suitable constructor for creating game at client side
+    
+    
     @Override
     public boolean canStartGame() {
         return this.players.size() == numberOfPlayersToStart;
