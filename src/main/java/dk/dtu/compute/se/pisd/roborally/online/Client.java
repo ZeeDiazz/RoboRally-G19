@@ -27,7 +27,7 @@ public class Client extends OnlinePlayer {
     private int playerId;
     private Map<String, String> lobbyAndPlayerInfo;
 
-    //TODO: CREATE a constructor with URI??
+
     public Client(String baseLocation) {
         super();
         this.baseLocation = baseLocation;
@@ -70,11 +70,17 @@ public class Client extends OnlinePlayer {
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.postRequestJson(gameURI, jsonObject);
 
-
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             gameId = jsonGameFromServer.getItem().get("gameId").getAsInt();
+            // needs playerID
+            int playerId = jsonGameFromServer.getItem().get("playerID").getAsInt();
             System.out.println("gameId: " + gameId);
             System.out.println("minimum number of players to start: " + minimumPlayers);
+
+            Board board = boardName.equals("RiskyCrossing") ? MapMaker.makeJsonRiskyCrossing() : MapMaker.makeJsonDizzyHighway();
+
+            this.playerId = playerId;
+            game = new OnlineGame(board, gameId, minimumPlayers, this);
         } else {
             System.out.println("Failed gameId: " + gameId);
             System.out.println(jsonGameFromServer.getStatusCode());
