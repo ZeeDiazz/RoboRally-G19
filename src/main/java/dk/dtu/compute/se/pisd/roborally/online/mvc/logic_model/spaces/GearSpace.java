@@ -1,6 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces;
 
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Move;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
@@ -43,5 +45,13 @@ public abstract class GearSpace extends Space {
         turnRobot(robot);
         changed();
         return null;
+    }
+
+    @Override
+    public JsonElement serialize() {
+        JsonObject jsonObject = super.serialize().getAsJsonObject();
+        jsonObject.addProperty("headingDirection", this.direction.toString());
+
+        return jsonObject;
     }
 }
