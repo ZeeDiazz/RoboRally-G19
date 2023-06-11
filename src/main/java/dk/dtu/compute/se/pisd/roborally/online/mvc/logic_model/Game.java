@@ -135,6 +135,17 @@ public abstract class Game extends Subject implements Serializable {
         return current;
     }
 
+    public Player getSpecificPlayer(int playerId) {
+
+        for (Player player : players) {
+            if (player.getPlayerID() == playerId) {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Sets the current player on the board
      *
