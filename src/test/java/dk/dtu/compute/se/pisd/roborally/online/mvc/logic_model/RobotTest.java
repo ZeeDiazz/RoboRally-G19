@@ -71,7 +71,7 @@ class RobotTest {
 
     @Test
     void getOwner() {
-        //Check if the the player(owner) is the the owner of this robot
+        //Check if the player(owner) is the owner of this robot
         assertEquals(owner, robot.getOwner());
     }
 }
