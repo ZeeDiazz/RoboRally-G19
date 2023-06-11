@@ -481,6 +481,30 @@ public class AppController implements Observer, GameFinishedListener {
 
     }
 
+    public void deleteSavedGame(){
+        int gameId;
+
+        try {
+            gameId =  chooseGameIdDeleteSavedGame();
+            client.deleteSavedGame(gameId);
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"",ButtonType.OK);
+        alert.setTitle("Delete Game");
+        alert.setHeaderText("Game deleted");
+        alert.setContentText("Successfully deleted game with gameId: " + gameId);
+
+        alert.showAndWait();
+    }
+
+
 
     /**
      * Stop playing the current game, giving the user the option to save
@@ -554,6 +578,59 @@ public class AppController implements Observer, GameFinishedListener {
         stopGame();
     }
 
+    private int chooseGameIdDeleteSavedGame(){
+
+        // Create the dialog for choosing a gameId
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Choose game ID");
+        dialog.setHeaderText("Please enter your preferred game ID");
+
+
+        // add the Buttons Submit & skip
+        ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
+
+        dialog.getDialogPane().getButtonTypes().addAll(submitButtonType);
+
+        //
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 150, 10, 10)); //10 height & 150 width
+
+
+        TextField integerField = new TextField();
+        integerField.setPromptText("Enter a positive integer"); //a text prompt telling the player to write an int
+
+        grid.add(new Label("Game ID:"), 0, 0);
+        grid.add(integerField, 1, 0);
+
+        // Enable/Disable submit button depending on whether an integer was entered.
+        Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
+        submitButton.setDisable(true);
+
+        // Do some validation.
+        integerField.textProperty().addListener((observable, oldValue, newValue) -> {
+            submitButton.setDisable(!isValidInteger(newValue));
+        });
+
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert the result to an integer when the submit button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == submitButtonType) {
+                return Integer.parseInt(integerField.getText());
+            } else {
+                return -1;
+            }
+        });
+
+        Optional<Integer> result = dialog.showAndWait();
+
+        result.ifPresent(integer -> {
+            System.out.println("Entered Integer: " + integer);
+        });
+
+        return result.get();
+    }
     private int chooseGameIdCreateGame() {
 
         // Create the dialog for choosing a gameId
