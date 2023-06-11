@@ -122,7 +122,7 @@ public class Client {
 
             listener = new Thread(() -> {
                 lobbyAndPlayerInfo = new HashMap<>();
-                lobbyAndPlayerInfo.put("lobbyId", gameId + "");
+                lobbyAndPlayerInfo.put("gameId", gameId + "");
                 lobbyAndPlayerInfo.put("playerId", playerId + "");
                 URI statusUri;
                 try {
