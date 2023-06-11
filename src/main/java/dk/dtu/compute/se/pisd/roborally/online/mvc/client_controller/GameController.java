@@ -126,12 +126,12 @@ public class GameController implements Serializable {
 
 
     public void startProgrammingPhase() {
+        // Felix: This is a temporary fix for the priority antenna{
         Space priorityAntennaSpace = game.board.getSpace(11, 0);
         List<Robot> robots = null;
         if(priorityAntennaSpace instanceof PriorityAntennaSpace){
             PriorityAntennaSpace priorityAntenna = (PriorityAntennaSpace) priorityAntennaSpace;
             List<Robot> robotsList = new ArrayList<>();
-
             for (int i = 0; i < game.getPlayerCount(); i++) {
                 robotsList.add(game.getPlayer(i).robot);
             }
@@ -145,7 +145,7 @@ public class GameController implements Serializable {
             game.setPhase(Phase.PROGRAMMING);
             game.setCurrentPlayer(game.getPlayer(0));
             game.setStep(0);
-        }
+        } // Felix: }
 
         for (int i = 0; i < game.getPlayerCount(); i++) {
             Player player = game.getPlayer(i);
