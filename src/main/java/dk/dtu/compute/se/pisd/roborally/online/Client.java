@@ -3,6 +3,7 @@ package dk.dtu.compute.se.pisd.roborally.online;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 
 import dk.dtu.compute.se.pisd.roborally.restful.RequestMaker;
@@ -343,28 +344,32 @@ public class Client {
 
     // (load game)
     public Game loadGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
-        if (playerId == game.getPlayer(0).getPlayerID()) {
-            URI loadgameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.saveGame), "gameId", gameId + "");
 
-            Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(loadgameURI);
+        URI loadgameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.saveGame), "gameId", gameId + "");
 
-            if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
-                JsonObject gameFromServer = jsonGameFromServer.getItem();
-                
-                Game initialGame = deserializeGameFromServer(gameFromServer);
+        Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(loadgameURI);
 
-                if (initialGame.getGameId() > 0) {
-                    System.out.println("Succesfully loaded game");
-                    this.game = initialGame;
-                    return game;
-                }
-                // gameId == 0 means the game is full : gameID == -1 means that the game doesn't exist
-                System.out.println(playerId == 0 ? "Game is full" : "Game doesn't exist");
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+            JsonObject gameControllerFromServer = jsonGameFromServer.getItem();
+
+
+            GameController gameController = new GameController(new Board(10, 10));
+            Game initialGame = (Game) gameController.deserialize(gameControllerFromServer.get("gameController").getAsJsonObject().get("game"));
+
+//                Game initialGame = deserializeGameFromServer(gameControllerFromServer);
+
+            if (initialGame.getGameId() > 0) {
+                System.out.println("Succesfully loaded game");
+                this.game = initialGame;
                 return game;
-            } else {
-                System.out.println("Failed to connect");
             }
+            // gameId == 0 means the game is full : gameID == -1 means that the game doesn't exist
+            System.out.println(playerId == 0 ? "Game is full" : "Game doesn't exist");
+            return game;
+        } else {
+            System.out.println("Failed to connect");
         }
+
         return null;
     }
 
