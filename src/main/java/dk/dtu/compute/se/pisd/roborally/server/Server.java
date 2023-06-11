@@ -357,9 +357,9 @@ public class Server {
 
 
     @PostMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Void> saveGame(@RequestBody String stringInfo) throws IOException {
+    public ResponseEntity<String> saveGame(@RequestBody String stringInfo) throws IOException {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
+        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         if(!info.has("gameId")){
             return responseMaker.methodNotAllowed();
         }
@@ -379,7 +379,8 @@ public class Server {
             System.out.println("Error while saving game");
             throw new RuntimeException(e);
         }
-        return responseMaker.ok();
+        JsonObject response = new JsonObject();
+        return responseMaker.itemResponse(response);
     }
 
     @DeleteMapping(ResourceLocation.saveGame)
