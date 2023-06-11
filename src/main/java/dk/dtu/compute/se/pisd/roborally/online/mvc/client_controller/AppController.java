@@ -362,7 +362,18 @@ public class AppController implements Observer, GameFinishedListener {
         } else {
             //TODO:
             try {
-                client.saveGame();
+                Alert alert = new Alert(AlertType.INFORMATION);
+
+                if (client.saveGame()) {
+                    alert.setTitle("Saved succesfully");
+                    alert.setHeaderText("The game was succesfully saved");
+                    alert.showAndWait();
+                } else {
+                    alert.setTitle("Save failed");
+                    alert.setHeaderText("The game couldn't be saved");
+                    alert.setContentText("There was a problem with connecting to the server");
+                    alert.showAndWait();
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
