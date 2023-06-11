@@ -109,7 +109,22 @@ public class AppController implements Observer, GameFinishedListener {
 
     }
 
-    // Uses LocalPlayer for now...
+    private void createBoardView() {
+        gameController = new GameController(game);
+        // Zigalow {
+        jsonTransformer = new JSONTransformer(gameController);
+        // Zigalow}
+
+        gameController.startProgrammingPhase();
+
+        // Registers the event in the GameController class
+        // Zigalow {
+        gameController.setGameFinishedListener(this);
+        // Zigalow }
+
+        roboRally.createBoardView(gameController);
+    }
+
 
     /**
      * Creates a game. When the game is made, a GameController is then made with the game,
