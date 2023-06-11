@@ -318,29 +318,33 @@ public class Client extends OnlinePlayer {
     }
 
     // (save game)
-    public void saveGame() throws URISyntaxException, IOException, InterruptedException {
+    public boolean saveGame() throws URISyntaxException, IOException, InterruptedException {
         // If the player is the first in the list, then the player is host
-        if (playerId == game.getPlayer(0).getPlayerID()) {
-            URI savegameURI = new URI(makeFullUri(ResourceLocation.saveGame));
+//        if (playerId == game.getPlayer(0).getPlayerID()) {
+        URI savegameURI = new URI(makeFullUri(ResourceLocation.saveGame));
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("gameId", gameId);
+        // JsonObject object = new JsonObject();
+        // object.add("game",game.serialize());
 
-            Response<JsonObject> jsonGameFromServer = RequestMaker.postRequestJson(savegameURI, jsonObject);
+        Response<JsonObject> jsonGameFromServer = RequestMaker.postRequestJson(savegameURI, game.serialize());
 
-            if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Game " + gameId + "is saved");
-            } else {
-                System.out.println("Failed to connect");
-            }
+        boolean savedSuccesfully = false;
 
+        if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Game " + gameId + " is saved");
+            savedSuccesfully = true;
+        } else {
+            System.out.println("Failed to connect");
+            System.out.println(jsonGameFromServer.getStatusCode());
         }
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        return savedSuccesfully;
+//        }
+        /*Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Cannot save game");
         alert.setHeaderText("Only the host can save the game");
         alert.setContentText("You don't have permission to save the game");
         alert.showAndWait();
-
+*/
     }
 
     // (load game)
@@ -356,8 +360,6 @@ public class Client extends OnlinePlayer {
 
             GameController gameController = new GameController(new Board(10, 10));
             Game initialGame = (Game) gameController.deserialize(gameControllerFromServer.get("gameController").getAsJsonObject().get("game"));
-
-//                Game initialGame = deserializeGameFromServer(gameControllerFromServer);
 
             if (initialGame.getGameId() > 0) {
                 System.out.println("Succesfully loaded game");
