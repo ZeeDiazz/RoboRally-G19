@@ -7,15 +7,20 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 
 public abstract class GearSpace extends Space {
-
+    protected HeadingDirection direction;
     /**
      *  Represents a gear space that can be occupied by a player.
      *
      * @param position the position of the gear space
      * @param walls an array of Heading values representing the walls surrounding the gear space
      */
-    public GearSpace(Position position, HeadingDirection... walls) {
+    public GearSpace(Position position,  HeadingDirection direction, HeadingDirection... walls) {
         super(position, walls);
+        this.direction = direction;
+    }
+
+    public HeadingDirection getDirection() {
+        return direction;
     }
 
     /**

@@ -5,8 +5,9 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Robot;
 
 public class GreenGearSpace extends GearSpace {
-    public GreenGearSpace(Position position, HeadingDirection... walls) {
-        super(position, walls);
+    public GreenGearSpace(Position position, HeadingDirection direction, HeadingDirection... walls) {
+        super(position, direction, walls);
+
     }
 
     @Override
@@ -16,6 +17,6 @@ public class GreenGearSpace extends GearSpace {
 
     @Override
     public Space copy(Position newPosition) {
-        return new GreenGearSpace(newPosition, this.walls.toArray(new HeadingDirection[0]));
+        return new GreenGearSpace(newPosition, direction,this.walls.toArray(new HeadingDirection[0]));
     }
 }
