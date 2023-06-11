@@ -274,9 +274,9 @@ public class Server {
             // TODO make JSON
             if(lobby.canLaunch()) {
                 if (lobby.isReady()) {
-                    response.addProperty("status", "ready");
+                    response.addProperty("status", true);
                 } else {
-                    response.addProperty("status", "not ready");
+                    response.addProperty("status", false);
                 }
                 return responseMaker.itemResponse(response);
             } else {
