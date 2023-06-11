@@ -78,11 +78,11 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
             setSpaceImage(imageView);
 
-        } /*else if (space instanceof PriorityAntennaSpace) {
+        } else if (space instanceof PriorityAntennaSpace) {
             Image image = new Image("PriorityAntennaSpace.png");
             this.imageView = new ImageView(image);
             setSpaceImage(imageView);
-        }*/else if (space instanceof RedGearSpace) {
+        }else if (space instanceof RedGearSpace) {
             Image image = new Image("RedGearSpace.png");
             this.imageView = new ImageView(image);
             setSpaceImage(imageView);

@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PriorityAntennaSpace extends Space {
+    protected HeadingDirection direction;
 
-    public PriorityAntennaSpace(Position position, HeadingDirection... walls){
+    public PriorityAntennaSpace(Position position, HeadingDirection direction ,HeadingDirection... walls){
         super(position, walls);
+        this.direction = direction;
     }
 
     /**
