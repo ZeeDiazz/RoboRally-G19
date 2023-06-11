@@ -1,104 +1,140 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
 
 public class Lobby {
-    int Id;
-    int readyCount = 0;
-    List<Integer> players;
-    Boolean[] isReady;
+    private final int id;
+    private int readyCount = 0;
+    private int minimumPlayers = 0;
+    private final AtomicLongArray counter = new AtomicLongArray(6);
+    private final Map<Integer, Boolean> playerStatus;
 
     /**
      * Constructor for Lobby
-     * @param Id, an integer value to identify the lobby
-     * @auther Felix Schmidt (Felix732)
+     * @param id, an integer value to identify the lobby
+     * @author Felix Schmidt (Felix732)
      */
-    public Lobby (int Id){
-        this.Id = Id;
-        this.players = new ArrayList<>();
-        isReady = new Boolean[6];
-        for (int i = 0; i < isReady.length; i++) {
-            isReady[i] = false;
-        }
+    public Lobby (int id){
+        this.id = id;
+        this.playerStatus = new HashMap<>();
     }
 
     /**
-     * Method to get the number of players ready in a lobby
-     * @return
-     * @auther Felix Schmidt (Felix732)
+     * Method to get the lobby id
+     * @return id, integer value lobby id
+     * @author Felix Schmidt (Felix732)
      */
-    public int getPlayersReadyCount() {
-        for (int i = 0; i < isReady.length; i++) {
-            if (isReady[i]) {
-                readyCount++;
-            }
-        }
-        return readyCount;
+    public int getId(){
+        return this.id;
     }
 
     /**
      * Method to add a player to a lobby utilizing the List interface method add
      * @param playerId
-     * @auther Felix Schmidt (Felix732)
+     * @author Felix Schmidt (Felix732)
      */
     public void addPlayer(int playerId){
-        players.add(playerId);
-    }
-    /**
-     * Method to get the lobby id
-     * @return id, integer value lobby id
-     * @auther Felix Schmidt (Felix732)
-     */
-    public int getLobbyId(){
-        return this.Id;
-    }
-
-    /**
-     * Method to get the list of players in a lobby
-     * @return players, a list of players
-     * @auther Felix Schmidt (Felix732)
-     */
-    public List<Integer> getPlayers(){
-        return players;
+        playerStatus.put(playerId, false);
     }
 
     /**
      * Method to remove a player from a lobby
      * @param playerId
-     * @auther Felix Schmidt (Felix732)
+     * @author Felix Schmidt (Felix732)
      */
     public void removePlayer(int playerId){
-        players.remove(playerId);
+        if (!hasPlayer(playerId)) {
+            return;
+        }
+        playerStatus.remove(playerId);
+    }
+
+    public boolean hasPlayer(int playerId) {
+        return playerStatus.containsKey(playerId);
+    }
+
+    /**
+     * Method to get the number of players ready in a lobby
+     * @return
+     * @author Felix Schmidt (Felix732)
+     */
+    public int getPlayersReadyCount() {
+        return readyCount;
+    }
+
+    /**
+     * Method to get the list of players in a lobby
+     * @return players, a list of players
+     * @author Felix Schmidt (Felix732)
+     */
+    public List<Integer> getPlayerIds(){
+        return playerStatus.keySet().stream().toList();
+    }
+
+    private boolean playerIsReady(int playerId) {
+        return hasPlayer(playerId) && playerStatus.get(playerId);
     }
 
     /**
      * Method to set a player ready
      * @param playerId
-     * @auther Felix Schmidt (Felix732)
+     * @author Felix Schmidt (Felix732)
      */
-    public void setIsReady(int playerId){
-        for (int i = 0; i < this.players.size(); i++) {
-            if (playerId == this.players.get(i)) {
-                this.isReady[i] = true; //hey
-            }
+    public void setIsReady(int playerId) {
+        if (!hasPlayer(playerId)) {
+            return;
+        }
+        if (!playerIsReady(playerId)) {
+            playerStatus.put(playerId, true);
+            readyCount++;
         }
     }
 
     /**
      * Method to set a player not ready
      * @param playerId
-     * @auther Felix Schmidt (Felix732)
+     * @author Felix Schmidt (Felix732)
      */
-    public void setNotReady (int playerId){
-        for (int i = 0; i < players.size(); i++){
-            if (playerId == players.get(i)){
-                isReady[i] = false;
-            }
+    public void setNotReady (int playerId) {
+        if (!hasPlayer(playerId)) {
+            return;
+        }
+        if (playerIsReady(playerId)) {
+            playerStatus.put(playerId, true);
+            readyCount--;
         }
     }
-    public Boolean[] getIsReady(){
-        return isReady;
+
+    public boolean isReady(){
+        return readyCount == playerStatus.size();
+    }
+    public boolean canLaunch(){
+        return playerStatus.size() >= minimumPlayers;
+    }
+
+    public void resetReadyStatus() {
+        for (int playerId : getPlayerIds()) {
+            setNotReady(playerId);
+        }
+    }
+    public int getMinimumPlayers() {
+        return minimumPlayers;
+    }
+    public void setMinimumPlayers(int minimumPlayers) {
+        this.minimumPlayers = minimumPlayers;
+    }
+    public int getNumberOfPlayers() {
+        return playerStatus.size();
+    }
+    public AtomicLongArray getCounter() {
+        return counter;
+    }
+    public long givePlayerId() {
+        return counter.getAndIncrement(1);
     }
 
 }
