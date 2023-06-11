@@ -34,17 +34,44 @@ class RobotTest {
 
     @Test
     void getHeadingDirection() {
+        //A robot start by have South as a Heading direction
+        assertEquals(HeadingDirection.SOUTH, robot.getHeadingDirection());
+
+        //Make turn to their left
+        robot.setHeadingDirection(HeadingDirection.leftHeadingDirection(robot.getHeadingDirection()));
+
+        //Check if the robot is looking towards East
+        assertEquals(HeadingDirection.EAST, robot.getHeadingDirection());
     }
 
     @Test
     void getRebootPosition() {
+        //Robot doesn't have a rebootPosition to begin with
+        assertNull(robot.getRebootPosition());
+
+        //Robot reboot position is 1,0
+        Position rebootPosition = new Position(1, 0);
+        robot.setRebootPosition(rebootPosition);
+
+        //Check if the Robot rebootPosition is updated to the new rebootPosition
+        assertEquals(rebootPosition, robot.getRebootPosition());
     }
 
     @Test
     void getColor() {
+        //We assigned the color Green the robot
+        assertEquals("Green", robot.getColor());
+
+        //Change the players color to blue
+        robot.setColor("Blue");
+
+        //Check if the color is changed
+        assertEquals("Blue", robot.getColor());
     }
 
     @Test
     void getOwner() {
+        //Check if the the player(owner) is the the owner of this robot
+        assertEquals(owner, robot.getOwner());
     }
 }
