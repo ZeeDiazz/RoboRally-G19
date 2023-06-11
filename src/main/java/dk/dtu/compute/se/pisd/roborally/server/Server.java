@@ -88,7 +88,7 @@ public class Server {
         return lobbies.get(index);
     }
     private boolean notEnoughInfo(JsonObject jsonObject) {
-        return !jsonObject.has("lobbyId") || !jsonObject.has("playerId");
+        return !jsonObject.has("gameId") || !jsonObject.has("playerId");
     }
 
 
@@ -110,15 +110,15 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.specificGame)
-    public ResponseEntity<String> getGameInfo(@RequestParam Integer lobbyId) {
+    public ResponseEntity<String> getGameInfo(@RequestParam Integer gameId) {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         JsonObject response = new JsonObject();
-        if(lobbyId == null){
+        if(gameId == null){
             return responseMaker.forbidden();
         }
-        if (lobbyExists(lobbyId)) {
-            response.addProperty("lobbyId", lobbyId);
-            List players = getLobby(lobbyId).getPlayerIds();
+        if (lobbyExists(gameId)) {
+            response.addProperty("gameId", gameId);
+            List players = getLobby(gameId).getPlayerIds();
             response.add("players", (new JsonParser()).parse(players.toString()));
             return responseMaker.itemResponse(response);
             // TODO: return a more game info (as JSON)
@@ -171,7 +171,7 @@ public class Server {
             return responseMaker.forbidden();
         }
 
-        int lobbyId = info.get("lobbyId").getAsInt();
+        int lobbyId = info.get("gameId").getAsInt();
         Lobby lobby = null;
         for (int i = 0; i < lobbies.size(); i++) {
             if (lobbies.get(i).getId() == lobbyId) {
@@ -228,13 +228,13 @@ public class Server {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         // check if lobby and player exists
-        if (!info.has("lobbyId")) {
+        if (!info.has("gameId")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
             return responseMaker.unauthorized();
         }
 
-        int lobbyId = info.get("lobbyId").getAsInt();
+        int lobbyId = info.get("gameId").getAsInt();
         Lobby lobby = null;
         for (Lobby l : lobbies) {
             if (l.getId() == lobbyId) {
@@ -291,13 +291,13 @@ public class Server {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
-        if (!info.has("lobbyId") || !info.has("status")) {
+        if (!info.has("gameId") || !info.has("status")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
             return responseMaker.unauthorized();
         }
 
-        int lobbyId = info.get("lobbyId").getAsInt();
+        int lobbyId = info.get("gameId").getAsInt();
         Lobby lobby = null;
         for (Lobby l : lobbies) {
             if (l.getId() == lobbyId) {
