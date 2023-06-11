@@ -159,8 +159,25 @@ public class AppController implements Observer, GameFinishedListener {
             }
 
             // TODO: 11-06-2023 - waiting for players usage
-            waitingForPlayers();
-            game = client.getGame();
+            //      waitingForPlayers();
+
+            game = new OnlineGame(board, playerCount);
+            game.setGameId(gameId);
+
+
+            for (int i = 0; i < playerCount; i++) {
+                Player player = new OnlinePlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Space startingSpace = board.getSpace(i % board.width, i);
+                player.robot.setSpace(startingSpace);
+                player.robot.setRebootPosition(startingSpace.position);
+                game.addPlayer(player);
+            }
+
+            client.setClientGame(game);
+            System.out.println(client.getGame().getGameId());
+
+
+            //             game = client.getGame();
         }
         createBoardView();
     }
