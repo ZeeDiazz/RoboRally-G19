@@ -208,11 +208,11 @@ public class Space extends Subject implements Serializable {
             case "EnergySpace":
                 return new EnergySpace(position, walls);
             case "GreenGearSpace":
-                return new GreenGearSpace(position, walls);
+                direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
+                return new GreenGearSpace(position,direction, walls);
             case "RedGearSpace":
-                return new RedGearSpace(position, walls);
-            case "PitSpace":
-                return new PitSpace(position, walls);
+                direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
+                return new RedGearSpace(position,direction, walls);
             case "CheckPointSpace":
                 int id = jsonObject.get("checkpointId").getAsInt();
                 return new CheckPointSpace(position, id, walls);

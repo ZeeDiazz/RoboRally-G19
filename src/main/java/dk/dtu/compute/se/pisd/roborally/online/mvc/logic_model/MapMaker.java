@@ -84,8 +84,16 @@ public final class MapMaker {
                     HeadingDirection direction = getHeadingDirection(heading);
                     space = new GreenConveyorSpace(position, direction);
                 }
-                case "PitSpace" -> space = new PitSpace(position, new HeadingDirection[0]);
-
+                case "RedGearSpace" -> {
+                    String heading = spaceObject.get("heading").getAsString();
+                    HeadingDirection direction = getHeadingDirection(heading);
+                    space = new RedGearSpace(position,direction);
+                }
+                case "GreenGearSpace" -> {
+                    String heading = spaceObject.get("heading").getAsString();
+                    HeadingDirection direction = getHeadingDirection(heading);
+                    space = new GreenGearSpace(position,direction);
+                }
             }
             //put the obstacle in the hashmap
             obstacleSpaces.put(position, space);

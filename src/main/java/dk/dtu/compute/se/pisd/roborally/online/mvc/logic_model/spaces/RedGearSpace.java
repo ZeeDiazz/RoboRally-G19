@@ -9,8 +9,8 @@ public class RedGearSpace extends GearSpace {
     /**
      * Represents a space on the board with a red gear that rotates players left when they end their turn on it.
      */
-    public RedGearSpace(Position position, HeadingDirection... walls) {
-        super(position, walls);
+    public RedGearSpace(Position position, HeadingDirection direction, HeadingDirection... walls) {
+        super(position,direction, walls);
     }
 
     /**
@@ -31,6 +31,6 @@ public class RedGearSpace extends GearSpace {
      */
     @Override
     public Space copy(Position newPosition) {
-        return new RedGearSpace(newPosition, this.walls.toArray(new HeadingDirection[0]));
+        return new RedGearSpace(newPosition,direction, this.walls.toArray(new HeadingDirection[0]));
     }
 }
