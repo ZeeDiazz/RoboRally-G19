@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class Client {
+public class Client extends OnlinePlayer {
     private int gameId;
     private Game game;
     private final String baseLocation;
@@ -29,6 +29,7 @@ public class Client {
 
     //TODO: CREATE a constructor with URI??
     public Client(String baseLocation) {
+        super();
         this.baseLocation = baseLocation;
     }
 
