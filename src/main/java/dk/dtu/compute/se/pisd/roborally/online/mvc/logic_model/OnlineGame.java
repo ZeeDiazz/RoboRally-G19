@@ -2,6 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dk.dtu.compute.se.pisd.roborally.online.Client;
 
 public class OnlineGame extends Game {
 
@@ -9,14 +10,19 @@ public class OnlineGame extends Game {
     private int numberOfPlayersToStart;
 
 
-    public OnlineGame(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter, int numberOfPlayersToStart) {
+    public OnlineGame(Board board, int gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter, int numberOfPlayersToStart) {
         super(board, gameId, current, phase, step, stepMode, moveCounter);
         this.numberOfPlayersToStart = numberOfPlayersToStart;
     }
+    
+    public OnlineGame(Board board, int gameId, int numberOfPlayersToStart, Client client) {
+        this.board = board;
+        this.gameId = gameId;
+        this.numberOfPlayersToStart = numberOfPlayersToStart;
+        this.current = client;
+    }
 
-    // todo - make suitable constructor for creating game at client side
-    
-    
+
     @Override
     public boolean canStartGame() {
         return this.players.size() == numberOfPlayersToStart;
