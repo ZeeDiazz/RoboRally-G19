@@ -151,6 +151,7 @@ public class Server {
         int lobbyIndex = lobbies.size() - 1;
         long playerId = lobbies.get(lobbyIndex).givePlayerId();
         lobbies.get(lobbyIndex).addPlayer((int)playerId);
+        lobbies.get(lobbyIndex).setIsReady((int)playerId);
         lobbies.get(lobbyIndex).setMinimumPlayers(minimumPlayers);
 
         JsonObject response = new JsonObject();
