@@ -323,10 +323,31 @@ public class AppController implements Observer, GameFinishedListener {
             do {
                 option = gameOptions.showAndWait().get();
 
+                Alert errorAlert = new Alert(AlertType.INFORMATION);
+                int gameId;
                 // todo - load game usages
                 if (option == joinGame) {
                     try {
-                        client.joinGame(chooseGameIdWindow());
+                        gameId = chooseGameIdWindow();
+
+                        // If player closes window
+                        if (gameId < 0) {
+                            return;
+                        }
+                        int initialPlayerId = client.joinGame(gameId);
+
+
+                        if (initialPlayerId == -1) {
+                            errorAlert.setTitle("Game doesn't exist");
+                            errorAlert.setHeaderText("Game doesn't exist");
+                            errorAlert.setContentText("There isn't any available game, that matches the entered game Id of " + gameId);
+                            continue;
+                        } else if (initialPlayerId == 0) {
+                            errorAlert.setTitle("Game is full");
+                            errorAlert.setHeaderText("Game is full");
+                            errorAlert.setContentText("The game of game ID " + gameId + " is already filled up");
+                            continue;
+                        }
 
                         while (!client.gameIsReady()) {
                             // wait
@@ -338,7 +359,33 @@ public class AppController implements Observer, GameFinishedListener {
                         throw new RuntimeException(e);
                     }
                 } else if (option == loadGame) {
-                    // loadGame
+                    try {
+
+                        gameId = chooseGameIdWindow();
+
+                        Game initialGame = client.loadGame(gameId);
+
+                        if (initialGame.getGameId() == -1) {
+                            errorAlert.setTitle("Game doesn't exist");
+                            errorAlert.setHeaderText("Game doesn't exist");
+                            errorAlert.setContentText("There isn't any available game, that matches the entered game Id of " + gameId);
+                            continue;
+                        } else if (initialGame.getGameId() == 0) {
+                            errorAlert.setTitle("Game is full");
+                            errorAlert.setHeaderText("Game is full");
+                            errorAlert.setContentText("The game of game ID " + gameId + " is already filled up");
+                            continue;
+                        } else {
+                            // TODO: 11-06-2023 - waiting for players usage 
+                            game = initialGame;
+                            waitingForPlayers();
+                            createBoardView();
+                            return;
+                        }
+
+                    } catch (URISyntaxException | InterruptedException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             } while (option != createGame);
         }
@@ -615,8 +662,9 @@ public class AppController implements Observer, GameFinishedListener {
 
     private boolean isValidInteger(String text) {
         try {
-            Integer.parseInt(text);
-            return true;
+
+            return Integer.parseInt(text) > 0;
+
         } catch (NumberFormatException e) {
             return false;
         }
