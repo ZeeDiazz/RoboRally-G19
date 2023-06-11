@@ -51,7 +51,7 @@
       }
     },
     {
-      "obstacleType": "PriorityAntennaSpace",
+      "obstacleType": "GreenConveyorSpace",
       "heading": "NORTH",
       "position": {
         "x": 2,
