@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.PriorityAntennaSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import javafx.scene.control.Alert;
@@ -125,9 +126,26 @@ public class GameController implements Serializable {
 
 
     public void startProgrammingPhase() {
-        game.setPhase(Phase.PROGRAMMING);
-        game.setCurrentPlayer(game.getPlayer(0));
-        game.setStep(0);
+        Space priorityAntennaSpace = game.board.getSpace(11, 0);
+        List<Robot> robots = null;
+        if(priorityAntennaSpace instanceof PriorityAntennaSpace){
+            PriorityAntennaSpace priorityAntenna = (PriorityAntennaSpace) priorityAntennaSpace;
+            List<Robot> robotsList = new ArrayList<>();
+
+            for (int i = 0; i < game.getPlayerCount(); i++) {
+                robotsList.add(game.getPlayer(i).robot);
+            }
+
+            robots = priorityAntenna.getPriority(robotsList);
+
+            game.setPhase(Phase.PROGRAMMING);
+            game.setCurrentPlayer(robots.get(0).owner);
+            game.setStep(0);
+        } else {
+            game.setPhase(Phase.PROGRAMMING);
+            game.setCurrentPlayer(game.getPlayer(0));
+            game.setStep(0);
+        }
 
         for (int i = 0; i < game.getPlayerCount(); i++) {
             Player player = game.getPlayer(i);
