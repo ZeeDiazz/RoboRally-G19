@@ -59,7 +59,7 @@ public class AppController implements Observer, GameFinishedListener {
 
     private Client client = new Client(ResourceLocation.baseLocation);
 
-    final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(1, 2, 3, 4, 5, 6);
+    final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
@@ -139,7 +139,7 @@ public class AppController implements Observer, GameFinishedListener {
             // Zigalow }
 
             for (int i = 0; i < playerCount; i++) {
-                Player player = new LocalPlayer(PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.robot.setSpace(startingSpace);
                 player.robot.setRebootPosition(startingSpace.position);
