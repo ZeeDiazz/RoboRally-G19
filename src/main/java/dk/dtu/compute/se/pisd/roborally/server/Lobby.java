@@ -10,7 +10,6 @@ public class Lobby {
     private final int id;
     private int readyCount = 0;
     private int minimumPlayers = 0;
-    private final AtomicLongArray counter = new AtomicLongArray(6);
     private final Map<Integer, Boolean> playerStatus;
     private boolean active;
     private String boardName;
@@ -113,12 +112,6 @@ public class Lobby {
     }
     public int getNumberOfPlayers() {
         return playerStatus.size();
-    }
-    public AtomicLongArray getCounter() {
-        return counter;
-    }
-    public long givePlayerId() {
-        return counter.getAndIncrement(1);
     }
     public void setActive() {
         this.active = true;
