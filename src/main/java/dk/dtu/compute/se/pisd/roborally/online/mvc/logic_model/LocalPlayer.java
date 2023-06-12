@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class LocalPlayer extends Player {
 
 
-    public LocalPlayer(String color, @NotNull String name) {
-        super(color, name);
+    public LocalPlayer(Game game, String color, @NotNull String name) {
+        super(game, color, name);
     }
 }

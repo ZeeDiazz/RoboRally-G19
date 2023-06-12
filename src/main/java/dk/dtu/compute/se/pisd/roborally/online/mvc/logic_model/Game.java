@@ -353,7 +353,7 @@ public abstract class Game extends Subject implements Serializable {
 
         String gameType = jsonObject.getAsJsonPrimitive("gameType").getAsString();
 
-        Player playerToAdd = (gameType.equals("OnlineGame")) ? new OnlinePlayer(null, "") : new LocalPlayer(null, "");
+        Player playerToAdd = (gameType.equals("OnlineGame")) ? new OnlinePlayer(null,null, "") : new LocalPlayer(null,null, "");
 
         ArrayList<Player> players = new ArrayList<>();
         for (int i = 0; i < playerCount; i++) {

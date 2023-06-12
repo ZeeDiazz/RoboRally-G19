@@ -161,8 +161,7 @@ public class Client extends OnlinePlayer {
             if (playerId > 0) {
                 System.out.println("Succesfully joined game");
                 this.gameId = playerId;
-            }
-            else {
+            } else {
                 // playerId == 0 means the game is full : playerID == -1 means that the game doesn't exist
                 System.out.println(playerId == 0 ? "Game is full" : "Game doesn't exist");
             }
@@ -399,7 +398,7 @@ public class Client extends OnlinePlayer {
     }
 
 
-        private String makeFullUri(String relativeDestination) {
+    private String makeFullUri(String relativeDestination) {
         return baseLocation + relativeDestination;
     }
 
@@ -424,7 +423,9 @@ public class Client extends OnlinePlayer {
 
         Game deserializedGame = new OnlineGame(board, playerCount);
         for (int i = 0; i < playerCount; i++) {
-            deserializedGame.addPlayer(new OnlinePlayer(PLAYER_COLORS.get(i), "Player " + (i + 1)));
+            
+            // FLAG - it needs a game. Does this give problems???
+            deserializedGame.addPlayer(new OnlinePlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1)));
         }
         deserializedGame.setGameId(this.gameId);
         return deserializedGame;
@@ -434,8 +435,7 @@ public class Client extends OnlinePlayer {
         URI statusUri;
         try {
             statusUri = new URI(makeFullUri(ResourceLocation.gameStatus));
-        }
-        catch (URISyntaxException e) {
+        } catch (URISyntaxException e) {
             // TODO handle
             throw new RuntimeException(e);
         }
