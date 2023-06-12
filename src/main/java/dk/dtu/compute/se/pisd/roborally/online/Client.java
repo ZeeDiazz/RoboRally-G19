@@ -12,12 +12,11 @@ import dk.dtu.compute.se.pisd.roborally.restful.Response;
 import javafx.scene.control.Alert;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Client extends OnlinePlayer {
     private int gameId;
@@ -26,6 +25,7 @@ public class Client extends OnlinePlayer {
     private Thread listener;
     private int playerId;
     private Map<String, String> lobbyAndPlayerInfo;
+    final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
 
     public Client(String baseLocation) {
@@ -73,14 +73,12 @@ public class Client extends OnlinePlayer {
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             gameId = jsonGameFromServer.getItem().get("gameId").getAsInt();
             // needs playerID
-            int playerId = jsonGameFromServer.getItem().get("playerID").getAsInt();
+            int playerId = jsonGameFromServer.getItem().get("playerId").getAsInt();
             System.out.println("gameId: " + gameId);
             System.out.println("minimum number of players to start: " + minimumPlayers);
 
-            Board board = boardName.equals("RiskyCrossing") ? MapMaker.makeJsonRiskyCrossing() : MapMaker.makeJsonDizzyHighway();
-
             this.playerId = playerId;
-            game = new OnlineGame(board, gameId, minimumPlayers, this);
+            this.gameId = gameId;
         } else {
             System.out.println("Failed gameId: " + gameId);
             System.out.println(jsonGameFromServer.getStatusCode());
@@ -126,6 +124,7 @@ public class Client extends OnlinePlayer {
             joinedGame.deserialize(gameFromServer);*/
 
             playerId = gameFromServer.get("playerId").getAsInt(); //??
+            this.gameId = gameId;
             System.out.println("Joined gameId: " + gameId);
 
             listener = new Thread(() -> {
@@ -163,8 +162,10 @@ public class Client extends OnlinePlayer {
                 System.out.println("Succesfully joined game");
                 this.gameId = playerId;
             }
-            // playerId == 0 means the game is full : playerID == -1 means that the game doesn't exist
-            System.out.println(playerId == 0 ? "Game is full" : "Game doesn't exist");
+            else {
+                // playerId == 0 means the game is full : playerID == -1 means that the game doesn't exist
+                System.out.println(playerId == 0 ? "Game is full" : "Game doesn't exist");
+            }
             return playerId;
         } else {
             System.out.println("Failed to join gameId: " + gameId);
@@ -411,20 +412,59 @@ public class Client extends OnlinePlayer {
     }
 
     private Game deserializeGameFromServer(JsonObject gameInfo) {
-        Board board = new Board(0, 0);
-        board = (Board) board.deserialize(gameInfo.get("board"));
+        System.out.println("Info:\n" + gameInfo.entrySet());
+        String boardName = gameInfo.get("boardName").getAsString();
+        Board board;
+        try {
+            board = boardName.equals("RiskyCrossing") ? MapMaker.makeJsonRiskyCrossing() : MapMaker.makeJsonDizzyHighway();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         int playerCount = gameInfo.get("playerCount").getAsInt();
 
         Game deserializedGame = new OnlineGame(board, playerCount);
-        JsonArray playerArray = gameInfo.get("players").getAsJsonArray();
-        Player playerDeserializer = new OnlinePlayer(null, "", "");
         for (int i = 0; i < playerCount; i++) {
-            deserializedGame.addPlayer((Player) playerDeserializer.deserialize(playerArray.get(i)));
+            deserializedGame.addPlayer(new OnlinePlayer(PLAYER_COLORS.get(i), "Player " + (i + 1)));
         }
+        deserializedGame.setGameId(this.gameId);
         return deserializedGame;
     }
 
-    public void setClientGame(Game game) {
-        this.game = game;
+    public void startGame() {
+        URI statusUri;
+        try {
+            statusUri = new URI(makeFullUri(ResourceLocation.gameStatus));
+        }
+        catch (URISyntaxException e) {
+            // TODO handle
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Sending start update");
+        JsonObject object = new JsonObject();
+        object.addProperty("gameId", gameId);
+        object.addProperty("playerId", playerId);
+        object.addProperty("startGame", true);
+
+        try {
+            System.out.println("Sending POST request");
+            RequestMaker.postRequest(statusUri, object.toString());
+        } catch (IOException | InterruptedException e) {
+            // TODO handle
+            throw new RuntimeException(e);
+        }
+        System.out.println("Finished startGame()");
+
+        lobbyAndPlayerInfo = new HashMap<>();
+        lobbyAndPlayerInfo.put("gameId", gameId + "");
+        lobbyAndPlayerInfo.put("playerId", playerId + "");
+        JsonObject gameInfo;
+        try {
+            URI gameUri = RequestMaker.makeUri(this.makeFullUri(ResourceLocation.specificGame), lobbyAndPlayerInfo);
+            gameInfo = RequestMaker.getRequestJson(gameUri).getItem();
+        } catch (IOException | InterruptedException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        game = deserializeGameFromServer(gameInfo);
     }
 }

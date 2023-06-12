@@ -12,15 +12,18 @@ public class Lobby {
     private int minimumPlayers = 0;
     private final AtomicLongArray counter = new AtomicLongArray(6);
     private final Map<Integer, Boolean> playerStatus;
+    private boolean active;
+    private String boardName;
 
     /**
      * Constructor for Lobby
      * @param id, an integer value to identify the lobby
      * @author Felix Schmidt (Felix732)
      */
-    public Lobby (int id){
+    public Lobby(int id, String boardName) {
         this.id = id;
         this.playerStatus = new HashMap<>();
+        this.boardName = boardName;
     }
 
     /**
@@ -79,33 +82,14 @@ public class Lobby {
         return hasPlayer(playerId) && playerStatus.get(playerId);
     }
 
-    /**
-     * Method to set a player ready
-     * @param playerId
-     * @author Felix Schmidt (Felix732)
-     */
-    public void setIsReady(int playerId) {
+    public void setReadyStatus(int playerId, boolean newStatus) {
         if (!hasPlayer(playerId)) {
             return;
         }
-        if (!playerIsReady(playerId)) {
-            playerStatus.put(playerId, true);
-            readyCount++;
-        }
-    }
-
-    /**
-     * Method to set a player not ready
-     * @param playerId
-     * @author Felix Schmidt (Felix732)
-     */
-    public void setNotReady (int playerId) {
-        if (!hasPlayer(playerId)) {
-            return;
-        }
-        if (playerIsReady(playerId)) {
-            playerStatus.put(playerId, true);
-            readyCount--;
+        boolean currentStatus = playerIsReady(playerId);
+        if (currentStatus != newStatus) {
+            playerStatus.put(playerId, newStatus);
+            readyCount += newStatus ? 1 : -1;
         }
     }
 
@@ -118,7 +102,7 @@ public class Lobby {
 
     public void resetReadyStatus() {
         for (int playerId : getPlayerIds()) {
-            setNotReady(playerId);
+            setReadyStatus(playerId, false);
         }
     }
     public int getMinimumPlayers() {
@@ -136,5 +120,14 @@ public class Lobby {
     public long givePlayerId() {
         return counter.getAndIncrement(1);
     }
+    public void setActive() {
+        this.active = true;
+    }
+    public boolean isActive() {
+        return this.active;
+    }
 
+    public String getBoardName() {
+        return this.boardName;
+    }
 }

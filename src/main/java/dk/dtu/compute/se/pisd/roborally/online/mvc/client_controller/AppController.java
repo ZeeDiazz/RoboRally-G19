@@ -139,7 +139,7 @@ public class AppController implements Observer, GameFinishedListener {
             // Zigalow }
 
             for (int i = 0; i < playerCount; i++) {
-                Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Player player = new LocalPlayer(PLAYER_COLORS.get(i), "Player " + (i + 1));
                 Space startingSpace = board.getSpace(i % board.width, i);
                 player.robot.setSpace(startingSpace);
                 player.robot.setRebootPosition(startingSpace.position);
@@ -156,24 +156,14 @@ public class AppController implements Observer, GameFinishedListener {
                 throw new RuntimeException(e);
             }
 
-            game = client.getGame();
-
             // TODO: 11-06-2023 - waiting for players usage
             //      waitingForPlayers();
+            Alert waiter = new Alert(AlertType.CONFIRMATION, "");
+            waiter.showAndWait();
 
-            for (int i = 0; i < playerCount; i++) {
-                Player player = new OnlinePlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                Space startingSpace = board.getSpace(i % board.width, i);
-                player.robot.setSpace(startingSpace);
-                player.robot.setRebootPosition(startingSpace.position);
-                game.addPlayer(player);
-            }
-
-            client.setClientGame(game);
-            System.out.println(client.getGame().getGameId());
-
-
-            //             game = client.getGame();
+            System.out.println("Starting the game");
+            client.startGame();
+            game = client.getGame();
         }
         createBoardView();
     }
@@ -235,7 +225,7 @@ public class AppController implements Observer, GameFinishedListener {
             gameOptions.setHeaderText("How would you like to play?");
             gameOptions.setContentText("Select the option you would like to perform");
 
-
+            // TODO fix the loop, so it can handle not having to choose the amount of players and so on
             do {
                 option = gameOptions.showAndWait().get();
 
@@ -250,27 +240,24 @@ public class AppController implements Observer, GameFinishedListener {
                         if (gameId == -2) {
                             continue;
                         }
-                        int initialPlayerId = client.joinGame(gameId);
+                        int playerId = client.joinGame(gameId);
 
 
-                        if (initialPlayerId == -1) {
+                        if (playerId == -1) {
                             errorAlert.setTitle("Game doesn't exist");
                             errorAlert.setHeaderText("Game doesn't exist");
                             errorAlert.setContentText("There isn't any available game, that matches the entered game Id of " + gameId);
                             continue;
-                        } else if (initialPlayerId == 0) {
+                        } else if (playerId == 0) {
                             errorAlert.setTitle("Game is full");
                             errorAlert.setHeaderText("Game is full");
                             errorAlert.setContentText("The game of game ID " + gameId + " is already filled up");
                             continue;
                         }
 
-
-                        // Should be implemented in method waitingForPlayers
-                     /*   while (!client.gameIsReady()) {
-                            // wait
-                            // todo - implement waiting for players
-                        }*/
+                        while (!client.gameIsReady()) {
+                            Thread.sleep(10);
+                        }
                         game = client.getGame();
 
 

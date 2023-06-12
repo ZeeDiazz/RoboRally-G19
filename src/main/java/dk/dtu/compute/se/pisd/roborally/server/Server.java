@@ -113,18 +113,20 @@ public class Server {
     public ResponseEntity<String> getGameInfo(@RequestParam Integer gameId) {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         JsonObject response = new JsonObject();
-        if(gameId == null){
+        if(gameId == null) {
             return responseMaker.forbidden();
         }
-        if (lobbyExists(gameId)) {
+        Lobby lobby = getLobby(gameId);
+        if (lobby != null) {
             response.addProperty("gameId", gameId);
-            List players = getLobby(gameId).getPlayerIds();
+            response.addProperty("playerCount", lobby.getNumberOfPlayers());
+            response.addProperty("boardName", lobby.getBoardName());
+            List<Integer> players = lobby.getPlayerIds();
             response.add("players", (new JsonParser()).parse(players.toString()));
             return responseMaker.itemResponse(response);
             // TODO: return a more game info (as JSON)
 
         }
-
         return responseMaker.notFound();
 
     }
@@ -135,8 +137,7 @@ public class Server {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
 
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
-        Random rng = new Random();
-        if(!info.has("gameId") || !info.has("minimumPlayers")){
+        if(!info.has("gameId") || !info.has("minimumPlayers") || !info.has("boardName")) {
             return responseMaker.forbidden();
         }
         int lobbyId = info.get("gameId").getAsInt();
@@ -147,15 +148,18 @@ public class Server {
         while (lobbyExists(lobbyId)) {
             lobbyId = makeNewLobbyId();
         }
-        lobbies.add(new Lobby(lobbyId));
-        int lobbyIndex = lobbies.size() - 1;
-        long playerId = lobbies.get(lobbyIndex).givePlayerId();
-        lobbies.get(lobbyIndex).addPlayer((int)playerId);
-        lobbies.get(lobbyIndex).setIsReady((int)playerId);
-        lobbies.get(lobbyIndex).setMinimumPlayers(minimumPlayers);
+
+        Lobby lobby = new Lobby(lobbyId, info.get("boardName").getAsString());
+        lobbies.add(lobby);
+
+        int playerId = makeNewPlayerId(lobby);
+        lobby.addPlayer(playerId);
+        // lobby.setIsReady((int)playerId);
+        lobby.setMinimumPlayers(minimumPlayers);
 
         JsonObject response = new JsonObject();
         response.addProperty("gameId", lobbyId);
+        response.addProperty("playerId", playerId);
 
         return responseMaker.created(response.toString());
         /*
@@ -213,10 +217,10 @@ public class Server {
         }
         // add player to lobby
         Lobby currentLobby = getLobby(lobbyId);
-        int playerId = (int)getLobby(lobbyId).givePlayerId();
+        int playerId = makeNewPlayerId(currentLobby);
         System.out.println("Player given id: " + playerId);
         // Add player to the lobby
-        getLobby(lobbyId).addPlayer(playerId);
+        currentLobby.addPlayer(playerId);
 
         JsonObject response = new JsonObject();
         response.addProperty("playerId", playerId);
@@ -266,69 +270,55 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.gameStatus)
-    public ResponseEntity<String> getGameStatus(@RequestParam Integer lobbyId) {
+    public ResponseEntity<String> getGameStatus(@RequestParam Integer gameId) {
         JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         JsonObject response = new JsonObject();
-        Lobby lobby = getLobby(lobbyId);
-        if (lobbyExists(lobbyId)) {
-            // TODO make JSON
-            if(lobby.canLaunch()) {
-                if (lobby.isReady()) {
-                    response.addProperty("status", true);
-                } else {
-                    response.addProperty("status", false);
-                }
-                return responseMaker.itemResponse(response);
-            } else {
-                response.addProperty("status", "waiting");
-                return responseMaker.itemResponse(response);
-            }
+        Lobby lobby = getLobby(gameId);
+        if (lobby != null) {
+            response.addProperty("hasStarted", lobby.isActive());
+            response.addProperty("canLaunch", lobby.canLaunch());
+            response.addProperty("isReady", lobby.isReady());
+            return responseMaker.itemResponse(response);
         }
         return responseMaker.notFound();
     }
 
     @PostMapping(ResourceLocation.gameStatus)
     public ResponseEntity<Void> updateGameStatus(@RequestBody String stringInfo) {
+        System.out.println("Someone updated their status");
+
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
-        if (!info.has("gameId") || !info.has("status")) {
+        System.out.println(info.entrySet());
+
+        if (!info.has("gameId")) {
             return responseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
             return responseMaker.unauthorized();
         }
 
         int lobbyId = info.get("gameId").getAsInt();
-        Lobby lobby = null;
-        for (Lobby l : lobbies) {
-            if (l.getId() == lobbyId) {
-                lobby = l; //
-                break;
-            }
-        }
-
+        Lobby lobby = getLobby(lobbyId);
         if (lobby == null) {
             return responseMaker.notFound();
         }
 
         int playerId = info.get("playerId").getAsInt();
-        boolean playerInLobby = false;
-        for (Integer lobbyPlayer : lobby.getPlayerIds()) {
-            if (lobbyPlayer == playerId) {
-                playerInLobby = true;
-                break;
-            }
-        }
-
-        if (!playerInLobby) {
+        if (!lobby.hasPlayer(playerId)) {
             return responseMaker.forbidden();
         }
 
-        boolean playerIsReady = info.get("status").getAsBoolean();
-        if (playerIsReady) {
-            lobby.setIsReady(playerId);
-        } else {
-            lobby.setNotReady(playerId);
+        if (info.has("isReady")) {
+            boolean playerIsReady = info.get("isReady").getAsBoolean();
+            lobby.setReadyStatus(playerId, playerIsReady);
+        }
+
+        System.out.println("Has startGame: " + info.has("startGame"));
+        System.out.println("As boolean: " + info.get("startGame").getAsBoolean());
+        if (info.has("startGame") && info.get("startGame").getAsBoolean()) {
+            System.out.println("Started game");
+            lobby.setActive();
         }
         return responseMaker.ok();
     }

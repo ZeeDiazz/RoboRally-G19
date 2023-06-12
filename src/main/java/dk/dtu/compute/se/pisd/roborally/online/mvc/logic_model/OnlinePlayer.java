@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class OnlinePlayer extends Player {
 
-    public OnlinePlayer(Game game, String color, @NotNull String name) {
-        super(game, color, name);
+    public OnlinePlayer(String color, @NotNull String name) {
+        super(color, name);
     }
 
 

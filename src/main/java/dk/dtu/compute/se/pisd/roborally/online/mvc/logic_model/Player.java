@@ -50,8 +50,7 @@ public abstract class Player extends Subject implements Serializable {
         }
     }
 
-    public Player(Game game, String color, @NotNull String name) {
-        this.game = game;
+    public Player(String color, @NotNull String name) {
         this.name = name;
         this.robot = new Robot(color, this);
         // Player starts with 5 energy cube
@@ -201,7 +200,7 @@ public abstract class Player extends Subject implements Serializable {
 
         String playerType = jsonObject.getAsJsonPrimitive("playerType").getAsString();
 
-        Player initialPlayer = playerType.equals("OnlinePlayer") ? new OnlinePlayer(null, "red", "") : new LocalPlayer(null, "red", "");
+        Player initialPlayer = playerType.equals("OnlinePlayer") ? new OnlinePlayer("red", "") : new LocalPlayer("red", "");
 
         initialPlayer.name = jsonObject.getAsJsonPrimitive("name").getAsString();
         initialPlayer.playerID = jsonObject.getAsJsonPrimitive("playerID").getAsInt();
