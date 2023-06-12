@@ -25,10 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class Server {
-    // TODO: 2023-06-08 implement a way to get ALL games
-    // TODO: 2023-06-08 implement a way to get info on specific game
-    // TODO: 2023-06-08 implement a way to get info on specific player
-    // TODO: 2023-06-09 implement a way to Load game, save game, delete saved game
 
     // intialize list of lobbies, not null
     private final List<Lobby> lobbies = new ArrayList<>();
@@ -91,11 +87,6 @@ public class Server {
         return !jsonObject.has("gameId") || !jsonObject.has("playerId");
     }
 
-
-    @GetMapping("/greeting")
-    public ResponseEntity<String> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return (new ResponseMaker<String>()).ok();
-    }
 
     @GetMapping(ResourceLocation.allGames)
     public ResponseEntity<Integer[]> getAllGames() {
