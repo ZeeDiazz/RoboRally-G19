@@ -30,13 +30,14 @@ public class GameController implements Serializable {
     public static Board board = null;
     public static Game game = null;
     private static CommandExecuter commandExecution;
+
     /**
      * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
      * This is also so that the PlayerView class is able to access the interactive card in question
      *
      * @author Zigalow
      */
-    public Command currentInteractiveCard;
+
 
     public GameController(@NotNull Game game) {
         this.game = game;
@@ -62,7 +63,8 @@ public class GameController implements Serializable {
      */
     // XXX: V3
     private void startPlayerInteractionPhase(Command options) {
-        this.currentInteractiveCard = options;
+//        this.currentInteractiveCard = options;
+        this.game.currentInteractiveCard = options;
         this.game.setPhase(Phase.PLAYER_INTERACTION);
     }
 
@@ -353,7 +355,7 @@ public class GameController implements Serializable {
         alert.setContentText("Close this window to exit the game");
         alert.setResizable(true);
         alert.showAndWait();
-        
+
 
         if (gameFinishedListener != null) {
             gameFinishedListener.onGameFinished();
@@ -377,9 +379,9 @@ public class GameController implements Serializable {
         jsonObject.add("game", game.serialize());
 
 
-        if (currentInteractiveCard != null) {
+        /*if (currentInteractiveCard != null) {
             jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
-        }
+        }*/
 
         return jsonObject;
     }
@@ -407,10 +409,8 @@ public class GameController implements Serializable {
         GameController gameController = new GameController(initialGame);
 
 
-        JsonElement commandCard = jsonObject.get("currentInteractiveCard");
-
-
-        gameController.currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
+        // JsonElement commandCard = jsonObject.get("currentInteractiveCard");
+        //  gameController.currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
 
 
         return gameController;

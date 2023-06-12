@@ -28,6 +28,7 @@ public abstract class Game extends Subject implements Serializable {
 
     //Represents the total amount of steps in the current game
     protected int moveCounter;
+    public Command currentInteractiveCard;
 
     //Represents the amount of steps in the current programming phase
     protected int step = 0;
@@ -310,6 +311,9 @@ public abstract class Game extends Subject implements Serializable {
         JsonObject jsonObject = new JsonObject();
 
 
+        if (currentInteractiveCard != null) {
+            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+        }
         jsonObject.addProperty("gameType", this.getClass().getSimpleName());
         jsonObject.addProperty("gameId", this.gameId);
         jsonObject.addProperty("moveCounter", this.moveCounter);
@@ -336,6 +340,12 @@ public abstract class Game extends Subject implements Serializable {
 
         JsonElement gameIdJson = jsonObject.get("gameId");
         Integer gameId = (gameIdJson == null) ? null : gameIdJson.getAsInt();
+
+
+        JsonElement commandCard = jsonObject.get("currentInteractiveCard");
+        
+        currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
+
 
         int moveCounter = jsonObject.get("moveCounter").getAsInt();
         int step = jsonObject.get("step").getAsInt();
@@ -389,6 +399,8 @@ public abstract class Game extends Subject implements Serializable {
             player.robot.setSpace(spaceOnBoard);
             game1.board.getSpace(spaceOnBoard.getPosition()).setRobotOnSpace(player.robot);
         }
+        
+        game1.currentInteractiveCard = currentInteractiveCard;
 
         return game1;
     }
