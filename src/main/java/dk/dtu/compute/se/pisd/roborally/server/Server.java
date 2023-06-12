@@ -1,5 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dk.dtu.compute.se.pisd.roborally.restful.JsonResponseMaker;
@@ -17,7 +18,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @auther Felix Schmidt (Felix723)
@@ -29,8 +29,10 @@ public class Server {
     // intialize list of lobbies, not null
     private final List<Lobby> lobbies = new ArrayList<>();
     private final Random rng = new Random();
-    private final String databasePath = "src/main/resources/database/";
+    private final static String databasePath = "src/main/resources/database/";
     private final static JsonParser jsonParser = new JsonParser();
+    private final static ResponseMaker<Void> emptyResponseMaker = new ResponseMaker<>();
+    private final static JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
 
     public Server() {
 
@@ -44,21 +46,11 @@ public class Server {
             takenId = false;
 
             for (Lobby lobby : lobbies) {
-                if (lobby.getId() == id) {
+                if (lobby.hasPlayer(id)) {
                     takenId = true;
                     break;
                 }
             }
-        } while (takenId);
-        return id;
-    }
-
-    private int makeNewPlayerId(Lobby lobby) {
-        int id;
-        boolean takenId;
-        do {
-            id = rng.nextInt(0, Integer.MAX_VALUE);
-            takenId = lobby.hasPlayer(id);
         } while (takenId);
         return id;
     }
@@ -89,20 +81,18 @@ public class Server {
 
 
     @GetMapping(ResourceLocation.allGames)
-    public ResponseEntity<Integer[]> getAllGames() {
-        ResponseMaker<Integer[]> responseMaker = new ResponseMaker<>();
-
-        Integer[] ids = new Integer[lobbies.size()];
-        for (int i = 0; i < ids.length; i++) {
-            ids[i] = lobbies.get(i).getId();
+    public ResponseEntity<String> getAllGames() {
+        JsonObject response = new JsonObject();
+        JsonArray ids = new JsonArray();
+        for (Lobby lobby : lobbies) {
+            ids.add(lobby.getId());
         }
 
-        return responseMaker.itemResponse(ids);
+        return responseMaker.itemResponse(response);
     }
 
     @GetMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> getGameInfo(@RequestParam Integer gameId) {
-        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         JsonObject response = new JsonObject();
         if(gameId == null) {
             return responseMaker.forbidden();
@@ -126,8 +116,6 @@ public class Server {
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-
-        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         if(!info.has("gameId") || !info.has("minimumPlayers") || !info.has("boardName")) {
             return responseMaker.forbidden();
         }
@@ -143,7 +131,7 @@ public class Server {
         Lobby lobby = new Lobby(lobbyId, info.get("boardName").getAsString());
         lobbies.add(lobby);
 
-        int playerId = makeNewPlayerId(lobby);
+        int playerId = lobby.makePlayerId();
         lobby.addPlayer(playerId);
         // lobby.setIsReady((int)playerId);
         lobby.setMinimumPlayers(minimumPlayers);
@@ -161,57 +149,46 @@ public class Server {
     @DeleteMapping(ResourceLocation.specificGame)
     public ResponseEntity<Void> deleteActiveGame(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
 
         if(notEnoughInfo(info)) {
-            return responseMaker.forbidden();
+            return emptyResponseMaker.forbidden();
         }
 
         int lobbyId = info.get("gameId").getAsInt();
-        Lobby lobby = null;
-        for (int i = 0; i < lobbies.size(); i++) {
-            if (lobbies.get(i).getId() == lobbyId) {
-                lobby = lobbies.get(i);
-                break;
-            }
-        }
+        Lobby lobby = getLobby(lobbyId);
 
         if (lobby == null) {
-            return responseMaker.notFound();
+            return emptyResponseMaker.notFound();
         }
 
         int playerId = info.get("playerId").getAsInt();
-        boolean playerInLobby = false;
-        for (Integer lobbyPlayer : lobby.getPlayerIds()) {
-            if (lobbyPlayer == playerId) {
-                playerInLobby = true;
-                break;
-            }
-        }
 
-        if (!playerInLobby || lobby.getPlayerIds().get(0) != playerId) {
-            return responseMaker.forbidden();
+        if (!lobby.hasPlayer(playerId) || !lobby.isHost(playerId)) {
+            return emptyResponseMaker.forbidden();
         }
-        return responseMaker.ok();
+        return emptyResponseMaker.ok();
     }
     @PostMapping(ResourceLocation.joinGame)
     public ResponseEntity<String> playerJoinRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
         int lobbyId = info.get("gameId").getAsInt();
 
-        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         System.out.println("Player trying to join lobby " + lobbyId);
         // get the lobby with matching id
-        int playersInLobby = getLobby(lobbyId).getNumberOfPlayers();
-        if(playersInLobby >= 6){
+        Lobby lobby = getLobby(lobbyId);
+        if (lobby == null) {
+            return responseMaker.notFound();
+        }
+
+        int playersInLobby = lobby.getNumberOfPlayers();
+        if (playersInLobby >= 6) {
             return responseMaker.forbidden();
         }
         // add player to lobby
-        Lobby currentLobby = getLobby(lobbyId);
-        int playerId = makeNewPlayerId(currentLobby);
+        int playerId = lobby.makePlayerId();
         System.out.println("Player given id: " + playerId);
         // Add player to the lobby
-        currentLobby.addPlayer(playerId);
+        lobby.addPlayer(playerId);
 
         JsonObject response = new JsonObject();
         response.addProperty("playerId", playerId);
@@ -222,47 +199,30 @@ public class Server {
     @PostMapping(ResourceLocation.leaveGame)
     public ResponseEntity<Void> playerLeaveRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
         // check if lobby and player exists
         if (!info.has("gameId")) {
-            return responseMaker.methodNotAllowed();
+            return emptyResponseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
-            return responseMaker.unauthorized();
+            return emptyResponseMaker.unauthorized();
         }
 
         int lobbyId = info.get("gameId").getAsInt();
-        Lobby lobby = null;
-        for (Lobby l : lobbies) {
-            if (l.getId() == lobbyId) {
-                lobby = l;
-                break;
-            }
-        }
-
+        Lobby lobby = getLobby(lobbyId);
         if (lobby == null) {
-            return responseMaker.notFound();
+            return emptyResponseMaker.notFound();
         }
 
         int playerId = info.get("playerId").getAsInt();
-        boolean playerInLobby = false;
-        for (Integer lobbyPlayer : lobby.getPlayerIds()) {
-            if (lobbyPlayer == playerId) {
-                playerInLobby = true;
-                break;
-            }
-        }
-
-        if (!playerInLobby) {
-            return responseMaker.forbidden();
+        if (!lobby.hasPlayer(playerId)) {
+            return emptyResponseMaker.forbidden();
         }
 
         lobby.removePlayer(playerId);
-        return responseMaker.ok();
+        return emptyResponseMaker.ok();
     }
 
     @GetMapping(ResourceLocation.gameStatus)
     public ResponseEntity<String> getGameStatus(@RequestParam Integer gameId) {
-        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
         JsonObject response = new JsonObject();
         Lobby lobby = getLobby(gameId);
         if (lobby != null) {
@@ -276,28 +236,23 @@ public class Server {
 
     @PostMapping(ResourceLocation.gameStatus)
     public ResponseEntity<Void> updateGameStatus(@RequestBody String stringInfo) {
-        System.out.println("Someone updated their status");
-
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-
-        System.out.println(info.entrySet());
 
         if (!info.has("gameId")) {
-            return responseMaker.methodNotAllowed();
+            return emptyResponseMaker.methodNotAllowed();
         } else if (!info.has("playerId")) {
-            return responseMaker.unauthorized();
+            return emptyResponseMaker.unauthorized();
         }
 
         int lobbyId = info.get("gameId").getAsInt();
         Lobby lobby = getLobby(lobbyId);
         if (lobby == null) {
-            return responseMaker.notFound();
+            return emptyResponseMaker.notFound();
         }
 
         int playerId = info.get("playerId").getAsInt();
         if (!lobby.hasPlayer(playerId)) {
-            return responseMaker.forbidden();
+            return emptyResponseMaker.forbidden();
         }
 
         if (info.has("isReady")) {
@@ -305,24 +260,19 @@ public class Server {
             lobby.setReadyStatus(playerId, playerIsReady);
         }
 
-        System.out.println("Has startGame: " + info.has("startGame"));
-        System.out.println("As boolean: " + info.get("startGame").getAsBoolean());
         if (info.has("startGame") && info.get("startGame").getAsBoolean()) {
-            System.out.println("Started game");
             lobby.setActive();
         }
-        return responseMaker.ok();
+        return emptyResponseMaker.ok();
     }
 
     @GetMapping(ResourceLocation.saveGame)
     public ResponseEntity<String> loadGame(@RequestParam Integer gameId) {
         String filename = databasePath + gameId + ".json";
         File file = new File(filename);
-        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
 
         if (!file.exists()) {
             return responseMaker.notFound();
-
         }
 
         try (FileReader fileReader = new FileReader(file)) {
@@ -331,7 +281,6 @@ public class Server {
             return ResponseEntity.ok(loadedInfo.toString());
 
         } catch (IOException e) {
-            System.out.println("Error while loading game");
             throw new RuntimeException(e);
         }
     }
@@ -340,8 +289,7 @@ public class Server {
     @PostMapping(ResourceLocation.saveGame)
     public ResponseEntity<String> saveGame(@RequestBody String stringInfo) throws IOException {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
-        if(!info.has("gameId")){
+        if(!info.has("gameId")) {
             return responseMaker.methodNotAllowed();
         }
         String pathVariable = info.get("gameId").getAsString();
@@ -367,18 +315,17 @@ public class Server {
     @DeleteMapping(ResourceLocation.saveGame)
     public ResponseEntity<Void> deleteSavedGame(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        ResponseMaker<Void> responseMaker = new ResponseMaker<>();
-        if(!info.has("gameId")){
-            return responseMaker.methodNotAllowed();
+        if (!info.has("gameId")) {
+            return emptyResponseMaker.methodNotAllowed();
         }
-        String pathVariable = info.get("gameId").getAsString();
-        String fileName = databasePath + pathVariable + ".json";
-        try{
+        String gameId = info.get("gameId").getAsString();
+        String fileName = databasePath + gameId + ".json";
+        try {
             boolean success = Files.deleteIfExists(Paths.get(fileName));
-            if (success){
-                return responseMaker.ok();
-            }else {
-                return responseMaker.notFound();
+            if (success) {
+                return emptyResponseMaker.ok();
+            } else {
+                return emptyResponseMaker.notFound();
             }
         } catch (IOException e) {
             System.out.println("Error while deleting game");

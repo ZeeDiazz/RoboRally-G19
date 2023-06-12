@@ -3,10 +3,13 @@ package dk.dtu.compute.se.pisd.roborally.server;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
 
 public class Lobby {
+    private static final Random rng = new Random();
+
     private final int id;
     private int readyCount = 0;
     private int minimumPlayers = 0;
@@ -58,6 +61,8 @@ public class Lobby {
     public boolean hasPlayer(int playerId) {
         return playerStatus.containsKey(playerId);
     }
+
+    public boolean isHost(int playerId) { return getPlayerIds().get(0) == playerId; }
 
     /**
      * Method to get the number of players ready in a lobby
@@ -119,8 +124,17 @@ public class Lobby {
     public boolean isActive() {
         return this.active;
     }
-
     public String getBoardName() {
         return this.boardName;
+    }
+
+    public int makePlayerId() {
+        int id = -1;
+        boolean takenId = true;
+        while (takenId) {
+            id = rng.nextInt(0, Integer.MAX_VALUE);
+            takenId = hasPlayer(id);
+        }
+        return id;
     }
 }
