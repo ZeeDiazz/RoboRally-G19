@@ -100,7 +100,7 @@ public class Server {
         Lobby lobby = getLobby(gameId);
         if (lobby != null) {
             response.addProperty("gameId", gameId);
-            response.addProperty("playerCount", lobby.getNumberOfPlayers());
+            response.addProperty("playerCount", lobby.getPlayerCount());
             response.addProperty("boardName", lobby.getBoardName());
             List<Integer> players = lobby.getPlayerIds();
             response.add("players", (new JsonParser()).parse(players.toString()));
@@ -128,13 +128,11 @@ public class Server {
             lobbyId = makeNewLobbyId();
         }
 
-        Lobby lobby = new Lobby(lobbyId, info.get("boardName").getAsString());
+        Lobby lobby = new Lobby(lobbyId, minimumPlayers, info.get("boardName").getAsString());
         lobbies.add(lobby);
 
         int playerId = lobby.makePlayerId();
         lobby.addPlayer(playerId);
-        // lobby.setIsReady((int)playerId);
-        lobby.setMinimumPlayers(minimumPlayers);
 
         JsonObject response = new JsonObject();
         response.addProperty("gameId", lobbyId);
@@ -180,7 +178,7 @@ public class Server {
             return responseMaker.notFound();
         }
 
-        int playersInLobby = lobby.getNumberOfPlayers();
+        int playersInLobby = lobby.getPlayerCount();
         if (playersInLobby >= 6) {
             return responseMaker.forbidden();
         }
@@ -222,13 +220,29 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.gameStatus)
-    public ResponseEntity<String> getGameStatus(@RequestParam Integer gameId) {
+    public ResponseEntity<String> getGameStatus(@RequestParam Integer gameId, @RequestParam Integer playerId) {
         JsonObject response = new JsonObject();
         Lobby lobby = getLobby(gameId);
         if (lobby != null) {
             response.addProperty("hasStarted", lobby.isActive());
             response.addProperty("canLaunch", lobby.canLaunch());
             response.addProperty("isReady", lobby.isReady());
+
+            if (lobby.isReady()) {
+                JsonArray moves = new JsonArray();
+                for (String move : lobby.getLatestMoves()) {
+                    moves.add(move);
+                }
+                response.add("moves", moves);
+            }
+
+            if (lobby.hasPlayer(playerId)) {
+                lobby.hasRetrievedInfo(playerId);
+                if (lobby.allHaveInfo()) {
+                    lobby.resetReadyStatus();
+                    lobby.resetMoves();
+                }
+            }
             return responseMaker.itemResponse(response);
         }
         return responseMaker.notFound();
@@ -255,13 +269,15 @@ public class Server {
             return emptyResponseMaker.forbidden();
         }
 
+        if (info.has("startGame") && info.get("startGame").getAsBoolean()) {
+            lobby.setActive();
+        }
+        if (info.has("moves")) {
+            lobby.updateMoves(playerId, info.get("moves").getAsString());
+        }
         if (info.has("isReady")) {
             boolean playerIsReady = info.get("isReady").getAsBoolean();
             lobby.setReadyStatus(playerId, playerIsReady);
-        }
-
-        if (info.has("startGame") && info.get("startGame").getAsBoolean()) {
-            lobby.setActive();
         }
         return emptyResponseMaker.ok();
     }
