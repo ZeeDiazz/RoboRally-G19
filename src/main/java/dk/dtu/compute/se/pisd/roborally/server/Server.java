@@ -224,6 +224,7 @@ public class Server {
         JsonObject response = new JsonObject();
         Lobby lobby = getLobby(gameId);
         if (lobby != null) {
+            response.addProperty("stepCount", lobby.getStepsTaken());
             response.addProperty("hasStarted", lobby.isActive());
             response.addProperty("canLaunch", lobby.canLaunch());
             response.addProperty("isReady", lobby.isReady());

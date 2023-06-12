@@ -6,8 +6,8 @@ public class Lobby {
     private static final Random rng = new Random();
 
     private final int id;
-    private int readyCount = 0;
-    private int minimumPlayers = 0;
+    private int stepsTaken = 0;
+    private int minimumPlayers;
     private final List<Integer> playerIds;
     private final List<Boolean> readyStatus;
     private final List<Boolean> hasRetrievedInfo;
@@ -88,6 +88,12 @@ public class Lobby {
      * @author Felix Schmidt (Felix732)
      */
     public int getPlayersReadyCount() {
+        int readyCount = 0;
+        for (int i = 0; i < getPlayerCount(); i++) {
+            if (readyStatus.get(i)) {
+                readyCount++;
+            }
+        }
         return readyCount;
     }
 
@@ -113,11 +119,7 @@ public class Lobby {
         if (!hasPlayer(playerId)) {
             return;
         }
-        boolean currentStatus = playerIsReady(playerId);
-        if (currentStatus != newStatus) {
-            readyStatus.set(getPlayerIndex(playerId), newStatus);
-            readyCount += newStatus ? 1 : -1;
-        }
+        readyStatus.set(getPlayerIndex(playerId), newStatus);
     }
 
     public boolean hasRetrievedInfo(int playerId) {
@@ -128,8 +130,8 @@ public class Lobby {
         return hasRetrievedInfo.set(playerIndex, true);
     }
 
-    public boolean isReady(){
-        return readyCount == playerIds.size();
+    public boolean isReady() {
+        return getPlayersReadyCount() == playerIds.size();
     }
     public boolean allHaveInfo() {
         for (boolean hasRetrieved : hasRetrievedInfo) {
@@ -149,6 +151,7 @@ public class Lobby {
             setReadyStatus(playerId, false);
             hasRetrievedInfo.set(getPlayerIndex(playerId), false);
         }
+        stepsTaken++;
     }
     public int getMinimumPlayers() {
         return minimumPlayers;
@@ -190,5 +193,9 @@ public class Lobby {
     public List<String> getLatestMoves() {
         // streaming to a list, to make a copy, instead of giving the internal copy away
         return latestMoves.stream().toList();
+    }
+
+    public int getStepsTaken() {
+        return stepsTaken;
     }
 }
