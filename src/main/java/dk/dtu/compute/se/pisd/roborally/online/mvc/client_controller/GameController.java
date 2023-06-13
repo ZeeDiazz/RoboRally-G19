@@ -247,6 +247,11 @@ public class GameController implements Serializable {
 
     // TODO [Javadoc]: 13-06-2023
 
+    /**
+     *
+     * @param move
+     * @author Daniel
+     */
     public static void performMove(Move move) {
         for (Move resultingMove : game.resultingMoves(move)) {
             Robot robot = resultingMove.moving;

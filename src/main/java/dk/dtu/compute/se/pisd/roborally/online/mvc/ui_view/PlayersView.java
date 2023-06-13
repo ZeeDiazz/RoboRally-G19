@@ -37,7 +37,7 @@ import javafx.scene.control.TabPane;
  */
 public class PlayersView extends TabPane implements ViewObserver {
 
-    private Board board;
+
     //ZeeDiazz (Zaid)
     private Game game;
 
@@ -49,7 +49,6 @@ public class PlayersView extends TabPane implements ViewObserver {
      */
     public PlayersView(GameController gameController) {
         game = gameController.game;
-        board = game.board;
 
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 

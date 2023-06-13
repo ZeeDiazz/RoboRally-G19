@@ -102,10 +102,6 @@ public class BoardView extends VBox implements ViewObserver {
             Phase phase = game.getPhase();
             statusLabel.setText(game.getStatusMessage());
         }
-        /*if (subject == board) {
-            Phase phase = board.getPhase();
-            statusLabel.setText(board.getStatusMessage());
-        }*/
     }
 
     // XXX this handler and its uses should eventually be deleted! This is just to help test the
