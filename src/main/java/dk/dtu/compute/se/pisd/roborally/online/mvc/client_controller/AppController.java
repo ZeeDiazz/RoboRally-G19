@@ -139,24 +139,13 @@ public class AppController implements Observer, GameFinishedListener {
 
             // Zigalow }
 
-            // Zaid {
-            List<Position> robotsStartingPositions = new ArrayList<>();
-            robotsStartingPositions.add(new Position(1, 1));
-            robotsStartingPositions.add(new Position(0, 3));
-            robotsStartingPositions.add(new Position(1, 4));
-            robotsStartingPositions.add(new Position(1, 5));
-            robotsStartingPositions.add(new Position(0, 6));
-            robotsStartingPositions.add(new Position(1, 8));
-
-            // Zaid }
-
             for (int i = 0; i < playerCount; i++) {
                 Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
                 //Space startingSpace = board.getSpace(i % board.width, i);
-                // Zaid {
-                Position robotStartingPosition = robotsStartingPositions.get(i);
-                Space startingSpace = board.getSpace(robotStartingPosition.X, robotStartingPosition.Y);
-                // Zaid }
+                // ZeeDiazz (Zaid) {
+                System.out.println(board.spawnPositions.size());
+                Space startingSpace = board.getSpace(board.spawnPositions.get(i).X, board.spawnPositions.get(i).Y);
+                // ZeeDiazz (Zaid) }
                 player.robot.setSpace(startingSpace);
                 player.robot.setRebootPosition(startingSpace.position);
                 game.addPlayer(player);
