@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.PriorityAntennaSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import javafx.scene.control.Alert;
@@ -32,12 +31,7 @@ public class GameController implements Serializable {
     public static Game game = null;
     private static CommandExecuter commandExecution;
 
-    /**
-     * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
-     * This is also so that the PlayerView class is able to access the interactive card in question
-     *
-     * @author Zigalow
-     */
+    // TODO [Javadoc]: 13-06-2023
 
 
     public GameController(@NotNull Game game) {
@@ -68,21 +62,26 @@ public class GameController implements Serializable {
         this.game.setPhase(Phase.PLAYER_INTERACTION);
     }
 
+    // TODO [Javadoc]: 13-06-2023
+
     public void executeStep() {
         game.setStepMode(true);
         continuePrograms();
     }
+    // TODO [Javadoc]: 13-06-2023
 
     private void continuePrograms() {
         do {
             executeNextStep();
             if (this.game.getPhase() != Phase.PLAYER_INTERACTION) {
-                nextPlayer(game.getCurrentPlayer());
+                nextPlayer();
             } else {
                 return;
             }
         } while (game.getPhase() == Phase.ACTIVATION && !game.isStepMode());
     }
+
+    // TODO [Javadoc]: 13-06-2023
 
     private void executeNextStep() {
         Player currentPlayer = game.getCurrentPlayer();
@@ -119,7 +118,7 @@ public class GameController implements Serializable {
     public void executeCommandOptionAndContinue(Command option) {
         commandExecution.executeCardCommand(game.getCurrentPlayer(), option);
         this.game.setPhase(Phase.ACTIVATION);
-        nextPlayer(this.game.getCurrentPlayer());
+        nextPlayer();
         if (!this.game.isStepMode()) {
             this.executePrograms();
         }
@@ -157,7 +156,7 @@ public class GameController implements Serializable {
         makeProgramFieldsVisible(0);
         game.setPhase(Phase.ACTIVATION);
         game.setStep(0);
-        updatePrioritisedRobotsNew();
+        updatePrioritisedRobotsForAllPlayers();
         game.setCurrentPlayer(game.prioritisedPlayers.remove(0));
     }
 
@@ -190,7 +189,7 @@ public class GameController implements Serializable {
     }
 
     /**
-     * It checks if a player is on an obstacle, and executes the obstacles action.
+     * It checks if a player is on an obstacle, and executes the obstacles' action.
      *
      * @author ZeeDiazz (Zaid)
      */
@@ -217,6 +216,7 @@ public class GameController implements Serializable {
         }
 
     }
+    // TODO [Javadoc]: 13-06-2023
 
     private void performSimultaneousMoves(Move... moves) {
         Hashtable<Position, Move> validMoves = new Hashtable<>();
@@ -242,6 +242,8 @@ public class GameController implements Serializable {
         validMoves.values().forEach(move -> performMove(move));
     }
 
+    // TODO [Javadoc]: 13-06-2023
+
     public static void performMove(Move move) {
         for (Move resultingMove : game.resultingMoves(move)) {
             Robot robot = resultingMove.moving;
@@ -262,18 +264,19 @@ public class GameController implements Serializable {
      * This method relates to all that has to do with passing on the turn to the next player
      * <p>If the last player has executed his/her last command, the programming phase will start</p>
      *
-     * @param currentPlayer The current turn's player before the end of a turn
-     * @author Zigalow, Daniel, Zaid Sheikh, Felix723
+     * @author Zigalow, Daniel, Zaid Sheikh
      */
 
-    public void nextPlayer(Player currentPlayer) {
+    public void nextPlayer() {
+        // Zigalow {
         updatePrioritisedRobotsCurrentList();
+        // Zigalow }
         this.game.increaseMoveCounter();
         // Daniel {
         int currentStep = this.game.getStep();
-
-        // nextPlayerNumber++;
+        // Zigalow {
         if (game.prioritisedPlayers.isEmpty()) {
+            // Zigalow }
             currentStep++;
             if (currentStep < Player.NUMBER_OF_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
@@ -288,12 +291,14 @@ public class GameController implements Serializable {
             // Daniel }
 
         }
+        // Zigalow {
         if (!game.prioritisedPlayers.isEmpty()) {
             this.game.setCurrentPlayer(game.prioritisedPlayers.remove(0));
         } else {
-            updatePrioritisedRobotsNew();
+            updatePrioritisedRobotsForAllPlayers();
             this.game.setCurrentPlayer(game.prioritisedPlayers.remove(0));
         }
+        // Zigalow }
     }
 
 
@@ -310,16 +315,11 @@ public class GameController implements Serializable {
     }
 
     /**
-     * @param space The space which the player's robot is going to be moved to
-     * @author Zigalow
-     * This method makes it possible to click on a space, and make the current player's robot move to that space
-     */
-
-    /**
+     * This method is for checking whether a space is being occupied by a robot
+     *
      * @param space The space which is checked whether it's being occupied by a robot
      * @return Returns true if there is another robot on the space received as parameter
      * @author Zigalow
-     * This method is for checking whether a space is being occupied by a robot
      */
 
     public boolean spaceIsOccupied(Space space) {
@@ -327,9 +327,10 @@ public class GameController implements Serializable {
     }
 
     /**
+     * This method makes it possible to click on a space, and make the current player's robot move to that space
+     *
      * @param space The space which the player's robot is going to be moved to
      * @author Zigalow
-     * This method makes it possible to click on a space, and make the current player's robot move to that space
      */
     public void moveCurrentPlayerToSpaceWithMouseClick(@NotNull Space space) {
         Player currentPlayer = game.getCurrentPlayer();
@@ -339,7 +340,7 @@ public class GameController implements Serializable {
         } else {
             currentPlayer.robot.setSpace(space);
         }
-        nextPlayer(currentPlayer);
+        nextPlayer();
     }
 
     public boolean allCheckPointReached(Robot robot) {
@@ -370,6 +371,13 @@ public class GameController implements Serializable {
 
     }
 
+    /**
+     * Sets the gameController to register the argument object as a listener
+     * That way, when the game finishes, the class will notify its listener that the game has finished
+     *
+     * @param gameFinishedListener
+     * @author Zigalow
+     */
     public void setGameFinishedListener(GameFinishedListener gameFinishedListener) {
         this.gameFinishedListener = gameFinishedListener;
     }
@@ -385,11 +393,6 @@ public class GameController implements Serializable {
         // jsonObject.add("board", board.serialize());
         jsonObject.add("game", game.serialize());
 
-
-        /*if (currentInteractiveCard != null) {
-            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
-        }*/
-
         return jsonObject;
     }
 
@@ -397,11 +400,7 @@ public class GameController implements Serializable {
     public Serializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
 
-       /* Board initialBoard = new Board(0, 0);
-        initialBoard = (Board) initialBoard.deserialize(jsonObject.get("board"));
-*/
         String gameType = jsonObject.getAsJsonPrimitive("gameType").getAsString();
-
 
         Game initialGame;
         if (gameType.equals("LocalGame")) {
@@ -412,7 +411,6 @@ public class GameController implements Serializable {
             initialGame = (OnlineGame) initialGame.deserialize(jsonObject.get("game"));
         }
 
-
         GameController gameController = new GameController(initialGame);
 
 
@@ -422,6 +420,12 @@ public class GameController implements Serializable {
 
         return gameController;
     }
+
+    /**
+     * Updates the game's prioritedPlayers attribute based on the current list's robots' currentPosition
+     *
+     * @author Zigalow
+     */
 
     private void updatePrioritisedRobotsCurrentList() {
 
@@ -445,7 +449,13 @@ public class GameController implements Serializable {
 
     }
 
-    private void updatePrioritisedRobotsNew() {
+    /**
+     * Updates the game's prioritedPlayers attribute, so that the attribute has a new prioritised list
+     * based on all robots' currentPosition
+     *
+     * @author Zigalow
+     */
+    private void updatePrioritisedRobotsForAllPlayers() {
         List<Robot> robotsInPriority = new ArrayList<>();
 
         for (Player player : game.getPlayers()) {
@@ -463,7 +473,14 @@ public class GameController implements Serializable {
         game.prioritisedPlayers = prioritisedPlayers;
     }
 
-
+    /**
+     * This method is for creating and getting a list
+     * of robots sorted by priority based on RoboRally rules
+     *
+     * @param robots
+     * @return prioritylist, a list of player sorted  by priority
+     * @author Felix723
+     */
     private List<Robot> getPriority(List<Robot> robots) {
         List<Robot> tied = new ArrayList<>();
         List<Robot> priority = new ArrayList<>();

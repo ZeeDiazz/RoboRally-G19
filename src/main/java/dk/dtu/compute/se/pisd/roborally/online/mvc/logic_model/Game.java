@@ -30,6 +30,12 @@ public abstract class Game extends Subject implements Serializable {
 
     //Represents the total amount of steps in the current game
     protected int moveCounter;
+    /**
+     * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
+     * This is also so that the PlayerView class is able to access the interactive card in question
+     *
+     * @author Zigalow
+     */
     public Command currentInteractiveCard;
 
     //Represents the amount of steps in the current programming phase
@@ -55,10 +61,10 @@ public abstract class Game extends Subject implements Serializable {
         this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
-public Game() {
-        
-}
-    
+    public Game() {
+
+    }
+
     public void addBoard(Board board) {
         this.board = board;
     }
