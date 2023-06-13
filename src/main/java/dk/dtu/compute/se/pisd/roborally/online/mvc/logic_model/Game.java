@@ -16,7 +16,8 @@ import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INIT
 
 /**
  * An abstract game class
- * @author ZeeDiazz (Zaid)
+ *
+ * @author Zigalow & ZeeDiazz (Zaid)
  */
 public abstract class Game extends Subject implements Serializable {
     public List<Player> prioritisedPlayers = new ArrayList<>();
@@ -55,7 +56,6 @@ public abstract class Game extends Subject implements Serializable {
      * @param stepMode
      * @param moveCounter
      * @author ZeeDiazz (Zaid)
-     *
      */
     public Game(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter) {
         this.board = board;
@@ -102,6 +102,7 @@ public abstract class Game extends Subject implements Serializable {
      * Gets the games ID related to the board.
      *
      * @return The game ID
+     * @author Zaid
      */
     public Integer getGameId() {
         return gameId;
@@ -337,15 +338,6 @@ public abstract class Game extends Subject implements Serializable {
         return moves;
     }
 
-
-
-
-    /**
-     * Serialize game
-     *
-     * @return
-     * @author Zigalow
-     */
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
@@ -383,13 +375,7 @@ public abstract class Game extends Subject implements Serializable {
         return jsonObject;
     }
 
-    /**
-     * Deserialize game
-     *
-     * @param element The json element that needs to be deserialized
-     * @return
-     * @author Zigalow
-     */
+
     @Override
     public Serializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
@@ -476,12 +462,9 @@ public abstract class Game extends Subject implements Serializable {
 
         initialPriorityAntennaSpace = (Space) initialPriorityAntennaSpace.deserialize(jsonObject.get("priorityAntennaSpace"));
 
-
         Position position = initialPriorityAntennaSpace.getPosition();
 
-
         game1.priorityAntennaSpace = board.getSpace(position);
-
 
         return game1;
     }
