@@ -6,11 +6,17 @@ import org.jetbrains.annotations.NotNull;
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController.performMove;
 
 
+/**
+ * Class used for executing commands
+ *
+ * @author Zigalow
+ */
 public class CommandExecuter {
     private static Board board;
 
     /**
      * Constructs a new CommandExecuter with the given board.
+     *
      * @param board
      * @author Zigalow
      */
@@ -20,16 +26,13 @@ public class CommandExecuter {
 
     /**
      * Executes the action of a command card to the given player.
+     *
      * @param player
      * @param command
      * @author Daniel, ZeeDiazz (Zaid), Zigalow
      */
     public void executeCardCommand(@NotNull Player player, Command command) {
         if (player.robot != null && command != null) {
-            // XXX This is a very simplistic way of dealing with some basic cards and
-            //     their execution. This should eventually be done in a more elegant way
-            //     (this concerns the way cards are modelled as well as the way they are executed).
-
             switch (command) {
                 case MOVE_1, MOVE_2, MOVE_3, BACK_UP -> {
                     this.moveCommand(player.robot, command);
@@ -43,8 +46,7 @@ public class CommandExecuter {
                     player.addEnergyCube(1);
                     player.setPrevProgramming(command);
                 }
-                case AGAIN ->
-                        this.repeatPrevProgramming(player);
+                case AGAIN -> this.repeatPrevProgramming(player);
 
                 default -> {
                 }
@@ -55,6 +57,7 @@ public class CommandExecuter {
 
     /**
      * Execute a move command in the given robot
+     *
      * @param robot
      * @param moveCommand
      * @author Zigalow
@@ -69,7 +72,8 @@ public class CommandExecuter {
     }
 
     /**
-     * Execute turn for the given robot
+     * Execute the turning of the given robot
+     *
      * @param robot
      * @param turnCommand
      * @author Zigalow
@@ -83,7 +87,8 @@ public class CommandExecuter {
     }
 
     /**
-     * This method moves the robot one space back, and doesn't change robots direction.
+     * This method moves the robot one space back, without changing the robot's direction.
+     *
      * @param robot
      * @author ZeeDiazz (Zaid)
      */
@@ -99,6 +104,7 @@ public class CommandExecuter {
 
     /**
      * Turns the robots direction to the right
+     *
      * @param robot
      * @author Daniel Weper Jensen
      */
@@ -111,6 +117,7 @@ public class CommandExecuter {
 
     /**
      * Turns the robots direction to the left
+     *
      * @param robot
      * @author Daniel Weper Jensen
      */
@@ -122,7 +129,8 @@ public class CommandExecuter {
     }
 
     /**
-     * This method turns players to the opposite direction, and the robot still remains in the current space.
+     * This method turns players to the opposite direction, and the robot still remains in the current space - U-Turn
+     *
      * @param robot
      * @autor ZeeDiazz (Zaid)
      */
@@ -134,7 +142,8 @@ public class CommandExecuter {
     }
 
     /**
-     * This method is for the command Again, and repeat the programming from previous register
+     * This method is for the command Again which repeats the command from the previous register
+     *
      * @param player
      * @author ZeeDiazz (Zaid)
      */
