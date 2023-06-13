@@ -5,6 +5,11 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.HeadingDirection;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Position;
 
 
+/**
+ * Represent a priority antenna space
+ *
+ * @author Felix
+ */
 public class PriorityAntennaSpace extends Space {
     protected HeadingDirection direction;
 
@@ -17,4 +22,5 @@ public class PriorityAntennaSpace extends Space {
     public boolean canEnterFrom(HeadingDirection from) {
         return false;
     }
+    
 }
