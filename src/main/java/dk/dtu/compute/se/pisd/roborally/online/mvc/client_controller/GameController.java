@@ -29,6 +29,10 @@ public class GameController implements Serializable {
 
     public static Board board = null;
     public static Game game = null;
+    /***
+     * For executing the different commands
+     * Zigalow
+     */
     private static CommandExecuter commandExecution;
 
     // TODO [Javadoc]: 13-06-2023
