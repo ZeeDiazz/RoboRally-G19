@@ -11,6 +11,9 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Board extends Subject implements Serializable {
 
@@ -29,6 +32,7 @@ public class Board extends Subject implements Serializable {
 
 
     private final Space[][] spaces;
+    public static List<Position> spawnPositions = new ArrayList<>();
     //-------------DELETE FROM HERE
     /*
     private final List<Player> players = new ArrayList<>();
@@ -54,12 +58,13 @@ public class Board extends Subject implements Serializable {
      * @param checkpointAmount
      * @author Daniel Jensen
      */
-    public Board(int width, int height, String boardName, Space[][] spaces, int checkpointAmount) {
+    public Board(int width, int height, String boardName, Space[][] spaces, int checkpointAmount/*,  List<Position> spawnPosition*/) {
         this.width = width;
         this.height = height;
         this.boardName = boardName;
         this.spaces = spaces;
         this.checkpointAmount = checkpointAmount;
+        //spawnPositions = spawnPosition;
     }
 
     /**
@@ -93,6 +98,25 @@ public class Board extends Subject implements Serializable {
         //this.stepMode = false;
         this.checkpointAmount = 0;
     }
+
+    /**
+     *
+     * @param spaces
+     * @param name
+     * @param spawnPositions
+     * @author ZeeDaizz (Zaid)
+     */
+    public Board(Space[][] spaces, String name, List<Position> spawnPositions ) {
+        this.boardName = name;
+        this.spawnPositions = spawnPositions;
+        this.width = spaces.length;
+        this.height = spaces[0].length;
+        this.spaces = spaces;
+
+        //this.stepMode = false;
+        this.checkpointAmount = 0;
+    }
+
 
     /**
      * Gets the given space on the board position.
@@ -180,6 +204,7 @@ public class Board extends Subject implements Serializable {
     public static Board add(Board board, Board adding, Position offset, String newName) {
         Position currentTopLeft = board.spaces[0][0].position;
         Position currentBottomRight = board.spaces[board.width - 1][board.height - 1].position;
+        board.spawnPositions = getSpawnPositions();
         Position addingTopLeft = Position.add(adding.spaces[0][0].position, offset);
         Position addingBottomRight = Position.add(adding.spaces[adding.width - 1][adding.height - 1].position, offset);
 
@@ -200,7 +225,16 @@ public class Board extends Subject implements Serializable {
             }
         }
 
-        return new Board(newSpaces, newName);
+        return new Board(newSpaces, newName, spawnPositions);
+    }
+
+    /**
+     * gets the spawnposition for a map
+     * @author ZeeDiazz (Zaid)
+     * @return
+     */
+    public static List<Position> getSpawnPositions() {
+        return spawnPositions;
     }
 
     /**
@@ -354,6 +388,15 @@ public class Board extends Subject implements Serializable {
         jsonObject.add("spaces", jsonArraySpaces);
 
 
+        /*JsonArray jsonArraySpawnPositions = new JsonArray();
+        for (Position position : spawnPositions) {
+            JsonObject spawnPositionJson = new JsonObject();
+            spawnPositionJson.addProperty("x", position.X);
+            spawnPositionJson.addProperty("y", position.Y);
+            jsonArraySpawnPositions.add(spawnPositionJson);
+        }
+        jsonObject.add("spawnPositions", jsonArraySpawnPositions);
+        */
         return jsonObject;
 
     }
@@ -379,9 +422,19 @@ public class Board extends Subject implements Serializable {
                 spaces[x][y] = (Space) space.deserialize(spaceJson);
             }
         }
+       /* List<Position> spawnPositions = new ArrayList<>();
+        JsonArray jsonArraySpawnPositions = jsonObject.get("spawnPositions").getAsJsonArray();
+        for (JsonElement spawnPositionElement : jsonArraySpawnPositions) {
+            JsonObject spawnPositionJson = spawnPositionElement.getAsJsonObject();
+            int x = spawnPositionJson.get("x").getAsInt();
+            int y = spawnPositionJson.get("y").getAsInt();
+            spawnPositions.add(new Position(x, y));
+        }
+        */
 
+
+        //return new Board(width, height, boardName, spaces, checkPointAmount, spawnPositions);
         return new Board(width, height, boardName, spaces, checkPointAmount);
-
 
     }
 }
