@@ -20,13 +20,13 @@ import java.util.*;
 
 public class Client extends OnlinePlayer {
     private int gameId;
+    private int playerIndex = -1;
     private Game game;
     private final String baseLocation;
     private Thread listener;
     private int playerId;
     private Map<String, String> lobbyAndPlayerInfo;
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
-
 
     public Client(String baseLocation) {
         super();
@@ -79,6 +79,7 @@ public class Client extends OnlinePlayer {
 
             this.playerId = playerId;
             this.gameId = gameId;
+            this.playerIndex = 0;
         } else {
             System.out.println("Failed gameId: " + gameId);
             System.out.println(jsonGameFromServer.getStatusCode());
@@ -124,6 +125,7 @@ public class Client extends OnlinePlayer {
             joinedGame.deserialize(gameFromServer);*/
 
             playerId = gameFromServer.get("playerId").getAsInt(); //??
+            this.playerIndex = gameFromServer.get("playerIndex").getAsInt();
             this.gameId = gameId;
             System.out.println("Joined gameId: " + gameId);
 
@@ -424,9 +426,14 @@ public class Client extends OnlinePlayer {
 
         OnlineGame deserializedGame = new OnlineGame(board, playerCount);
         for (int i = 0; i < playerCount; i++) {
-            
-            // FLAG - it needs a game. Does this give problems???
-            deserializedGame.addPlayer(new OnlinePlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1)));
+            Player player;
+            if (i == playerIndex) {
+                player = new LocalPlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1));
+            }
+            else {
+                player = new OnlinePlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1));
+            }
+            deserializedGame.addPlayer(player);
         }
         deserializedGame.setGameId(this.gameId);
         deserializedGame.setClient(this);
