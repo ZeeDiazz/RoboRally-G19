@@ -5,11 +5,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.PriorityAntennaSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -462,7 +460,7 @@ public abstract class Game extends Subject implements Serializable {
 
         List<Player> prioritisedPlayers = new ArrayList<>();
 
-        int id = 0;
+        int id;
         for (int i = 0; i < prioritisedPlayersJson.size(); i++) {
             id = prioritisedPlayersJson.get(i).getAsInt();
             for (Player player : players) {
