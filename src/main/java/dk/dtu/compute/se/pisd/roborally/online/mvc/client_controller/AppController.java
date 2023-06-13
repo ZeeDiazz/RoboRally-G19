@@ -271,6 +271,14 @@ public class AppController implements Observer, GameFinishedListener {
                             Thread.sleep(10);
                         }
                         game = client.getGame();
+                        for (int i = 0; i < game.getPlayerCount(); i++) {
+                            Space startingSpace = game.board.getSpace(Board.spawnPositions.get(i).X, Board.spawnPositions.get(i).Y);
+
+                            Player player = game.getPlayer(i);
+                            player.robot.setSpace(startingSpace);
+                            player.robot.setRebootPosition(startingSpace.position);
+                        }
+
                         createBoardView();
                         return;
 

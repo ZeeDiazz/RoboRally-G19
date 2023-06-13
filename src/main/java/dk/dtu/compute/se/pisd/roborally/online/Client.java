@@ -16,7 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-public class Client extends OnlinePlayer {
+public class Client {
     private int gameId;
     private int playerIndex = -1;
     private Game game;
