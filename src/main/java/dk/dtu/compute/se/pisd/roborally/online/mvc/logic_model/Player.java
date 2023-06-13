@@ -45,6 +45,14 @@ public abstract class Player extends Subject implements Serializable {
         }
     }
 
+    /**
+     * Constructor to create a Player object with the given board, color, and name.
+     *
+     * @param game  The game that the player belongs to.
+     * @param color The color of the player.
+     * @param name  The name of the player.
+     * @author Zaid
+     */
     public Player(Game game, String color, @NotNull String name) {
         this.game = game;
         this.name = name;
@@ -83,7 +91,13 @@ public abstract class Player extends Subject implements Serializable {
             notifyChange();
         }
     }
-    
+
+    /**
+     * gets the amount of energy cubes a player has
+     *
+     * @return the amount of energy cubes
+     * @author ZeeDiazz (Zaid)
+     */
     public Command getPrevProgramming() {
         return prevProgramming;
     }
@@ -126,18 +140,40 @@ public abstract class Player extends Subject implements Serializable {
         }
     }
 
+    /**
+     * Gets the program field at the specific index
+     *
+     * @param index index of the program field
+     * @return the command card field at the specific index
+     * @author Daniel
+     */
     public CommandCardField getProgramField(int index) {
         return programField[index];
     }
 
+    /**
+     * Gets the program field at the specific index
+     *
+     * @param index index of the program field
+     * @return the command card field at the specific index
+     * @author Daniel
+     */
     public CommandCardField getCardField(int index) {
         return cards[index];
     }
 
+    /**
+     * @return the commandCardFields in the "command cards" section, in the game
+     * @author Zaid
+     */
     public CommandCardField[] getCards() {
         return cards;
     }
 
+    /**
+     * @return the commandCardFields in the "program" section, in the game
+     * @author Zaid
+     */
     public CommandCardField[] getProgram() {
         return programField;
     }
