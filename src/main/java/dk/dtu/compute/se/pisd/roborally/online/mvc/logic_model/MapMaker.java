@@ -23,7 +23,7 @@ public final class MapMaker {
      * @throws FileNotFoundException
      * @author ZeeDiazz (Zaid)
      */
-    public static Board loadJsonBoard(String mapName) throws FileNotFoundException {
+    private static Board loadJsonBoard(String mapName) throws FileNotFoundException {
         JsonParser parser = new JsonParser();
         JsonElement mapFile = parser.parse(new FileReader("src/main/resources/boards/" + mapName + ".json"));
         JsonObject mapBoard = mapFile.getAsJsonObject();
