@@ -134,20 +134,10 @@ public class AppController implements Observer, GameFinishedListener {
 
         if (offlineGame) {
             game = new LocalGame(board);
-
-
             // Zigalow }
 
             for (int i = 0; i < playerCount; i++) {
-                Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                //Space startingSpace = board.getSpace(i % board.width, i);
-                // ZeeDiazz (Zaid) {
-                System.out.println(board.spawnPositions.size());
-                Space startingSpace = board.getSpace(board.spawnPositions.get(i).X, board.spawnPositions.get(i).Y);
-                // ZeeDiazz (Zaid) }
-                player.robot.setSpace(startingSpace);
-                player.robot.setRebootPosition(startingSpace.position);
-                game.addPlayer(player);
+                game.addPlayer(new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1)));
             }
         } else {
 
@@ -178,6 +168,14 @@ public class AppController implements Observer, GameFinishedListener {
             System.out.println("Starting the game");
             client.startGame();
             game = client.getGame();
+        }
+
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            Space startingSpace = game.board.getSpace(Board.spawnPositions.get(i).X, Board.spawnPositions.get(i).Y);
+
+            Player player = game.getPlayer(i);
+            player.robot.setSpace(startingSpace);
+            player.robot.setRebootPosition(startingSpace.position);
         }
         createBoardView();
     }
