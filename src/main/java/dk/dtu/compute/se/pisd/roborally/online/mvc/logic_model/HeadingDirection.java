@@ -32,15 +32,13 @@ public enum HeadingDirection {
     NORTH,
     EAST;
 
-    // From 1.4.0
-    /* public Heading next() {
-        return values()[(this.ordinal() + 1) % values().length];
-    }
-
-    public Heading prev() {
-        return values()[(this.ordinal() + values().length - 1) % values().length];
-    }*/
-
+    /**
+     * Gives the left direction to the original direction
+     *
+     * @param heading
+     * @return
+     * @author Daniel
+     */
     public static HeadingDirection rightHeadingDirection(HeadingDirection heading) {
         HeadingDirection newDirection;
         switch (heading) {
@@ -53,6 +51,13 @@ public enum HeadingDirection {
         return newDirection;
     }
 
+    /**
+     * Gives the left direction to the original direction
+     *
+     * @param heading
+     * @return
+     * @author Daniel
+     */
     public static HeadingDirection leftHeadingDirection(HeadingDirection heading) {
         HeadingDirection newDirection;
         switch (heading) {
@@ -65,6 +70,13 @@ public enum HeadingDirection {
         return newDirection;
     }
 
+    /**
+     * To get the oppsite direction of the original direction
+     *
+     * @param heading
+     * @return
+     * @author ZeeDiazz (Zaid)
+     */
     public static HeadingDirection oppositeHeadingDirection(HeadingDirection heading) {
         HeadingDirection newDirection;
         switch (heading) {
@@ -76,15 +88,4 @@ public enum HeadingDirection {
         }
         return newDirection;
     }
-
-    public static HeadingDirection getHeading(String name) {
-
-        for (HeadingDirection heading : HeadingDirection.values()) {
-            if (name.equals(heading.toString())) {
-                return heading;
-            }
-        }
-        return null;
-    }
-
 }
