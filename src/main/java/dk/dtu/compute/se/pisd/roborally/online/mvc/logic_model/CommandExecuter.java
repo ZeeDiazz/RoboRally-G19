@@ -12,17 +12,7 @@ import static dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.Game
  * @author Zigalow
  */
 public class CommandExecuter {
-    private static Board board;
 
-    /**
-     * Constructs a new CommandExecuter with the given board.
-     *
-     * @param board
-     * @author Zigalow
-     */
-    public CommandExecuter(Board board) {
-        this.board = board;
-    }
 
     /**
      * Executes the action of a command card to the given player.

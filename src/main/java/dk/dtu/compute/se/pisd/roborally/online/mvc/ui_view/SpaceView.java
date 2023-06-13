@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class SpaceView extends StackPane implements ViewObserver {
 
-    final public static int SPACE_HEIGHT = 60; // 60; // 75;
-    final public static int SPACE_WIDTH = 60;  // 60; // 75;
+    final public static int SPACE_HEIGHT = 60;
+    final public static int SPACE_WIDTH = 60;
     final public static double wallThickness = 4;
     final public static Color wallColor = Color.YELLOW;
 
@@ -50,7 +50,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setPrefHeight(SPACE_HEIGHT);
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
-
+        //ZeeDiazz (Zaid) {
         this.imageView = new ImageView();
         this.imageView.setFitWidth(SPACE_WIDTH);
         this.imageView.setFitHeight(SPACE_HEIGHT);
@@ -103,6 +103,7 @@ public class SpaceView extends StackPane implements ViewObserver {
             this.imageView = new ImageView(image);
             setSpaceImage(imageView);
         }
+        // ZeeDiazz (Zaid) }
 
         // Zahed Wafa {
         double top = space.hasWall(HeadingDirection.NORTH) ? wallThickness : 0;
@@ -115,8 +116,6 @@ public class SpaceView extends StackPane implements ViewObserver {
         Border border = new Border(borderStroke);
         this.setBorder(border);
         // Zahed Wafa }
-
-        // }
 
         // updatePlayer();
 
@@ -149,6 +148,7 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     /**
      * Sets the image of the spaces
+     *
      * @param imageView that holds the image
      * @author ZeeDiazz (Zaid)
      */

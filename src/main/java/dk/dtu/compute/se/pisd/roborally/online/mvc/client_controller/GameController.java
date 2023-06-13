@@ -40,13 +40,13 @@ public class GameController implements Serializable {
 
     public GameController(@NotNull Game game) {
         this.game = game;
-        commandExecution = new CommandExecuter(game.board);
+        commandExecution = new CommandExecuter();
         this.game.priorityAntennaSpace = game.board.getPriorityAntennaSpace();
     }
 
     public GameController(@NotNull Board board) {
         this.board = board;
-        commandExecution = new CommandExecuter(board);
+        commandExecution = new CommandExecuter();
     }
 
     public void executePrograms() {
