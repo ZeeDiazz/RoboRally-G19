@@ -137,6 +137,7 @@ public class Server {
         JsonObject response = new JsonObject();
         response.addProperty("gameId", lobbyId);
         response.addProperty("playerId", playerId);
+        response.addProperty("playerIndex", 0);
 
         return responseMaker.created(response.toString());
         /*
@@ -191,8 +192,9 @@ public class Server {
 
         JsonObject response = new JsonObject();
         response.addProperty("playerId", playerId);
+        response.addProperty("playerIndex", lobby.getPlayerCount() - 1);
 
-        return responseMaker.itemResponse(response.toString());
+        return responseMaker.itemResponse(response);
     }
 
     @PostMapping(ResourceLocation.leaveGame)
