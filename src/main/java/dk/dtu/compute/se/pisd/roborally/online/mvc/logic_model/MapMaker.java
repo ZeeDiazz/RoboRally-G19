@@ -18,21 +18,16 @@ public final class MapMaker {
     /**
      * Loads a map from json fil from the map given in the parameter
      *
-     * @param map
+     * @param mapName
      * @return
      * @throws FileNotFoundException
      * @author ZeeDiazz (Zaid)
      */
-    public static Board loadJsonBoard(String map) throws FileNotFoundException {
+    public static Board loadJsonBoard(String mapName) throws FileNotFoundException {
         JsonParser parser = new JsonParser();
-
-        // Load the json fil
-        JsonElement mapFile = parser.parse(new FileReader("src/main/resources/boards/" + map + ".json"));
-
+        JsonElement mapFile = parser.parse(new FileReader("src/main/resources/boards/" + mapName + ".json"));
         JsonObject mapBoard = mapFile.getAsJsonObject();
-
         Board board = new Board(9, 9);
-
         return (Board) board.deserialize(mapBoard);
     }
 
