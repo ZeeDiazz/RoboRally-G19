@@ -49,6 +49,7 @@ public class CommandCardField extends Subject implements Serializable {
 
     /**
      * Constructs a new CommandCardField with the given Player.
+     *
      * @param player The Player associated with this Command Card Field.
      */
     public CommandCardField(Player player) {
@@ -59,6 +60,7 @@ public class CommandCardField extends Subject implements Serializable {
 
     /**
      * Returns the Command Card currently placed in this Command Card Field.
+     *
      * @return The Command Card currently placed in this field, or null if no Command Card is placed.
      */
     public CommandCard getCard() {
@@ -69,6 +71,7 @@ public class CommandCardField extends Subject implements Serializable {
      * Sets the Command Card to be placed in this Command Card Field.
      * If the new Command Card is different from the current Command Card,
      * it will notify observers of the change.
+     *
      * @param card placeing the command card in the field.
      */
     public void setCard(CommandCard card) {
@@ -80,6 +83,7 @@ public class CommandCardField extends Subject implements Serializable {
 
     /**
      * Returns whether the Command Card in this field is currently visible.
+     *
      * @return true if the Command Card is visible, false otherwise.
      */
     public boolean isVisible() {
@@ -89,6 +93,7 @@ public class CommandCardField extends Subject implements Serializable {
     /**
      * Sets the visibility of the Command Card in this field.
      * If the visibility changes, it will notify observers of the change.
+     *
      * @param visible true to make the command card visible, false to make it invisible.
      */
     public void setVisible(boolean visible) {
@@ -97,12 +102,7 @@ public class CommandCardField extends Subject implements Serializable {
             notifyChange();
         }
     }
-
-    /**
-     * serialize for commandCardField
-     * @return
-     * @author Zigalow
-     */
+    
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
@@ -115,22 +115,16 @@ public class CommandCardField extends Subject implements Serializable {
         return jsonObject;
     }
 
-    /**
-     * @param element The json element that needs to be deserialized
-     * @return An ISerializable object from given json element
-     * @author Zigalow
-     */
     @Override
     public Serializable deserialize(JsonElement element) {
-       JsonObject json = element.getAsJsonObject();
+        JsonObject json = element.getAsJsonObject();
         CommandCard card = new CommandCard(Command.LEFT);
 
         JsonElement cardJson = json.get("commandCardField");
         if (cardJson != null) {
-            this.card = (CommandCard)card.deserialize(json.get("commandCardField"));
+            this.card = (CommandCard) card.deserialize(json.get("commandCardField"));
             this.visible = json.get("isVisible").getAsBoolean();
-        }
-        else {
+        } else {
             this.card = null;
             this.visible = true;
         }

@@ -29,7 +29,6 @@ import java.util.List;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public enum Command {
 
@@ -39,26 +38,19 @@ public enum Command {
     MOVE_1("Move 1"),
     RIGHT("Turn Right"),
     LEFT("Turn Left"),
-    MOVE_2("Move 2"),
     // ZeeDiazz (Zaid) {
+    MOVE_2("Move 2"),
     MOVE_3("Move 3"),
     U_TURN("U-Turn"),
     BACK_UP("Move Back"),
     POWER_UP("Power Up"),
     AGAIN("Again"),
 
-    // XXX Assignment P3
-    OPTION_LEFT_RIGHT("Weasel Routine", LEFT, RIGHT,U_TURN);
+
+    OPTION_LEFT_RIGHT("Weasel Routine", LEFT, RIGHT, U_TURN);
     // } ZeeDiazz (Zaid)
 
     final public String displayName;
-
-    // XXX Assignment P3
-    // Command(String displayName) {
-    //     this.displayName = displayName;
-    // }
-    //
-    // replaced by the code below:
 
     final private List<Command> options;
 
