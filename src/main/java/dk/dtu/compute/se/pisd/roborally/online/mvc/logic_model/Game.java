@@ -357,7 +357,6 @@ public Game() {
 
 
         JsonElement commandCard = jsonObject.get("currentInteractiveCard");
-        
         currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
 
 
@@ -377,7 +376,7 @@ public Game() {
 
         String gameType = jsonObject.getAsJsonPrimitive("gameType").getAsString();
 
-        Player playerToAdd = (gameType.equals("OnlineGame")) ? new OnlinePlayer(null,null, "") : new LocalPlayer(null,null, "");
+        Player playerToAdd = (gameType.equals("OnlineGame")) ? new OnlinePlayer(null, null, "") : new LocalPlayer(null, null, "");
 
         ArrayList<Player> players = new ArrayList<>();
         for (int i = 0; i < playerCount; i++) {
@@ -413,10 +412,7 @@ public Game() {
             player.robot.setSpace(spaceOnBoard);
             game1.board.getSpace(spaceOnBoard.getPosition()).setRobotOnSpace(player.robot);
         }
-        
         game1.currentInteractiveCard = currentInteractiveCard;
-
-        
         JsonArray prioritisedPlayersJson = jsonObject.get("prioritisedPlayers").getAsJsonArray();
 
         List<Player> prioritisedPlayers = new ArrayList<>();
@@ -424,13 +420,16 @@ public Game() {
         int id = 0;
         for (int i = 0; i < prioritisedPlayersJson.size(); i++) {
             id = prioritisedPlayersJson.get(i).getAsInt();
-            prioritisedPlayers.add(players.get(id));
+            for (Player player : players) {
+                if (player.getPlayerID() == id) {
+                    prioritisedPlayers.add(player);
+                    break;
+                }
+            }
         }
 
         game1.prioritisedPlayers = prioritisedPlayers;
-
         Space initialPriorityAntennaSpace = new Space(new Position(1, 1), HeadingDirection.WEST);
-
 
         initialPriorityAntennaSpace = (Space) initialPriorityAntennaSpace.deserialize(jsonObject.get("priorityAntennaSpace"));
 
