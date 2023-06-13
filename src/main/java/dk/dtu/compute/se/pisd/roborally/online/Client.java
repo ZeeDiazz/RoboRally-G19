@@ -182,7 +182,7 @@ public class Client extends OnlinePlayer {
      * @throws InterruptedException
      */
 
-    public boolean canStartGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
+    public boolean canStartGame() throws URISyntaxException, IOException, InterruptedException {
 
         URI canStartGameURI = RequestMaker.makeUri(ResourceLocation.baseLocation, ResourceLocation.gameStatus, String.valueOf(gameId));
 
@@ -209,20 +209,23 @@ public class Client extends OnlinePlayer {
 
     }
 
-    public void finishedProgrammingPhase() throws URISyntaxException, IOException, InterruptedException {
+    public void finishedProgrammingPhase(Command[] commands) throws URISyntaxException, IOException, InterruptedException {
         URI finishedProgrammingPhaseURI = new URI(makeFullUri(ResourceLocation.gameStatus));
 
-        //TODO: Send ProgrammingCards that the player has choosen
-  /*      JsonObject jsonElement = new JsonObject();
-        jsonElement.addProperty("playerId", playerId);*/
-        Player player = game.getSpecificPlayer(playerId);
+        JsonObject request = new JsonObject();
+        request.addProperty("gameId", gameId);
+        request.addProperty("playerId", playerId);
+        JsonArray cards = new JsonArray();
+        for (Command command : commands) {
+            cards.add(command.toString());
+        }
+        request.add("moves", cards);
+        request.addProperty("isReady", true);
 
-        JsonElement jsonElement = player.serialize();
-
-        Response<JsonObject> jsonProgrammingPhase = RequestMaker.postRequestJson(finishedProgrammingPhaseURI, jsonElement);
+        Response<JsonObject> jsonProgrammingPhase = RequestMaker.postRequestJson(finishedProgrammingPhaseURI, request);
 
         if (jsonProgrammingPhase.getStatusCode().is2xxSuccessful()) {
-            System.out.println("Successfully send the ProgrammingPhase");
+            System.out.println("Successfully sent the ProgrammingPhase");
         } else {
             System.out.println("Failed to connect");
         }
@@ -421,13 +424,14 @@ public class Client extends OnlinePlayer {
         }
         int playerCount = gameInfo.get("playerCount").getAsInt();
 
-        Game deserializedGame = new OnlineGame(board, playerCount);
+        OnlineGame deserializedGame = new OnlineGame(board, playerCount);
         for (int i = 0; i < playerCount; i++) {
             
             // FLAG - it needs a game. Does this give problems???
             deserializedGame.addPlayer(new OnlinePlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1)));
         }
         deserializedGame.setGameId(this.gameId);
+        deserializedGame.setClient(this);
         return deserializedGame;
     }
 
