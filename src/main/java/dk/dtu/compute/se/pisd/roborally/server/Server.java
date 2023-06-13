@@ -295,7 +295,7 @@ public class Server {
         try (FileReader fileReader = new FileReader(file)) {
             JsonObject loadedInfo = jsonParser.parse(fileReader).getAsJsonObject();
 
-            return ResponseEntity.ok(loadedInfo.toString());
+            return responseMaker.itemResponse(loadedInfo.toString());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
