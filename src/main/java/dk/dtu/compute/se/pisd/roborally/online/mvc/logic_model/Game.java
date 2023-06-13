@@ -30,6 +30,7 @@ public abstract class Game extends Subject implements Serializable {
 
     //Represents the total amount of steps in the current game
     protected int moveCounter;
+    public Command currentInteractiveCard;
 
     //Represents the amount of steps in the current programming phase
     protected int step = 0;
@@ -312,6 +313,10 @@ public abstract class Game extends Subject implements Serializable {
 
 
         jsonObject.add("priorityAntennaSpace", this.priorityAntennaSpace.serialize());
+
+        if (currentInteractiveCard != null) {
+            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+        }
         jsonObject.addProperty("gameType", this.getClass().getSimpleName());
         jsonObject.addProperty("gameId", this.gameId);
         jsonObject.addProperty("moveCounter", this.moveCounter);
@@ -347,6 +352,12 @@ public abstract class Game extends Subject implements Serializable {
         JsonElement gameIdJson = jsonObject.get("gameId");
         Integer gameId = (gameIdJson == null) ? null : gameIdJson.getAsInt();
 
+
+        JsonElement commandCard = jsonObject.get("currentInteractiveCard");
+        
+        currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
+
+
         int moveCounter = jsonObject.get("moveCounter").getAsInt();
         int step = jsonObject.get("step").getAsInt();
         Phase phase = Phase.valueOf(jsonObject.get("phase").getAsString());
@@ -363,7 +374,7 @@ public abstract class Game extends Subject implements Serializable {
 
         String gameType = jsonObject.getAsJsonPrimitive("gameType").getAsString();
 
-        Player playerToAdd = (gameType.equals("OnlineGame")) ? new OnlinePlayer(null, null, "") : new LocalPlayer(null, null, "");
+        Player playerToAdd = (gameType.equals("OnlineGame")) ? new OnlinePlayer(null,null, "") : new LocalPlayer(null,null, "");
 
         ArrayList<Player> players = new ArrayList<>();
         for (int i = 0; i < playerCount; i++) {
@@ -399,6 +410,8 @@ public abstract class Game extends Subject implements Serializable {
             player.robot.setSpace(spaceOnBoard);
             game1.board.getSpace(spaceOnBoard.getPosition()).setRobotOnSpace(player.robot);
         }
+        
+        game1.currentInteractiveCard = currentInteractiveCard;
 
         
         JsonArray prioritisedPlayersJson = jsonObject.get("prioritisedPlayers").getAsJsonArray();

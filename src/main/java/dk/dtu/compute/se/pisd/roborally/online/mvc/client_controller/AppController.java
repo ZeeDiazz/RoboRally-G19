@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -138,15 +139,28 @@ public class AppController implements Observer, GameFinishedListener {
 
             // Zigalow }
 
+            // Zaid {
+            List<Position> robotsStartingPositions = new ArrayList<>();
+            robotsStartingPositions.add(new Position(1, 1));
+            robotsStartingPositions.add(new Position(0, 3));
+            robotsStartingPositions.add(new Position(1, 4));
+            robotsStartingPositions.add(new Position(1, 5));
+            robotsStartingPositions.add(new Position(0, 6));
+            robotsStartingPositions.add(new Position(1, 8));
+
+            // Zaid }
+
             for (int i = 0; i < playerCount; i++) {
                 Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                Space startingSpace = board.getSpace(i % board.width, i);
+                //Space startingSpace = board.getSpace(i % board.width, i);
+                // Zaid {
+                Position robotStartingPosition = robotsStartingPositions.get(i);
+                Space startingSpace = board.getSpace(robotStartingPosition.X, robotStartingPosition.Y);
+                // Zaid }
                 player.robot.setSpace(startingSpace);
                 player.robot.setRebootPosition(startingSpace.position);
                 game.addPlayer(player);
             }
-
-
         } else {
 
             // Zaid & Zigalow {
@@ -160,24 +174,12 @@ public class AppController implements Observer, GameFinishedListener {
 
             // TODO: 11-06-2023 - waiting for players usage
             //      waitingForPlayers();
+            Alert waiter = new Alert(AlertType.CONFIRMATION, "");
+            waiter.showAndWait();
 
-            game = new OnlineGame(board, playerCount);
-            game.setGameId(gameId);
-
-
-            for (int i = 0; i < playerCount; i++) {
-                Player player = new OnlinePlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                Space startingSpace = board.getSpace(i % board.width, i);
-                player.robot.setSpace(startingSpace);
-                player.robot.setRebootPosition(startingSpace.position);
-                game.addPlayer(player);
-            }
-
-            client.setClientGame(game);
-            System.out.println(client.getGame().getGameId());
-
-
-            //             game = client.getGame();
+            System.out.println("Starting the game");
+            client.startGame();
+            game = client.getGame();
         }
         createBoardView();
     }
@@ -239,7 +241,7 @@ public class AppController implements Observer, GameFinishedListener {
             gameOptions.setHeaderText("How would you like to play?");
             gameOptions.setContentText("Select the option you would like to perform");
 
-
+            // TODO fix the loop, so it can handle not having to choose the amount of players and so on
             do {
                 option = gameOptions.showAndWait().get();
 
@@ -254,28 +256,27 @@ public class AppController implements Observer, GameFinishedListener {
                         if (gameId == -2) {
                             continue;
                         }
-                        int initialPlayerId = client.joinGame(gameId);
+                        int playerId = client.joinGame(gameId);
 
 
-                        if (initialPlayerId == -1) {
+                        if (playerId == -1) {
                             errorAlert.setTitle("Game doesn't exist");
                             errorAlert.setHeaderText("Game doesn't exist");
                             errorAlert.setContentText("There isn't any available game, that matches the entered game Id of " + gameId);
                             continue;
-                        } else if (initialPlayerId == 0) {
+                        } else if (playerId == 0) {
                             errorAlert.setTitle("Game is full");
                             errorAlert.setHeaderText("Game is full");
                             errorAlert.setContentText("The game of game ID " + gameId + " is already filled up");
                             continue;
                         }
 
-
-                        // Should be implemented in method waitingForPlayers
-                     /*   while (!client.gameIsReady()) {
-                            // wait
-                            // todo - implement waiting for players
-                        }*/
+                        while (!client.gameIsReady()) {
+                            Thread.sleep(10);
+                        }
                         game = client.getGame();
+                        createBoardView();
+                        return;
 
 
                     } catch (IOException | InterruptedException | URISyntaxException e) {
@@ -303,7 +304,7 @@ public class AppController implements Observer, GameFinishedListener {
             }
 
             // ZeeDiazz (Zaid) {
-            ButtonType map1Button = new ButtonType("Risky Crossing");
+            ButtonType map1Button = new ButtonType("RiskyCrossing");
             ButtonType map2Button = new ButtonType("Dizzy Highway");
 
             Alert selectMap = new Alert(Alert.AlertType.CONFIRMATION, "", map1Button, map2Button);
@@ -430,7 +431,7 @@ public class AppController implements Observer, GameFinishedListener {
                     } else if (initialGame.getGameId() > 0) {
                         // TODO: 11-06-2023 - waiting for players usage 
                         game = initialGame;
-                        waitingForPlayers();
+                        //waitingForPlayers();
                         createBoardView();
                         return;
                     }
@@ -479,6 +480,29 @@ public class AppController implements Observer, GameFinishedListener {
             fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
         }
 
+    }
+
+    public void deleteSavedGame() {
+        int gameId;
+
+        try {
+            gameId = chooseGameIdDeleteSavedGame();
+            client.deleteSavedGame(gameId);
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.OK);
+        alert.setTitle("Delete Game");
+        alert.setHeaderText("Game deleted");
+        alert.setContentText("Successfully deleted game with gameId: " + gameId);
+
+        alert.showAndWait();
     }
 
 
@@ -552,6 +576,60 @@ public class AppController implements Observer, GameFinishedListener {
     @Override
     public void onGameFinished() {
         stopGame();
+    }
+
+    private int chooseGameIdDeleteSavedGame() {
+
+        // Create the dialog for choosing a gameId
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Choose game ID");
+        dialog.setHeaderText("Please enter your preferred game ID");
+
+
+        // add the Buttons Submit & skip
+        ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
+
+        dialog.getDialogPane().getButtonTypes().addAll(submitButtonType);
+
+        //
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 150, 10, 10)); //10 height & 150 width
+
+
+        TextField integerField = new TextField();
+        integerField.setPromptText("Enter a positive integer"); //a text prompt telling the player to write an int
+
+        grid.add(new Label("Game ID:"), 0, 0);
+        grid.add(integerField, 1, 0);
+
+        // Enable/Disable submit button depending on whether an integer was entered.
+        Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
+        submitButton.setDisable(true);
+
+        // Do some validation.
+        integerField.textProperty().addListener((observable, oldValue, newValue) -> {
+            submitButton.setDisable(!isValidInteger(newValue));
+        });
+
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert the result to an integer when the submit button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == submitButtonType) {
+                return Integer.parseInt(integerField.getText());
+            } else {
+                return -1;
+            }
+        });
+
+        Optional<Integer> result = dialog.showAndWait();
+
+        result.ifPresent(integer -> {
+            System.out.println("Entered Integer: " + integer);
+        });
+
+        return result.get();
     }
 
     private int chooseGameIdCreateGame() {
@@ -662,9 +740,64 @@ public class AppController implements Observer, GameFinishedListener {
         return result.get();
     }
 
-    private void waitingForPlayers() {
+    private void waitingForPlayers(int gameID) {
         // todo - implement waiting for players
 
+        // Host
+        if (game != null) {
+            Thread hostIsGameReady = new Thread(new Runnable() {
+                int number = 0;
+
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            if (client.canStartGame(gameID)) {
+                                break;
+                            }
+                            Thread.sleep(1000);
+                            System.out.println(number++);
+                        } catch (URISyntaxException | IOException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    // todo - set client game to game, that is ready to start, from server. (gets new copy of game from server)
+
+                    Alert alert = new Alert(AlertType.INFORMATION, "", new ButtonType("Start game"));
+                    alert.setTitle("Start game");
+                    alert.setHeaderText("The game is ready to be started");
+                    alert.setContentText("Press start game, to start the game");
+                }
+            });
+        }
+        // Not host-client
+        else {
+            Thread nonHostIsGameReady = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            if (client.canStartGame(gameID)) {
+                                break;
+                            }
+                        } catch (URISyntaxException | IOException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    // todo - set client game to game, that is ready to start, from server. (gets new copy of game from server)
+                    Alert alert = new Alert(AlertType.INFORMATION, "", new ButtonType("Start game"));
+                    alert.setTitle("Start game");
+                    alert.setHeaderText("The game is ready to be started");
+                    alert.setContentText("Press start game, to start the game");
+                }
+            });
+
+
+        }
+        
+        
+        
+        /*
         while (!client.gameIsReady()) {
             // wait
 
@@ -718,33 +851,6 @@ public class AppController implements Observer, GameFinishedListener {
             waitForPlayersThread.start();*/
 
         // TODO: 06-06-2023 Thread waiting for players
-            /*
-            Alert waitingForPlayers = new Alert(AlertType.INFORMATION);
-            waitingForPlayers.setTitle("Missing players");
-            waitingForPlayers.setContentText("Please wait for the remaining players to join");
-            waitingForPlayers.setHeaderText("The game is missing " + (playerCount - game.getPlayerCount()) + " more players to start the game");
-            waitingForPlayers.getButtonTypes().clear();
-
-
-            Platform.runLater(() -> waitingForPlayers.show());
-
-
-            int currentNumberOfPlayers = game.getPlayerCount();
-            while (!game.canStartGame()) {
-                if (game.getPlayerCount() != currentNumberOfPlayers) {
-                    currentNumberOfPlayers = game.getPlayerCount();
-                    int remainingPlayers = playerCount - currentNumberOfPlayers;
-                    // Update the alert text on the JavaFX application thread
-                    Platform.runLater(() -> waitingForPlayers.setHeaderText("The game is missing " + remainingPlayers + " to start the game"));
-                }
-            }
-
-            ButtonType startGameButton = new ButtonType("Start Game");
-            Alert startGame = new Alert(AlertType.INFORMATION, "", startGameButton);
-            startGame.setTitle("Start game");
-            startGame.setHeaderText("The game can now be started");
-            startGame.setContentText("Press the button to start playing");
-            startGame.showAndWait();*/
     }
 
     private void getGameInfo(int gameId) {

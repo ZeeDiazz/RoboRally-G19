@@ -1,26 +1,33 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.*;
 
 public class Lobby {
+    private static final Random rng = new Random();
+
     private final int id;
-    private int readyCount = 0;
-    private int minimumPlayers = 0;
-    private final AtomicLongArray counter = new AtomicLongArray(6);
-    private final Map<Integer, Boolean> playerStatus;
+    private int stepsTaken = 0;
+    private int minimumPlayers;
+    private final List<Integer> playerIds;
+    private final List<Boolean> readyStatus;
+    private final List<Boolean> hasRetrievedInfo;
+    private final List<String> latestMoves;
+    private boolean active;
+    private String boardName;
 
     /**
      * Constructor for Lobby
      * @param id, an integer value to identify the lobby
      * @author Felix Schmidt (Felix732)
      */
-    public Lobby (int id){
+    public Lobby(int id, int minimumPlayers, String boardName) {
         this.id = id;
-        this.playerStatus = new HashMap<>();
+        this.minimumPlayers = minimumPlayers;
+        this.playerIds = new ArrayList<>();
+        this.readyStatus = new ArrayList<>();
+        this.hasRetrievedInfo = new ArrayList<>();
+        this.latestMoves = new ArrayList<>();
+        this.boardName = boardName;
     }
 
     /**
@@ -32,13 +39,25 @@ public class Lobby {
         return this.id;
     }
 
+    private int getPlayerIndex(int playerId) {
+        for (int i = 0; i < playerIds.size(); i++) {
+            if (playerIds.get(i) == playerId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     /**
      * Method to add a player to a lobby utilizing the List interface method add
      * @param playerId
      * @author Felix Schmidt (Felix732)
      */
-    public void addPlayer(int playerId){
-        playerStatus.put(playerId, false);
+    public void addPlayer(int playerId) {
+        playerIds.add(playerId);
+        readyStatus.add(false);
+        hasRetrievedInfo.add(false);
+        latestMoves.add("");
     }
 
     /**
@@ -46,16 +65,22 @@ public class Lobby {
      * @param playerId
      * @author Felix Schmidt (Felix732)
      */
-    public void removePlayer(int playerId){
-        if (!hasPlayer(playerId)) {
+    public void removePlayer(int playerId) {
+        int playerIndex = getPlayerIndex(playerId);
+        if (playerIndex == -1) {
             return;
         }
-        playerStatus.remove(playerId);
+        playerIds.remove(playerIndex);
+        readyStatus.remove(playerIndex);
+        hasRetrievedInfo.remove(playerIndex);
+        latestMoves.remove(playerIndex);
     }
 
     public boolean hasPlayer(int playerId) {
-        return playerStatus.containsKey(playerId);
+        return getPlayerIndex(playerId) != -1;
     }
+
+    public boolean isHost(int playerId) { return getPlayerIds().get(0) == playerId; }
 
     /**
      * Method to get the number of players ready in a lobby
@@ -63,6 +88,12 @@ public class Lobby {
      * @author Felix Schmidt (Felix732)
      */
     public int getPlayersReadyCount() {
+        int readyCount = 0;
+        for (int i = 0; i < getPlayerCount(); i++) {
+            if (readyStatus.get(i)) {
+                readyCount++;
+            }
+        }
         return readyCount;
     }
 
@@ -71,70 +102,100 @@ public class Lobby {
      * @return players, a list of players
      * @author Felix Schmidt (Felix732)
      */
-    public List<Integer> getPlayerIds(){
-        return playerStatus.keySet().stream().toList();
+    public List<Integer> getPlayerIds() {
+        // streaming to a list, to make a copy, instead of giving the internal copy away
+        return playerIds.stream().toList();
     }
 
     private boolean playerIsReady(int playerId) {
-        return hasPlayer(playerId) && playerStatus.get(playerId);
+        int playerIndex = getPlayerIndex(playerId);
+        if (playerIndex == -1) {
+            return false;
+        }
+        return readyStatus.get(playerIndex);
     }
 
-    /**
-     * Method to set a player ready
-     * @param playerId
-     * @author Felix Schmidt (Felix732)
-     */
-    public void setIsReady(int playerId) {
+    public void setReadyStatus(int playerId, boolean newStatus) {
         if (!hasPlayer(playerId)) {
             return;
         }
-        if (!playerIsReady(playerId)) {
-            playerStatus.put(playerId, true);
-            readyCount++;
-        }
+        readyStatus.set(getPlayerIndex(playerId), newStatus);
     }
 
-    /**
-     * Method to set a player not ready
-     * @param playerId
-     * @author Felix Schmidt (Felix732)
-     */
-    public void setNotReady (int playerId) {
-        if (!hasPlayer(playerId)) {
-            return;
+    public boolean hasRetrievedInfo(int playerId) {
+        int playerIndex = getPlayerIndex(playerId);
+        if (playerIndex == -1) {
+            return false;
         }
-        if (playerIsReady(playerId)) {
-            playerStatus.put(playerId, true);
-            readyCount--;
-        }
+        return hasRetrievedInfo.set(playerIndex, true);
     }
 
-    public boolean isReady(){
-        return readyCount == playerStatus.size();
+    public boolean isReady() {
+        return getPlayersReadyCount() == playerIds.size();
+    }
+    public boolean allHaveInfo() {
+        for (boolean hasRetrieved : hasRetrievedInfo) {
+            if (hasRetrieved) {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
     public boolean canLaunch(){
-        return playerStatus.size() >= minimumPlayers;
+        return getPlayerCount() >= minimumPlayers;
     }
 
     public void resetReadyStatus() {
         for (int playerId : getPlayerIds()) {
-            setNotReady(playerId);
+            setReadyStatus(playerId, false);
+            hasRetrievedInfo.set(getPlayerIndex(playerId), false);
         }
+        stepsTaken++;
     }
     public int getMinimumPlayers() {
         return minimumPlayers;
     }
-    public void setMinimumPlayers(int minimumPlayers) {
-        this.minimumPlayers = minimumPlayers;
+    public int getPlayerCount() {
+        return playerIds.size();
     }
-    public int getNumberOfPlayers() {
-        return playerStatus.size();
+    public void setActive() {
+        this.active = true;
     }
-    public AtomicLongArray getCounter() {
-        return counter;
+    public boolean isActive() {
+        return this.active;
     }
-    public long givePlayerId() {
-        return counter.getAndIncrement(1);
+    public String getBoardName() {
+        return this.boardName;
+    }
+    public int makePlayerId() {
+        int id = -1;
+        boolean takenId = true;
+        while (takenId) {
+            id = rng.nextInt(0, Integer.MAX_VALUE);
+            takenId = hasPlayer(id);
+        }
+        return id;
     }
 
+    public void updateMoves(int playerId, String moves) {
+        int index = getPlayerIndex(playerId);
+        if (index == -1) {
+            return;
+        }
+        latestMoves.set(index, moves);
+    }
+    public void resetMoves() {
+        for (int i = 0; i < getPlayerCount(); i++) {
+            latestMoves.set(i, "");
+        }
+    }
+    public List<String> getLatestMoves() {
+        // streaming to a list, to make a copy, instead of giving the internal copy away
+        return latestMoves.stream().toList();
+    }
+
+    public int getStepsTaken() {
+        return stepsTaken;
+    }
 }
