@@ -423,13 +423,14 @@ public class Client extends OnlinePlayer {
         }
         int playerCount = gameInfo.get("playerCount").getAsInt();
 
-        Game deserializedGame = new OnlineGame(board, playerCount);
+        OnlineGame deserializedGame = new OnlineGame(board, playerCount);
         for (int i = 0; i < playerCount; i++) {
             
             // FLAG - it needs a game. Does this give problems???
             deserializedGame.addPlayer(new OnlinePlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1)));
         }
         deserializedGame.setGameId(this.gameId);
+        deserializedGame.setClient(this);
         return deserializedGame;
     }
 

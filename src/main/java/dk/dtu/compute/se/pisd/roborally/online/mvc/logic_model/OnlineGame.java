@@ -5,8 +5,7 @@ import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.Client;
 
 public class OnlineGame extends Game {
-
-
+    private Client client;
     private int numberOfPlayersToStart;
 
 
@@ -22,6 +21,9 @@ public class OnlineGame extends Game {
         this.current = client;
     }
 
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
     @Override
     public boolean canStartGame() {
