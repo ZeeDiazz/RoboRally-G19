@@ -321,6 +321,20 @@ public class Board extends Subject implements Serializable {
         return checkpointAmount;
     }
 
+    public Space getPriorityAntennaSpace() {
+        Space space = null;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (getSpace(i, j) instanceof PriorityAntennaSpace) {
+                    space = getSpace(i, j);
+                    break;
+                }
+            }
+        }
+        return space;
+    }
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
