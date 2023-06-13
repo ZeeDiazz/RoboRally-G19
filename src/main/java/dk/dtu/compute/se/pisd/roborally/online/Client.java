@@ -425,7 +425,7 @@ public class Client extends OnlinePlayer {
         for (int i = 0; i < playerCount; i++) {
             
             // FLAG - it needs a game. Does this give problems???
-            deserializedGame.addPlayer(new OnlinePlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1)));
+            deserializedGame.addPlayer(new OnlinePlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1)));
         }
         deserializedGame.setGameId(this.gameId);
         return deserializedGame;
