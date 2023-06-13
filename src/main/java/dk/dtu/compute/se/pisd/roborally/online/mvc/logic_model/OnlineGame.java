@@ -4,6 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.Client;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class OnlineGame extends Game {
     private Client client;
     private int numberOfPlayersToStart;
@@ -34,6 +37,47 @@ public class OnlineGame extends Game {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    @Override
+    public void setPhase(Phase phase) {
+        super.setPhase(phase);
+
+        System.out.println("Set the phase to '" + phase + "'");
+        if (phase == Phase.ACTIVATION) {
+            for (Player player : players) {
+                if (player instanceof LocalPlayer) {
+                    CommandCardField[] cardFields = player.getProgram();
+                    Command[] commands = new Command[cardFields.length];
+                    for (int i = 0; i < cardFields.length; i++) {
+                        CommandCard card = cardFields[i].getCard();
+                        if (card == null) {
+                            commands[i] = null;
+                        }
+                        else {
+                            commands[i] = card.command;
+                        }
+                        System.out.println("Command: " + commands[i]);
+                    }
+
+                    try {
+                        client.finishedProgrammingPhase(commands);
+                    } catch (URISyntaxException | IOException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            // wait until the other players are also done
+            boolean waiting = true;
+            while (waiting) {
+                try {
+                    waiting = !client.canStartActivationPhase();
+                } catch (URISyntaxException | IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     @Override

@@ -1,8 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.online;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 
@@ -25,7 +23,6 @@ public class Client extends OnlinePlayer {
     private final String baseLocation;
     private Thread listener;
     private int playerId;
-    private Map<String, String> lobbyAndPlayerInfo;
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     public Client(String baseLocation) {
@@ -124,35 +121,34 @@ public class Client extends OnlinePlayer {
          /*   Game joinedGame = new OnlineGame(new Board(10, 10), gameFromServer.getAsJsonObject("game").get("numberOfPlayersToStart").getAsInt());
             joinedGame.deserialize(gameFromServer);*/
 
-            playerId = gameFromServer.get("playerId").getAsInt(); //??
+            this.playerId = gameFromServer.get("playerId").getAsInt(); //??
             this.playerIndex = gameFromServer.get("playerIndex").getAsInt();
             this.gameId = gameId;
-            System.out.println("Joined gameId: " + gameId);
+            System.out.println("Joined game: " + gameId + " as player: " + playerId);
 
             listener = new Thread(() -> {
-                lobbyAndPlayerInfo = new HashMap<>();
-                lobbyAndPlayerInfo.put("gameId", gameId + "");
-                lobbyAndPlayerInfo.put("playerId", playerId + "");
                 URI statusUri;
                 try {
-                    statusUri = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), lobbyAndPlayerInfo);
+                    statusUri = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), getIdentification());
                 } catch (URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
+                System.out.println("Status uri: " + statusUri);
 
+                Response<JsonObject> currentStatus;
                 boolean hasStarted = false;
                 while (!hasStarted) {
                     try {
-                        hasStarted = RequestMaker.getRequestJson(statusUri).getItem().get("hasStarted").getAsBoolean();
+                        currentStatus = RequestMaker.getRequestJson(statusUri);
+                        hasStarted = currentStatus.getItem().get("hasStarted").getAsBoolean();
                     } catch (IOException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    // wait
                 }
 
                 JsonObject gameInfo;
                 try {
-                    URI gameUri = RequestMaker.makeUri(this.makeFullUri(ResourceLocation.specificGame), lobbyAndPlayerInfo);
+                    URI gameUri = RequestMaker.makeUri(this.makeFullUri(ResourceLocation.specificGame), getIdentification());
                     gameInfo = RequestMaker.getRequestJson(gameUri).getItem();
                 } catch (IOException | InterruptedException | URISyntaxException e) {
                     throw new RuntimeException(e);
@@ -162,7 +158,6 @@ public class Client extends OnlinePlayer {
             listener.start();
             if (playerId > 0) {
                 System.out.println("Succesfully joined game");
-                this.gameId = playerId;
             } else {
                 // playerId == 0 means the game is full : playerID == -1 means that the game doesn't exist
                 System.out.println(playerId == 0 ? "Game is full" : "Game doesn't exist");
@@ -217,12 +212,17 @@ public class Client extends OnlinePlayer {
         request.addProperty("playerId", playerId);
         JsonArray cards = new JsonArray();
         for (Command command : commands) {
-            cards.add(command.toString());
+            if (command == null) {
+                cards.add("");
+            }
+            else {
+                cards.add(command.toString());
+            }
         }
         request.add("moves", cards);
         request.addProperty("isReady", true);
 
-        Response<JsonObject> jsonProgrammingPhase = RequestMaker.postRequestJson(finishedProgrammingPhaseURI, request);
+        Response<String> jsonProgrammingPhase = RequestMaker.postRequest(finishedProgrammingPhaseURI, request);
 
         if (jsonProgrammingPhase.getStatusCode().is2xxSuccessful()) {
             System.out.println("Successfully sent the ProgrammingPhase");
@@ -233,7 +233,11 @@ public class Client extends OnlinePlayer {
 
     // todo - ask if the server needs gameId
     public boolean canStartActivationPhase() throws URISyntaxException, IOException, InterruptedException {
-        URI canStartActivationPhaseURI = new URI(makeFullUri(ResourceLocation.gameStatus));
+        Map<String, String> info = new HashMap<>();
+        info.put("gameId", gameId+"");
+        info.put("playerId", playerId+"");
+
+        URI canStartActivationPhaseURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), info);
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(canStartActivationPhaseURI);
 
@@ -241,9 +245,7 @@ public class Client extends OnlinePlayer {
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             JsonObject gameFromServer = jsonGameFromServer.getItem();
 
-            canStartActivationPhase = gameFromServer.get("canStartActivationPhase").getAsBoolean();
-
-            System.out.println(canStartActivationPhase ? "The Phase is Activation" : "The Phase is not Activation");
+            canStartActivationPhase = gameFromServer.get("isReady").getAsBoolean();
         } else {
             System.out.println("Failed to connect");
             return false;
@@ -464,16 +466,22 @@ public class Client extends OnlinePlayer {
         }
         System.out.println("Finished startGame()");
 
-        lobbyAndPlayerInfo = new HashMap<>();
-        lobbyAndPlayerInfo.put("gameId", gameId + "");
-        lobbyAndPlayerInfo.put("playerId", playerId + "");
         JsonObject gameInfo;
         try {
-            URI gameUri = RequestMaker.makeUri(this.makeFullUri(ResourceLocation.specificGame), lobbyAndPlayerInfo);
+            URI gameUri = RequestMaker.makeUri(this.makeFullUri(ResourceLocation.specificGame), getIdentification());
             gameInfo = RequestMaker.getRequestJson(gameUri).getItem();
         } catch (IOException | InterruptedException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
         game = deserializeGameFromServer(gameInfo);
+    }
+
+    private Map<String, String> getIdentification() {
+        Map<String, String> identification = new HashMap<>();
+
+        identification.put("gameId", gameId+"");
+        identification.put("playerId", playerId+"");
+
+        return identification;
     }
 }

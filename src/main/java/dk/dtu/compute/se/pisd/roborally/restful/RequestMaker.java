@@ -64,8 +64,20 @@ public abstract class RequestMaker {
         return new Response<>(httpResponse);
     }
 
+    public static Response<String> postRequest(URI location, JsonElement json) throws IOException, InterruptedException {
+        return postRequest(location, json.toString());
+    }
+
     public static Response<JsonObject> postRequestJson(URI location, String string) throws IOException, InterruptedException {
-        return new JsonResponse(postRequest(location, string));
+        Response<String> response = postRequest(location, string);
+        try {
+            return new JsonResponse(response);
+        }
+        catch (IllegalStateException e) {
+            System.out.println("Posted to: '" + location + "' with payload: '" + string + "'");
+            System.out.println("Response: " + response.getItem());
+            throw e;
+        }
     }
 
     public static Response<JsonObject> postRequestJson(URI location, JsonElement json) throws IOException, InterruptedException {

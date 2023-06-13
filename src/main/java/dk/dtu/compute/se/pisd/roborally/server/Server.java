@@ -242,7 +242,7 @@ public class Server {
 
             if (playerId != null && lobby.hasPlayer(playerId)) {
                 lobby.hasRetrievedInfo(playerId);
-                if (lobby.allHaveInfo()) {
+                if (lobby.allHaveInfo() && false) {
                     lobby.resetReadyStatus();
                     lobby.resetMoves();
                 }
@@ -254,6 +254,7 @@ public class Server {
 
     @PostMapping(ResourceLocation.gameStatus)
     public ResponseEntity<Void> updateGameStatus(@RequestBody String stringInfo) {
+        System.out.println("Player sent update: " + stringInfo);
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
 
         if (!info.has("gameId")) {
@@ -277,11 +278,14 @@ public class Server {
             lobby.setActive();
         }
         if (info.has("moves")) {
-            lobby.updateMoves(playerId, info.get("moves").getAsString());
+            System.out.println("Player sent moves: " + info.get("moves").toString());
+            lobby.updateMoves(playerId, info.get("moves").toString());
         }
         if (info.has("isReady")) {
             boolean playerIsReady = info.get("isReady").getAsBoolean();
             lobby.setReadyStatus(playerId, playerIsReady);
+            System.out.println("Player is ready: " + playerIsReady);
+            System.out.println("Lobby is ready: " + lobby.isReady() + " (" + lobby.getReadyCount() + "/" + lobby.getPlayerCount() + ")");
         }
         return emptyResponseMaker.ok();
     }
