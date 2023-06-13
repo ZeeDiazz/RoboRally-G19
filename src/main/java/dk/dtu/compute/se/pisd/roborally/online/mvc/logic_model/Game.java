@@ -55,7 +55,10 @@ public abstract class Game extends Subject implements Serializable {
         this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
-
+public Game() {
+        
+}
+    
     public void addBoard(Board board) {
         this.board = board;
     }
