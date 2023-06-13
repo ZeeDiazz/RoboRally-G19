@@ -36,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 public class CommandCard extends Subject implements Serializable {
     /**
      * The Command associated with this Command Card.
+     *
+     * @author Zahedullah
      */
     final public Command command;
 
@@ -43,6 +45,7 @@ public class CommandCard extends Subject implements Serializable {
      * Constructs a new command card, with the given command.
      *
      * @param command The command associated with this Command Card.
+     * @author Zahedullah
      */
     public CommandCard(@NotNull Command command) {
         this.command = command;
@@ -52,6 +55,7 @@ public class CommandCard extends Subject implements Serializable {
      * Returns the command name associated with the command card.
      *
      * @return the name of the command card.
+     * @author Zahedullah
      */
     public String getName() {
         return command.displayName;
