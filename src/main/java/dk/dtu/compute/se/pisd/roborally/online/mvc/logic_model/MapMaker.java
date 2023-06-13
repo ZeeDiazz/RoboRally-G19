@@ -23,6 +23,7 @@ public final class MapMaker {
      * @param height
      * @param name
      * @return
+     * @author Daniel & Zaid
      */
     public static Board makeCustomBoard(HashMap<Position, Space> specialSpaces, HashMap<Position, HeadingDirection[]> walls, List<Position> spawnPositions, int width, int height, String name) {
         Space[][] spaces = new Space[width][height];
@@ -46,7 +47,7 @@ public final class MapMaker {
                 }
             }
         }
-        return (spawnPositions.isEmpty())? new Board(spaces, name): new Board(spaces, name, spawnPositions);
+        return (spawnPositions.isEmpty()) ? new Board(spaces, name) : new Board(spaces, name, spawnPositions);
     }
 
     /**
@@ -137,11 +138,12 @@ public final class MapMaker {
             }
         }
         //Create a board with the obstacles and walls and the width and the board name
-        return makeCustomBoard(obstacleSpaces, walls,spawnPositions, width, height, map);
+        return makeCustomBoard(obstacleSpaces, walls, spawnPositions, width, height, map);
     }
 
     /**
      * To get the heading of some of the spaces from json
+     *
      * @param heading
      * @return
      * @author ZeeDiazz (Zaid)
@@ -187,9 +189,9 @@ public final class MapMaker {
     public static Board makeJsonDizzyHighway() throws FileNotFoundException {
         Board startA = loadJsonBoard("StartA");
         Board startB = loadJsonBoard("5B");
-        Board dizzyHighway =  Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "DizzyHighway");
+        Board dizzyHighway = Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "DizzyHighway");
         dizzyHighway.addCheckpoint(new Position(12, 3));
-        dizzyHighway.addPriorityAntenna(new Position(0,4));
+        dizzyHighway.addPriorityAntenna(new Position(0, 4));
         return dizzyHighway;
     }
 }
