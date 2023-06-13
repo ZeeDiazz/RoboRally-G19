@@ -275,6 +275,8 @@ public class AppController implements Observer, GameFinishedListener {
                             Thread.sleep(10);
                         }
                         game = client.getGame();
+                        createBoardView();
+                        return;
 
 
                     } catch (IOException | InterruptedException | URISyntaxException e) {
