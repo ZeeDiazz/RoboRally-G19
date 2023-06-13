@@ -43,7 +43,7 @@ public enum Command {
     MOVE_3("Move 3"),
     U_TURN("U-Turn"),
     BACK_UP("Move Back"),
-    POWER_UP("Power Up"),
+    //POWER_UP("Power Up"),
     AGAIN("Again"),
 
 
