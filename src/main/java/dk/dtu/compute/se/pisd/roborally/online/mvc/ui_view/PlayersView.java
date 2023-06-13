@@ -23,7 +23,6 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.ui_view;
 
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.LocalPlayer;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
@@ -50,6 +49,17 @@ public class PlayersView extends TabPane implements ViewObserver {
      */
     public PlayersView(GameController gameController) {
         game = gameController.game;
+        gameController.setProgrammingObserver(new ProgrammingObserver() {
+            @Override
+            public void started() {
+                lockNonLocalPlayers();
+            }
+
+            @Override
+            public void finished() {
+                unlockAllPlayers();
+            }
+        });
 
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
@@ -58,11 +68,9 @@ public class PlayersView extends TabPane implements ViewObserver {
             Player player = game.getPlayer(i);
             playerViews[i] = new PlayerView(gameController, player);
 
-            // TODO make this work
-            if (player instanceof LocalPlayer || true) {
-                this.getTabs().add(playerViews[i]);
-            }
+            this.getTabs().add(playerViews[i]);
         }
+        lockNonLocalPlayers();
         game.attach(this);
         update(game);
     }
@@ -80,4 +88,22 @@ public class PlayersView extends TabPane implements ViewObserver {
         }
     }
 
+    public void lockNonLocalPlayers() {
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            Player player = game.getPlayer(i);
+            playerViews[i].setDisable(player instanceof LocalPlayer);
+            System.out.println("Current: " + i);
+            System.out.println("0 is selected: " + playerViews[0].isSelected());
+            System.out.println("1 is selected: " + playerViews[1].isSelected());
+            getSelectionModel().select(i);
+            System.out.println("0 is selected: " + playerViews[0].isSelected());
+            System.out.println("1 is selected: " + playerViews[1].isSelected());
+        }
+    }
+
+    public void unlockAllPlayers() {
+        for (PlayerView playerView : playerViews) {
+            playerView.setDisable(false);
+        }
+    }
 }
