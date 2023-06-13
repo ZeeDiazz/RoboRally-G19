@@ -206,12 +206,12 @@ public abstract class Player extends Subject implements Serializable {
         if (this.prevProgramming != null) {
             jsonObject.addProperty("previousCommand", this.prevProgramming.toString());
         }
-        /*jsonObject.addProperty("energyCubes", this.energyCubes);
+        //jsonObject.addProperty("energyCubes", this.energyCubes);
         JsonArray jsonArrayProgram = new JsonArray();
         for (CommandCardField cardField : programField) {
             jsonArrayProgram.add(cardField.serialize());
         }
-        jsonObject.add("program", jsonArrayProgram);*/
+        jsonObject.add("program", jsonArrayProgram);
 
         JsonArray jsonArrayCards = new JsonArray();
         for (CommandCardField card : cards) {
