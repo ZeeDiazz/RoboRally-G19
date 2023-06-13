@@ -175,7 +175,6 @@ public class Client extends OnlinePlayer {
     /**
      * Returns whether the game can be started
      *
-     * @param gameId The game ID of the game, that needs to be checked
      * @return returns true if the game can be started, and false if it can't
      * @throws URISyntaxException
      * @throws IOException
@@ -184,8 +183,7 @@ public class Client extends OnlinePlayer {
 
     public boolean canStartGame() throws URISyntaxException, IOException, InterruptedException {
 
-        URI canStartGameURI = RequestMaker.makeUri(ResourceLocation.baseLocation, ResourceLocation.gameStatus, String.valueOf(gameId));
-
+        URI canStartGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus),"gameId", String.valueOf(gameId));
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(canStartGameURI);
 
@@ -193,7 +191,7 @@ public class Client extends OnlinePlayer {
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
             JsonObject gameFromServer = jsonGameFromServer.getItem();
 
-            canStart = gameFromServer.get("status").getAsBoolean();
+            canStart = gameFromServer.get("canLaunch").getAsBoolean();
 
             if (canStart) {
                 System.out.println("The game can be started");
