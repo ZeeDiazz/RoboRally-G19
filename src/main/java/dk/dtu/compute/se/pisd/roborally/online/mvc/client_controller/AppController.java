@@ -172,10 +172,20 @@ public class AppController implements Observer, GameFinishedListener {
                 throw new RuntimeException(e);
             }
 
-            // TODO: 11-06-2023 - waiting for players usage
-            //      waitingForPlayers();
-            Alert waiter = new Alert(AlertType.CONFIRMATION, "");
-            waiter.showAndWait();
+            while (true) {
+                Alert waiter = new Alert(AlertType.CONFIRMATION, "Do you want to start the game?", ButtonType.OK);
+                waiter.showAndWait();
+
+                try {
+                    if (client.canStartGame()) {
+                        break;
+                    }
+                } catch (URISyntaxException | IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                Alert cannotStartGame = new Alert(AlertType.ERROR, "Cannot start game right now", ButtonType.OK);
+                cannotStartGame.showAndWait();
+            }
 
             System.out.println("Starting the game");
             client.startGame();
@@ -752,7 +762,7 @@ public class AppController implements Observer, GameFinishedListener {
                 public void run() {
                     while (true) {
                         try {
-                            if (client.canStartGame(gameID)) {
+                            if (client.canStartGame()) {
                                 break;
                             }
                             Thread.sleep(1000);
@@ -777,7 +787,7 @@ public class AppController implements Observer, GameFinishedListener {
                 public void run() {
                     while (true) {
                         try {
-                            if (client.canStartGame(gameID)) {
+                            if (client.canStartGame()) {
                                 break;
                             }
                         } catch (URISyntaxException | IOException | InterruptedException e) {
