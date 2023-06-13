@@ -5,9 +5,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.PriorityAntennaSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +20,8 @@ import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INIT
  * @author ZeeDiazz (Zaid)
  */
 public abstract class Game extends Subject implements Serializable {
-
-
+    public List<Player> prioritisedPlayers = new ArrayList<>();
+    public Space priorityAntennaSpace;
     public /*final*/ Board board;
     protected Integer gameId;
 
@@ -45,15 +47,14 @@ public abstract class Game extends Subject implements Serializable {
         this.step = step;
         this.stepMode = stepMode;
         this.moveCounter = moveCounter;
+        this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
     public Game(Board board) {
         this.board = board;
+        this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
-    public Game() {
-
-    }
 
     public void addBoard(Board board) {
         this.board = board;
@@ -311,6 +312,8 @@ public abstract class Game extends Subject implements Serializable {
         JsonObject jsonObject = new JsonObject();
 
 
+        jsonObject.add("priorityAntennaSpace", this.priorityAntennaSpace.serialize());
+
         if (currentInteractiveCard != null) {
             jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
         }
@@ -330,6 +333,13 @@ public abstract class Game extends Subject implements Serializable {
         }
         jsonObject.add("players", jsonArrayPlayers);
 
+        JsonArray jsonArrayPrioritisedPlayers = new JsonArray();
+
+        for (Player player : this.prioritisedPlayers) {
+            jsonArrayPrioritisedPlayers.add(player.getPlayerID());
+        }
+        jsonObject.add("prioritisedPlayers", jsonArrayPrioritisedPlayers);
+
 
         return jsonObject;
     }
@@ -337,6 +347,7 @@ public abstract class Game extends Subject implements Serializable {
     @Override
     public Serializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
+
 
         JsonElement gameIdJson = jsonObject.get("gameId");
         Integer gameId = (gameIdJson == null) ? null : gameIdJson.getAsInt();
@@ -401,6 +412,31 @@ public abstract class Game extends Subject implements Serializable {
         }
         
         game1.currentInteractiveCard = currentInteractiveCard;
+
+        
+        JsonArray prioritisedPlayersJson = jsonObject.get("prioritisedPlayers").getAsJsonArray();
+
+        List<Player> prioritisedPlayers = new ArrayList<>();
+
+        int id = 0;
+        for (int i = 0; i < prioritisedPlayersJson.size(); i++) {
+            id = prioritisedPlayersJson.get(i).getAsInt();
+            prioritisedPlayers.add(players.get(id));
+        }
+
+        game1.prioritisedPlayers = prioritisedPlayers;
+
+        Space initialPriorityAntennaSpace = new Space(new Position(1, 1), HeadingDirection.WEST);
+
+
+        initialPriorityAntennaSpace = (Space) initialPriorityAntennaSpace.deserialize(jsonObject.get("priorityAntennaSpace"));
+
+
+        Position position = initialPriorityAntennaSpace.getPosition();
+
+
+        game1.priorityAntennaSpace = board.getSpace(position);
+
 
         return game1;
     }

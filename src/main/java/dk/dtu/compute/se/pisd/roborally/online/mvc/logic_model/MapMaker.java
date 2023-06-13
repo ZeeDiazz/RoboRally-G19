@@ -147,7 +147,8 @@ public final class MapMaker {
         Board startB = loadJsonBoard("5A");
         Board riskyCrossing = Board.add(Board.rotateRight(startA), startB, new Position(3, 0), "RiskyCrossing");
         riskyCrossing.addCheckpoint(new Position(8, 7));
-        riskyCrossing.addCheckpoint(new Position(11, 0));
+        //riskyCrossing.addCheckpoint(new Position(11, 0));
+        riskyCrossing.addPriorityAntenna(new Position(11, 0));
         return riskyCrossing;
     }
 

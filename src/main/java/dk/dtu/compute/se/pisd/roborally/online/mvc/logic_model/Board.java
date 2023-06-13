@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.PriorityAntennaSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import org.jetbrains.annotations.NotNull;
@@ -126,6 +127,9 @@ public class Board extends Subject implements Serializable {
 
     public void addCheckpoint(Position position) {
         this.spaces[position.X][position.Y] = new CheckPointSpace(position, checkpointAmount++);
+    }
+    public void addPriorityAntenna(Position position){
+        this.spaces[position.X][position.Y] = new PriorityAntennaSpace(position,HeadingDirection.NORTH);
     }
 
 
@@ -315,6 +319,20 @@ public class Board extends Subject implements Serializable {
 
     public int getCheckpointAmount() {
         return checkpointAmount;
+    }
+
+    public Space getPriorityAntennaSpace() {
+        Space space = null;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (getSpace(i, j) instanceof PriorityAntennaSpace) {
+                    space = getSpace(i, j);
+                    break;
+                }
+            }
+        }
+        return space;
     }
 
     @Override

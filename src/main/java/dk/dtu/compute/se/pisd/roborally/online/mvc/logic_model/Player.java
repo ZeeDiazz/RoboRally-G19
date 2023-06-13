@@ -181,6 +181,11 @@ public abstract class Player extends Subject implements Serializable {
         this.playerID = playerID;
     }
 
+    public Robot getRobot() {
+        return this.robot;
+    }
+
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();

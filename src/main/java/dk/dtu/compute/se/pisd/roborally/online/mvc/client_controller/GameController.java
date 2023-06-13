@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.PriorityAntennaSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 import javafx.scene.control.Alert;
@@ -42,8 +43,7 @@ public class GameController implements Serializable {
     public GameController(@NotNull Game game) {
         this.game = game;
         commandExecution = new CommandExecuter(game.board);
-
-
+        this.game.priorityAntennaSpace = game.board.getPriorityAntennaSpace();
     }
 
     public GameController(@NotNull Board board) {
@@ -131,6 +131,7 @@ public class GameController implements Serializable {
         game.setCurrentPlayer(game.getPlayer(0));
         game.setStep(0);
 
+
         for (int i = 0; i < game.getPlayerCount(); i++) {
             Player player = game.getPlayer(i);
             if (player != null) {
@@ -155,8 +156,9 @@ public class GameController implements Serializable {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
         game.setPhase(Phase.ACTIVATION);
-        game.setCurrentPlayer(game.getPlayer(0));
         game.setStep(0);
+        updatePrioritisedRobotsNew();
+        game.setCurrentPlayer(game.prioritisedPlayers.remove(0));
     }
 
     private void makeProgramFieldsVisible(int register) {
@@ -265,13 +267,13 @@ public class GameController implements Serializable {
      */
 
     public void nextPlayer(Player currentPlayer) {
+        updatePrioritisedRobotsCurrentList();
         this.game.increaseMoveCounter();
         // Daniel {
         int currentStep = this.game.getStep();
-        int nextPlayerNumber = this.game.getPlayerNumber(currentPlayer) + 1;
+
         // nextPlayerNumber++;
-        if (nextPlayerNumber >= this.game.getPlayerCount()) {
-            nextPlayerNumber = 0;
+        if (game.prioritisedPlayers.isEmpty()) {
             currentStep++;
             if (currentStep < Player.NUMBER_OF_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
@@ -286,7 +288,12 @@ public class GameController implements Serializable {
             // Daniel }
 
         }
-        this.game.setCurrentPlayer(this.game.getPlayer(nextPlayerNumber));
+        if (!game.prioritisedPlayers.isEmpty()) {
+            this.game.setCurrentPlayer(game.prioritisedPlayers.remove(0));
+        } else {
+            updatePrioritisedRobotsNew();
+            this.game.setCurrentPlayer(game.prioritisedPlayers.remove(0));
+        }
     }
 
 
@@ -415,4 +422,110 @@ public class GameController implements Serializable {
 
         return gameController;
     }
+
+    private void updatePrioritisedRobotsCurrentList() {
+
+        List<Player> remainingPlayers = new ArrayList<>(game.prioritisedPlayers);
+        List<Robot> remainingRobots = new ArrayList<>();
+
+
+        for (Player player : remainingPlayers) {
+            remainingRobots.add(player.getRobot());
+        }
+
+        remainingRobots = getPriority(remainingRobots);
+
+
+        remainingPlayers.clear();
+        for (Robot robot : remainingRobots) {
+            remainingPlayers.add(robot.getOwner());
+        }
+
+        game.prioritisedPlayers = remainingPlayers;
+
+    }
+
+    private void updatePrioritisedRobotsNew() {
+        List<Robot> robotsInPriority = new ArrayList<>();
+
+        for (Player player : game.getPlayers()) {
+            robotsInPriority.add(player.getRobot());
+        }
+
+        robotsInPriority = getPriority(robotsInPriority);
+
+        List<Player> prioritisedPlayers = new ArrayList<>();
+
+        for (Robot robot : robotsInPriority) {
+            prioritisedPlayers.add(robot.getOwner());
+        }
+
+        game.prioritisedPlayers = prioritisedPlayers;
+    }
+
+
+    private List<Robot> getPriority(List<Robot> robots) {
+        List<Robot> tied = new ArrayList<>();
+        List<Robot> priority = new ArrayList<>();
+        int previousPlayerDistance = -1;
+        int robotsSize = robots.size();
+        robots.sort((a, b) -> (getDistanceTo(a) - getDistanceTo(b)));
+
+        for (int i = 0; i < robotsSize; i++) {
+            Robot current = robots.remove(0);
+
+            if (getDistanceTo(current) != previousPlayerDistance) {
+                tied.sort((a, b) -> Double.compare(getAngle(a), getAngle(b)));
+                priority.addAll(tied);
+                tied.clear();
+            }
+            previousPlayerDistance = getDistanceTo(current);
+            tied.add(current);
+        }
+        tied.sort((a, b) -> Double.compare(getAngle(a), getAngle(b)));
+        priority.addAll(tied);
+        return priority;
+    }
+
+    /**
+     * Returns the Manhattan distance between this antenna and the given robot's space.
+     *
+     * @param robot the robot whose distance to this antenna is to be calculated
+     * @return the Manhattan distance between this antenna and the robot's space
+     */
+    private int getDistanceTo(Robot robot) {
+        int xAntenna = game.priorityAntennaSpace.position.X;
+        int yAntenna = game.priorityAntennaSpace.position.Y;
+        int xPlayer = robot.getSpace().position.X;
+        int yPlayer = robot.getSpace().position.Y;
+        return Math.abs(xPlayer - xAntenna) + Math.abs(yPlayer - yAntenna);
+    }
+
+    /**
+     * Returns the angle between this antenna and the given robot's space in radians.
+     *
+     * @param robot the robot whose angle to this antenna is to be calculated
+     * @return the angle between this antenna and the robot's space in radians
+     */
+    private double getAngle(Robot robot) {
+        // (x1,y1) = priorityantenna
+        // (x2,y2) = robot
+
+        int xAntenna = game.priorityAntennaSpace.position.X;
+        int yAntenna = game.priorityAntennaSpace.position.Y;
+
+        int xPlayer = robot.getSpace().position.X;
+        int yPlayer = robot.getSpace().position.Y;
+        if (yPlayer == yAntenna) {
+            yPlayer++;
+        }
+        int xDifference = xPlayer - xAntenna;
+        int yDifference = yPlayer - yAntenna;
+
+        //double cos = (xAntenna - xPlayer)/(yAntenna -yPlayer);
+        //return Math.acos(cos);
+        return Math.atan2(yDifference, xDifference);
+    }
+
+
 }
