@@ -8,24 +8,21 @@ public class OnlineGame extends Game {
     private Client client;
     private int numberOfPlayersToStart;
 
-
+    /**
+     * Constructor used in serializations
+     *
+     * @author Zigalow
+     */
     public OnlineGame(Board board, int gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter, int numberOfPlayersToStart) {
         super(board, gameId, current, phase, step, stepMode, moveCounter);
         this.numberOfPlayersToStart = numberOfPlayersToStart;
     }
-    
-    public OnlineGame(Board board, int gameId, int numberOfPlayersToStart, Client client) {
-        this.board = board;
-        this.gameId = gameId;
-        this.numberOfPlayersToStart = numberOfPlayersToStart;
-        this.current = client;
-    }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-
+    /**
+     * Primary constructor for creating an OnlineGame
+     *
+     * @param board
+     */
     public OnlineGame(Board board, int numberOfPlayersToStart) {
         super(board);
         this.numberOfPlayersToStart = numberOfPlayersToStart;
@@ -33,6 +30,10 @@ public class OnlineGame extends Game {
 
     public int getNumberOfPlayersToStart() {
         return numberOfPlayersToStart;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     @Override

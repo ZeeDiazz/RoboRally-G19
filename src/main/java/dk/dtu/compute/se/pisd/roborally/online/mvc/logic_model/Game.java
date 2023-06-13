@@ -80,15 +80,6 @@ public abstract class Game extends Subject implements Serializable {
     }
 
     /**
-     * Constructor for Game
-     *
-     * @author Zigalow
-     */
-    public Game() {
-
-    }
-
-    /**
      * Gets the playing board in the game
      *
      * @return
