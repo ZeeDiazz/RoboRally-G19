@@ -220,6 +220,7 @@ public class Client extends OnlinePlayer {
             cards.add(command.toString());
         }
         request.add("moves", cards);
+        request.addProperty("isReady", true);
 
         Response<JsonObject> jsonProgrammingPhase = RequestMaker.postRequestJson(finishedProgrammingPhaseURI, request);
 
