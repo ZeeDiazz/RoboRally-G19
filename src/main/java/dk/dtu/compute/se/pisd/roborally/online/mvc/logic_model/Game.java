@@ -18,8 +18,8 @@ import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INIT
  * @author ZeeDiazz (Zaid)
  */
 public abstract class Game extends Subject implements Serializable {
-
-
+    public List<Player> prioritisedPlayers = new ArrayList<>();
+    public Space priorityAntennaSpace;
     public /*final*/ Board board;
     protected Integer gameId;
 
@@ -44,15 +44,14 @@ public abstract class Game extends Subject implements Serializable {
         this.step = step;
         this.stepMode = stepMode;
         this.moveCounter = moveCounter;
+        this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
     public Game(Board board) {
         this.board = board;
+        this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
-    public Game() {
-
-    }
 
     public void addBoard(Board board) {
         this.board = board;
@@ -334,6 +333,8 @@ public abstract class Game extends Subject implements Serializable {
     public Serializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
 
+        
+        
         JsonElement gameIdJson = jsonObject.get("gameId");
         Integer gameId = (gameIdJson == null) ? null : gameIdJson.getAsInt();
 
