@@ -25,10 +25,6 @@ public class OnlineGame extends Game {
         this.client = client;
     }
 
-    @Override
-    public boolean canStartGame() {
-        return this.players.size() == numberOfPlayersToStart;
-    }
 
     public OnlineGame(Board board, int numberOfPlayersToStart) {
         super(board);

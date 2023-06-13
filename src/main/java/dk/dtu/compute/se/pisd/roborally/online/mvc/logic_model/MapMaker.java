@@ -14,17 +14,17 @@ import java.util.List;
 
 public final class MapMaker {
     /**
+     * Creates a map from the given parameters
      *
      * @param specialSpaces
      * @param walls
-     * @param robotPositions
+     * @param spawnPositions
      * @param width
      * @param height
      * @param name
-     * @author Daniel & Zaid
      * @return
      */
-    public static Board makeCustomBoard(HashMap<Position, Space> specialSpaces, HashMap<Position, HeadingDirection[]> walls, List<Position> robotPositions, int width, int height, String name) {
+    public static Board makeCustomBoard(HashMap<Position, Space> specialSpaces, HashMap<Position, HeadingDirection[]> walls, List<Position> spawnPositions, int width, int height, String name) {
         Space[][] spaces = new Space[width][height];
 
         // Fill up the slots
@@ -46,7 +46,7 @@ public final class MapMaker {
                 }
             }
         }
-        return (robotPositions.isEmpty())? new Board(spaces, name): new Board(spaces, name, robotPositions);
+        return (spawnPositions.isEmpty())? new Board(spaces, name): new Board(spaces, name, spawnPositions);
     }
 
     /**
@@ -162,6 +162,7 @@ public final class MapMaker {
 
     /**
      * Create Risky Crossing map
+     *
      * @return
      * @throws FileNotFoundException
      * @author ZeeDiazz (Zaid)
@@ -178,6 +179,7 @@ public final class MapMaker {
 
     /**
      * Create Dizzy Highway map
+     *
      * @return
      * @throws FileNotFoundException
      * @author ZeeDiazz (Zaid)

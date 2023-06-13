@@ -17,6 +17,7 @@ import java.util.List;
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INITIALISATION;
 
 /**
+ * An abstract game class
  * @author ZeeDiazz (Zaid)
  */
 public abstract class Game extends Subject implements Serializable {
@@ -44,7 +45,20 @@ public abstract class Game extends Subject implements Serializable {
 
     protected Phase phase = INITIALISATION;
 
-    // For serializations 
+    /**
+     * Constructor for Game with the specified parameters that are need in the game.
+     * Used for serializations
+     *
+     * @param board
+     * @param gameId
+     * @param current
+     * @param phase
+     * @param step
+     * @param stepMode
+     * @param moveCounter
+     * @author ZeeDiazz (Zaid)
+     *
+     */
     public Game(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter) {
         this.board = board;
         this.gameId = gameId;
@@ -56,19 +70,32 @@ public abstract class Game extends Subject implements Serializable {
         this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
+    /**
+     * Constructor for Game with a given board.
+     *
+     * @param board
+     * @author ZeeDiazz (Zaid)
+     */
     public Game(Board board) {
         this.board = board;
         this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
+    /**
+     * Constructor for Game
+     *
+     * @author Zigalow
+     */
     public Game() {
 
     }
 
-    public void addBoard(Board board) {
-        this.board = board;
-    }
-
+    /**
+     * Gets the playing board in the game
+     *
+     * @return
+     * @author Zigalow
+     */
     public Board getBoard() {
         return this.board;
     }
@@ -146,16 +173,6 @@ public abstract class Game extends Subject implements Serializable {
         return current;
     }
 
-    public Player getSpecificPlayer(int playerId) {
-
-        for (Player player : players) {
-            if (player.getPlayerID() == playerId) {
-                return player;
-            }
-        }
-
-        return null;
-    }
 
     /**
      * Sets the current player on the board
@@ -276,6 +293,15 @@ public abstract class Game extends Subject implements Serializable {
         return "Phase: " + getPhase().name() + ", Player = " + getCurrentPlayer().getName() + ", Total Steps: " + getMoveCounter();
     }
 
+    /**
+     * A method to calculate all the moves coming from a single move.
+     * This is used when performing a move, to make sure all the players who will get pushed also move.
+     * It will also include the given move, but it has potentially been shortened (e.g. if there is a wall in the way).
+     *
+     * @param move the base move.
+     * @return all the moves to be performed to execute the given move to the rules' satisfaction.
+     * @author Daniel Jensen
+     */
     public ArrayList<Move> resultingMoves(Move move) {
         int moveAmount = 0;
         ArrayList<Move> moves = new ArrayList<>();
@@ -313,9 +339,15 @@ public abstract class Game extends Subject implements Serializable {
         return moves;
     }
 
-    public abstract boolean canStartGame();
 
 
+
+    /**
+     * Serialize game
+     *
+     * @return
+     * @author Zigalow
+     */
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
@@ -353,6 +385,13 @@ public abstract class Game extends Subject implements Serializable {
         return jsonObject;
     }
 
+    /**
+     * Deserialize game
+     *
+     * @param element The json element that needs to be deserialized
+     * @return
+     * @author Zigalow
+     */
     @Override
     public Serializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();

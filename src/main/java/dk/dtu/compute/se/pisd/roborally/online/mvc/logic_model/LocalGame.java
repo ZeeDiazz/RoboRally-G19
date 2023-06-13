@@ -11,9 +11,5 @@ public class LocalGame extends Game {
         super(board);
     }
 
-    @Override
-    public boolean canStartGame() {
-        return true;
-    }
     
 }
