@@ -61,7 +61,6 @@ public class GameController implements Serializable {
      */
     // XXX: V3
     private void startPlayerInteractionPhase(Command options) {
-//        this.currentInteractiveCard = options;
         this.game.currentInteractiveCard = options;
         this.game.setPhase(Phase.PLAYER_INTERACTION);
     }
@@ -416,11 +415,6 @@ public class GameController implements Serializable {
         }
 
         GameController gameController = new GameController(initialGame);
-
-
-        // JsonElement commandCard = jsonObject.get("currentInteractiveCard");
-        //  gameController.currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
-
 
         return gameController;
     }

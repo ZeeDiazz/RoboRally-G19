@@ -33,11 +33,6 @@ public abstract class Player extends Subject implements Serializable {
     private CommandCardField[] cards;
 
     protected Player() {
-        // todo: make implementation of default constructor, so that client can make use of it 
-        
-   /*     this.name = "Jørgen";
-        this.robot = new Robot("red", this);*/
-        // Player starts with 5 energy cube
         this.energyCubes = 5;
         programField = new CommandCardField[NUMBER_OF_REGISTERS];
         for (int i = 0; i < programField.length; i++) {
@@ -50,22 +45,6 @@ public abstract class Player extends Subject implements Serializable {
         }
     }
 
-    /*public Player(String color, @NotNull String name) {
-        this.name = name;
-        this.robot = new Robot(color, this);
-        // Player starts with 5 energy cube
-        this.energyCubes = 5;
-        programField = new CommandCardField[NUMBER_OF_REGISTERS];
-        for (int i = 0; i < programField.length; i++) {
-            programField[i] = new CommandCardField(this);
-        }
-
-        cards = new CommandCardField[NUMBER_OF_CARDS];
-        for (int i = 0; i < cards.length; i++) {
-            cards[i] = new CommandCardField(this);
-        }
-    }*/
-    
     public Player(Game game, String color, @NotNull String name) {
         this.game = game;
         this.name = name;
@@ -102,14 +81,9 @@ public abstract class Player extends Subject implements Serializable {
         if (name != null && !name.equals(this.name)) {
             this.name = name;
             notifyChange();
-            /*if (space != null) {
-                space.changed();
-            }*/
         }
     }
-
-    //get/set robot
-
+    
     public Command getPrevProgramming() {
         return prevProgramming;
     }
@@ -222,7 +196,7 @@ public abstract class Player extends Subject implements Serializable {
 
         String playerType = jsonObject.getAsJsonPrimitive("playerType").getAsString();
 
-        Player initialPlayer = playerType.equals("OnlinePlayer") ? new OnlinePlayer(null,"red", "") : new LocalPlayer(null,"red", "");
+        Player initialPlayer = playerType.equals("OnlinePlayer") ? new OnlinePlayer(null, "red", "") : new LocalPlayer(null, "red", "");
 
         initialPlayer.name = jsonObject.getAsJsonPrimitive("name").getAsString();
         initialPlayer.playerID = jsonObject.getAsJsonPrimitive("playerID").getAsInt();

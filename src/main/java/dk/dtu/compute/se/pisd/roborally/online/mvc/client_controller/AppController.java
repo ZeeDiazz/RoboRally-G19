@@ -793,63 +793,6 @@ public class AppController implements Observer, GameFinishedListener {
 
 
         }
-        
-        
-        
-        /*
-        while (!client.gameIsReady()) {
-            // wait
-
-        }
-        // Zaid & Zigalow }
-
-            /*try {
-                client.joinGame(gameId);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            while (!client.gameIsReady()) {
-                // wait
-            }
-            game = client.getGame();*/
-
-        //Create an alert
-            /*Alert waitingForPlayers = new Alert(AlertType.INFORMATION);
-            waitingForPlayers.setTitle("Waiting for Players");
-            waitingForPlayers.setContentText("Please wait for the remaining players to join");
-            waitingForPlayers.getButtonTypes().clear();
-            Platform.runLater(() -> waitingForPlayers.show());
-
-            int currentNumberOfPlayers = game.getPlayerCount();
-
-            Thread waitForPlayersThread = new Thread(() -> {
-                while (!client.gameIsReady() || !game.canStartGame()) {
-                    int remainingPlayers = playerCount - currentNumberOfPlayers;
-                    // Update the alert text on the JavaFX application thread
-                    Platform.runLater(() -> waitingForPlayers.setHeaderText("The game is missing " + remainingPlayers + " to start the game"));
-                    try {
-                        // checks the while statement after 1 sec again
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-
-                if (client.gameIsReady()|| game.canStartGame()) {
-                    Platform.runLater(() -> waitingForPlayers.close());
-                    game = client.getGame();
-                    gameController = new GameController(game);
-                }
-            });
-
-            waitForPlayersThread.start();*/
-
-        // TODO: 06-06-2023 Thread waiting for players
     }
 
     private void getGameInfo(int gameId) {
