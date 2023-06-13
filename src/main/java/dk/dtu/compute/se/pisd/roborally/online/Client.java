@@ -16,13 +16,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-public class Client extends OnlinePlayer {
+public class Client {
     private int gameId;
     private int playerIndex = -1;
     private Game game;
     private final String baseLocation;
     private Thread listener;
     private int playerId;
+    private JsonArray jsonMovesArray;
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     public Client(String baseLocation) {
@@ -246,10 +247,18 @@ public class Client extends OnlinePlayer {
             JsonObject gameFromServer = jsonGameFromServer.getItem();
 
             canStartActivationPhase = gameFromServer.get("isReady").getAsBoolean();
+            if (gameFromServer.has("moves")) {
+                jsonMovesArray = gameFromServer.get("moves").getAsJsonArray();
+                System.out.println("Moves gotten: " + jsonMovesArray);
+            }
+            else {
+                jsonMovesArray = null;
+            }
         } else {
             System.out.println("Failed to connect");
             return false;
         }
+
         return canStartActivationPhase;
     }
 
@@ -483,5 +492,28 @@ public class Client extends OnlinePlayer {
         identification.put("playerId", playerId+"");
 
         return identification;
+    }
+
+    public void loadMoves() {
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            Player player = game.getPlayer(i);
+            String playerMovesString = jsonMovesArray.get(i).getAsString().replace("[", "").replace("]", "").replace("\"", "");
+            System.out.println("Player moves string: " + playerMovesString);
+            String[] playerMoveStrings = playerMovesString.split(",");
+            for (int j = 0; j < playerMoveStrings.length; j++) {
+                String commandString = playerMoveStrings[j];
+                System.out.println("Command string: " + commandString);
+                CommandCard card;
+                if (commandString.equals("")) {
+                    card = null;
+                    System.out.println("No command");
+                }
+                else {
+                    card = new CommandCard(Command.valueOf(commandString));
+                    System.out.println("Command: " + card.command);
+                }
+                player.getProgramField(j).setCard(card);
+            }
+        }
     }
 }

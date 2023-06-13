@@ -238,13 +238,13 @@ public class Server {
                     moves.add(move);
                 }
                 response.add("moves", moves);
-            }
 
-            if (playerId != null && lobby.hasPlayer(playerId)) {
-                lobby.hasRetrievedInfo(playerId);
-                if (lobby.allHaveInfo() && false) {
-                    lobby.resetReadyStatus();
-                    lobby.resetMoves();
+                if (playerId != null && lobby.hasPlayer(playerId)) {
+                    lobby.hasRetrievedInfo(playerId);
+                    if (lobby.allHaveInfo()) {
+                        lobby.resetReadyStatus();
+                        lobby.resetMoves();
+                    }
                 }
             }
             return responseMaker.itemResponse(response);

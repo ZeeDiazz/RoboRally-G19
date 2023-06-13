@@ -77,6 +77,8 @@ public class OnlineGame extends Game {
                     throw new RuntimeException(e);
                 }
             }
+
+            client.loadMoves();
         }
     }
 
