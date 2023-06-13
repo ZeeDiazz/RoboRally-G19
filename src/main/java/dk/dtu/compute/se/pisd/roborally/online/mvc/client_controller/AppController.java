@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -138,9 +139,24 @@ public class AppController implements Observer, GameFinishedListener {
 
             // Zigalow }
 
+            // Zaid {
+            List<Position> robotsStartingPositions = new ArrayList<>();
+            robotsStartingPositions.add(new Position(1, 1));
+            robotsStartingPositions.add(new Position(0, 3));
+            robotsStartingPositions.add(new Position(1, 4));
+            robotsStartingPositions.add(new Position(1, 5));
+            robotsStartingPositions.add(new Position(0, 6));
+            robotsStartingPositions.add(new Position(1, 8));
+
+            // Zaid }
+
             for (int i = 0; i < playerCount; i++) {
                 Player player = new LocalPlayer(game, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                Space startingSpace = board.getSpace(i % board.width, i);
+                //Space startingSpace = board.getSpace(i % board.width, i);
+                // Zaid {
+                Position robotStartingPosition = robotsStartingPositions.get(i);
+                Space startingSpace = board.getSpace(robotStartingPosition.X, robotStartingPosition.Y);
+                // Zaid }
                 player.robot.setSpace(startingSpace);
                 player.robot.setRebootPosition(startingSpace.position);
                 game.addPlayer(player);
