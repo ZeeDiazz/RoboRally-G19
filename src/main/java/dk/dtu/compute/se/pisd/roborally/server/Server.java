@@ -220,7 +220,7 @@ public class Server {
     }
 
     @GetMapping(ResourceLocation.gameStatus)
-    public ResponseEntity<String> getGameStatus(@RequestParam Integer gameId, @RequestParam Integer playerId) {
+    public ResponseEntity<String> getGameStatus(@RequestParam Integer gameId, @RequestParam(required = false) Integer playerId) {
         JsonObject response = new JsonObject();
         Lobby lobby = getLobby(gameId);
         if (lobby != null) {
@@ -237,7 +237,7 @@ public class Server {
                 response.add("moves", moves);
             }
 
-            if (lobby.hasPlayer(playerId)) {
+            if (playerId != null && lobby.hasPlayer(playerId)) {
                 lobby.hasRetrievedInfo(playerId);
                 if (lobby.allHaveInfo()) {
                     lobby.resetReadyStatus();
