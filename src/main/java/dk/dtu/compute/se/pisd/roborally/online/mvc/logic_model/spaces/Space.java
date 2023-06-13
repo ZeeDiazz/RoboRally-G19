@@ -222,6 +222,8 @@ public class Space extends Subject implements Serializable {
             case "BlueConveyorSpace":
                 direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
                 return new BlueConveyorSpace(position, direction, walls);
+            case "PriorityAntennaSpace":
+                return new PriorityAntennaSpace(position, HeadingDirection.NORTH, walls);
         }
 
         // Shouldn't reach this
