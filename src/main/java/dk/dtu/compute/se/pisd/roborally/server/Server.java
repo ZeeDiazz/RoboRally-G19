@@ -164,6 +164,7 @@ public class Server {
         if (!lobby.hasPlayer(playerId) || !lobby.isHost(playerId)) {
             return emptyResponseMaker.forbidden();
         }
+
         return emptyResponseMaker.ok();
     }
     @PostMapping(ResourceLocation.joinGame)
@@ -291,11 +292,14 @@ public class Server {
         if (!file.exists()) {
             return responseMaker.notFound();
         }
+        if(gameId == null){
+            return responseMaker.methodNotAllowed();
+        }
 
         try (FileReader fileReader = new FileReader(file)) {
             JsonObject loadedInfo = jsonParser.parse(fileReader).getAsJsonObject();
 
-            return ResponseEntity.ok(loadedInfo.toString());
+            return responseMaker.itemResponse(loadedInfo.toString());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
