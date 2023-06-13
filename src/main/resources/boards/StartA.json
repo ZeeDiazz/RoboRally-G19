@@ -17,54 +17,6 @@
         "x": 9,
         "y": 0
       }
-    },
-    {
-      "obstacleType": "RedGearSpace",
-      "heading": "NORTH",
-      "position": {
-        "x": 1,
-        "y": 1
-      }
-    },
-    {
-      "obstacleType": "GreenGearSpace",
-      "heading": "NORTH",
-      "position": {
-        "x": 3,
-        "y": 2
-      }
-    },
-    {
-      "obstacleType": "GreenGearSpace",
-      "heading": "NORTH",
-      "position": {
-        "x": 4,
-        "y": 1
-      }
-    },
-    {
-      "obstacleType": "RedGearSpace",
-      "heading": "NORTH",
-      "position": {
-        "x": 5,
-        "y": 1
-      }
-    },
-    {
-      "obstacleType": "GreenGearSpace",
-      "heading": "NORTH",
-      "position": {
-        "x": 6,
-        "y": 2
-      }
-    },
-    {
-      "obstacleType": "GreenGearSpace",
-      "heading": "NORTH",
-      "position": {
-        "x": 8,
-        "y": 1
-      }
     }
   ],
   "walls": [
