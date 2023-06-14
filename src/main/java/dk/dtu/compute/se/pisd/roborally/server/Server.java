@@ -444,13 +444,9 @@ public class Server {
      * @auther Felix Schmidt (Felix723)
      */
     @DeleteMapping(ResourceLocation.saveGame)
-    public ResponseEntity<Void> deleteSavedGame(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        if (!info.has("gameId")) {
-            return emptyResponseMaker.methodNotAllowed();
-        }
-        String gameId = info.get("gameId").getAsString();
+    public ResponseEntity<Void> deleteSavedGame(@RequestParam Integer gameId) {
         String fileName = databasePath + gameId + ".json";
+        System.out.println("Deleting file at " + fileName);
         try {
             boolean success = Files.deleteIfExists(Paths.get(fileName));
             if (success) {

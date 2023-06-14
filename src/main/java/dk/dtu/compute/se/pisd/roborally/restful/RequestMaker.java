@@ -173,12 +173,12 @@ public abstract class RequestMaker {
      * @throws InterruptedException
      * @auther Daniel Jensen
      */
-    public static void deleteRequest(URI location) throws IOException, InterruptedException {
+    public static Response<String> deleteRequest(URI location) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(location)
                 .header("Content-Type", "application/json")
                 .DELETE()
                 .build();
-        client.send(request, HttpResponse.BodyHandlers.ofString());
+        return new Response<>(client.send(request, HttpResponse.BodyHandlers.ofString()));
     }
 }

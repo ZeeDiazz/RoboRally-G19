@@ -406,17 +406,14 @@ public class Client {
     }
 
     public void deleteSavedGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
-        URI deleteGameURI = new URI(makeFullUri(ResourceLocation.saveGame));
+        URI deleteGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.saveGame), "gameId", gameId+"");
 
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("gameId", gameId);
-
-        Response<JsonObject> deleteJsonGameFromServer = RequestMaker.postRequestJson(deleteGameURI, jsonObject);
-
-        if (deleteJsonGameFromServer.getStatusCode().is2xxSuccessful()) {
-            System.out.println("Successfully deleted game with gameId: " + gameId);
-        } else {
-            System.out.println("Failed to delete game with gameId: " + gameId);
+        Response<String> response = RequestMaker.deleteRequest(deleteGameURI);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Succesfully deleted game (id: " + gameId + ")");
+        }
+        else {
+            System.out.println("Did not delete game (id: " + gameId + ")");
         }
     }
 
