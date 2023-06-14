@@ -152,6 +152,7 @@ public class AppController implements Observer, GameFinishedListener {
 
             while (true) {
                 Alert waiter = new Alert(AlertType.CONFIRMATION, "Do you want to start the game?", ButtonType.OK);
+                waiter.setHeaderText("Start game of game Id " + client.getGameId() + "?");
                 waiter.showAndWait();
 
                 try {
@@ -161,8 +162,11 @@ public class AppController implements Observer, GameFinishedListener {
                 } catch (URISyntaxException | IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                Alert cannotStartGame = new Alert(AlertType.ERROR, "Cannot start game right now", ButtonType.OK);
+                Alert cannotStartGame = new Alert(AlertType.ERROR, "The game is still missing players", ButtonType.OK);
+                cannotStartGame.setHeaderText("Missing players");
                 cannotStartGame.showAndWait();
+
+
             }
 
             System.out.println("Starting the game");
@@ -201,31 +205,9 @@ public class AppController implements Observer, GameFinishedListener {
         // Zigalow }
 
         if (gameMode.get() == onlineButton) {
-            ButtonType listAllGames = new ButtonType("See game list");
-            ButtonType getGameInfo = new ButtonType("Get game info");
-            ButtonType playGame = new ButtonType("Play game");
 
             ButtonType option;
 
-            Alert selectOption = new Alert(AlertType.CONFIRMATION, "", playGame, listAllGames, getGameInfo);
-
-
-            selectOption.setTitle("Choose option");
-            selectOption.setHeaderText("What would you like to do?");
-            selectOption.setContentText("Select the option you would like to perform");
-
-
-            do {
-                option = selectOption.showAndWait().get();
-
-                // todo - getGameInfo and listAllGames usages
-                if (option == getGameInfo) {
-                    getGameInfo(chooseGameIdWindow());
-                } else if (option == listAllGames) {
-                    listAllGames();
-                }
-
-            } while (option != playGame);
 
             ButtonType createGame = new ButtonType("Create new game");
             ButtonType joinGame = new ButtonType("Join game");
@@ -236,14 +218,13 @@ public class AppController implements Observer, GameFinishedListener {
             gameOptions.setTitle("Choose game option");
             gameOptions.setHeaderText("How would you like to play?");
             gameOptions.setContentText("Select the option you would like to perform");
-
-            // TODO fix the loop, so it can handle not having to choose the amount of players and so on
+            
             do {
                 option = gameOptions.showAndWait().get();
 
                 Alert errorAlert = new Alert(AlertType.INFORMATION);
                 int gameId;
-                // todo - load game usages
+            
                 if (option == joinGame) {
                     try {
                         gameId = chooseGameIdWindow();

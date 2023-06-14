@@ -181,7 +181,7 @@ public class Client {
 
     public boolean canStartGame() throws URISyntaxException, IOException, InterruptedException {
 
-        URI canStartGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus),"gameId", String.valueOf(gameId));
+        URI canStartGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), "gameId", String.valueOf(gameId));
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(canStartGameURI);
 
@@ -215,8 +215,7 @@ public class Client {
         for (Command command : commands) {
             if (command == null) {
                 cards.add("");
-            }
-            else {
+            } else {
                 cards.add(command.toString());
             }
         }
@@ -234,11 +233,7 @@ public class Client {
 
     // todo - ask if the server needs gameId
     public boolean canStartActivationPhase() throws URISyntaxException, IOException, InterruptedException {
-        Map<String, String> info = new HashMap<>();
-        info.put("gameId", gameId+"");
-        info.put("playerId", playerId+"");
-
-        URI canStartActivationPhaseURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), info);
+        URI canStartActivationPhaseURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), getIdentification());
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(canStartActivationPhaseURI);
 
@@ -250,8 +245,7 @@ public class Client {
             if (gameFromServer.has("moves")) {
                 jsonMovesArray = gameFromServer.get("moves").getAsJsonArray();
                 System.out.println("Moves gotten: " + jsonMovesArray);
-            }
-            else {
+            } else {
                 jsonMovesArray = null;
             }
         } else {
@@ -448,8 +442,7 @@ public class Client {
             Player player;
             if (i == playerIndex) {
                 player = new LocalPlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1));
-            }
-            else {
+            } else {
                 player = new OnlinePlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1));
             }
             deserializedGame.addPlayer(player);
@@ -496,8 +489,8 @@ public class Client {
     private Map<String, String> getIdentification() {
         Map<String, String> identification = new HashMap<>();
 
-        identification.put("gameId", gameId+"");
-        identification.put("playerId", playerId+"");
+        identification.put("gameId", gameId + "");
+        identification.put("playerId", playerId + "");
 
         return identification;
     }
@@ -515,8 +508,7 @@ public class Client {
                 if (commandString.equals("")) {
                     card = null;
                     System.out.println("No command");
-                }
-                else {
+                } else {
                     card = new CommandCard(Command.valueOf(commandString));
                     System.out.println("Command: " + card.command);
                 }
@@ -524,4 +516,44 @@ public class Client {
             }
         }
     }
+
+    public void saveInteraction(Command latestOption) throws IOException, InterruptedException, URISyntaxException {
+        URI finishedProgrammingPhaseURI = new URI(makeFullUri(ResourceLocation.gameStatus));
+
+        JsonObject request = new JsonObject();
+        request.addProperty("gameId", gameId);
+        request.addProperty("playerId", playerId);
+        request.addProperty("interaction", latestOption.toString());
+
+        Response<String> jsonProgrammingPhase = RequestMaker.postRequest(finishedProgrammingPhaseURI, request);
+
+        if (jsonProgrammingPhase.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Successfully sent the interaction");
+        } else {
+            System.out.println("Failed to connect");
+        }
+    }
+
+    public Command getInteraction(int interactionsMade) throws IOException, InterruptedException, URISyntaxException {
+        URI interactionUri = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), getIdentification());
+
+        JsonArray interactionsJson = null;
+        boolean hasInteraction = false;
+        while (!hasInteraction) {
+            Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(interactionUri);
+
+            if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+                JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+                interactionsJson = gameFromServer.get("interactions").getAsJsonArray();
+                hasInteraction = interactionsJson.size() > interactionsMade;
+            }
+        }
+        return Command.valueOf(interactionsJson.get(interactionsMade).getAsString());
+    }
+
+    public int getGameId() {
+        return this.gameId;
+    }
+
 }

@@ -25,6 +25,10 @@ import java.util.List;
  */
 
 public class GameController implements Serializable {
+    private static GameController instance;
+    public static GameController getInstance() {
+        return instance;
+    }
 
     private GameFinishedListener gameFinishedListener;
     private ProgrammingObserver programmingObserver;
@@ -44,11 +48,15 @@ public class GameController implements Serializable {
         this.game = game;
         commandExecution = new CommandExecuter();
         this.game.priorityAntennaSpace = game.board.getPriorityAntennaSpace();
+
+        instance = this;
     }
 
     public GameController(@NotNull Board board) {
         this.board = board;
         commandExecution = new CommandExecuter();
+
+        instance = this;
     }
 
     public void executePrograms() {
@@ -121,6 +129,8 @@ public class GameController implements Serializable {
      * they will continue to do so after an option has been chosen</p>
      */
     public void executeCommandOptionAndContinue(Command option) {
+        System.out.println("Executing command option");
+
         commandExecution.executeCardCommand(game.getCurrentPlayer(), option);
         this.game.setPhase(Phase.ACTIVATION);
         nextPlayer();
@@ -128,7 +138,6 @@ public class GameController implements Serializable {
             this.executePrograms();
         }
     }
-
 
     public void startProgrammingPhase() {
         startedProgramming();
