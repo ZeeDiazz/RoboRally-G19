@@ -34,6 +34,8 @@ class GameControllerTest {
         player.robot.setSpace(new Space(new Position(1,2)));
 
         game.setPhase(Phase.PLAYER_INTERACTION);
+        assertEquals(Phase.PLAYER_INTERACTION, game.getPhase());
+
         gameController.startProgrammingPhase();
 
         assertEquals(Phase.PROGRAMMING, game.getPhase());
