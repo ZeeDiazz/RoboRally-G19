@@ -356,7 +356,9 @@ public abstract class Game extends Subject implements Serializable {
         jsonObject.addProperty("step", this.step);
         jsonObject.addProperty("stepMode", this.stepMode);
         jsonObject.addProperty("phase", this.phase.toString());
-        jsonObject.addProperty("currentPlayer", this.current.getName());
+        if(this.current != null){
+            jsonObject.addProperty("currentPlayer",this.current.getName());
+        }
         jsonObject.add("board", this.board.serialize());
         JsonArray jsonArrayPlayers = new JsonArray();
 

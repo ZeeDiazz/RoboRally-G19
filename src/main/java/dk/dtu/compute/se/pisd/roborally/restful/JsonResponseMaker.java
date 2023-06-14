@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
  * @auther Felix Schmidt
  * @auther Daniel Jensen
  */
-
 public class JsonResponseMaker<T extends JsonElement> extends ResponseMaker<String>  {
     public ResponseEntity<String> itemResponse(T item) {
         // If there is no item, make the response "Not Found" (404), otherwise the response is "OK" (200)
@@ -67,4 +66,3 @@ public class JsonResponseMaker<T extends JsonElement> extends ResponseMaker<Stri
     }
 
 }
-

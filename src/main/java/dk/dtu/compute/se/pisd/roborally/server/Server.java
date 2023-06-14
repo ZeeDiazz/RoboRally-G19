@@ -3,6 +3,14 @@ package dk.dtu.compute.se.pisd.roborally.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.MapMaker;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.OnlineGame;
 import dk.dtu.compute.se.pisd.roborally.restful.JsonResponseMaker;
 import dk.dtu.compute.se.pisd.roborally.restful.ResourceLocation;
 import dk.dtu.compute.se.pisd.roborally.restful.ResponseMaker;
@@ -35,6 +43,13 @@ public class Server {
     private final static JsonParser jsonParser = new JsonParser();
     private final static ResponseMaker<Void> emptyResponseMaker = new ResponseMaker<>();
     private final static JsonResponseMaker<JsonObject> responseMaker = new JsonResponseMaker<>();
+    private ResponseMessage responseMessages;
+    String filePath = "src/main/resources/games";
+    String filePath2 = "src/main/resources/boards/5B.json";
+    String defaultPath = "src/main/resources/games/";
+    String saveboardpath = "src/main/resources/games/";
+    File file = new File(filePath);
+    File file2 = new File(filePath2);
 
     public Server() {
 
@@ -197,7 +212,6 @@ public class Server {
         if (!lobby.hasPlayer(playerId) || !lobby.isHost(playerId)) {
             return emptyResponseMaker.forbidden();
         }
-
         lobbies.remove(lobby);
         return emptyResponseMaker.ok();
     }
@@ -234,7 +248,6 @@ public class Server {
         JsonObject response = new JsonObject();
         response.addProperty("playerId", playerId);
         response.addProperty("playerIndex", lobby.getPlayerCount() - 1);
-
         return responseMaker.itemResponse(response);
     }
 
@@ -458,5 +471,45 @@ public class Server {
             System.out.println("Error while deleting game");
             throw new RuntimeException(e);
         }
+    }
+    /**
+     *
+     * @param file
+     * @return
+     * @auther Felix Schmidt (Felix732)
+     */
+    public JsonObject makeJsonObject(File file) {
+        JsonParser parser = new JsonParser();
+        try {
+            return (JsonObject) parser.parse(new FileReader(file));
+        } catch (Exception e) {
+            System.out.println("Error while reading file");
+            return null;
+        }
+    }
+    /**
+     *
+     * @param jsonObject
+     * @auther Felix Schmidt (Felix732)
+     */
+    public void makeFileFromJsonObject (JsonObject jsonObject){
+        int gamId = jsonObject.get("gameId").getAsInt();
+        File file = new File(saveboardpath+gamId+".json");
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(jsonObject.toString());
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (Exception e) {
+            System.out.println("Error while writing file");
+        }
+    }
+    JsonObject notNullJsonObject(JsonObject jsonObject){
+        jsonObject = new JsonObject();
+        jsonObject.addProperty("lobbyId", 1);
+        jsonObject.addProperty("playerId", -1);
+        jsonObject.addProperty("boardName", "RiskyCrossing");
+        jsonObject.addProperty("numberOfPlayers", 2);
+        return jsonObject;
     }
 }

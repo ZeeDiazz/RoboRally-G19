@@ -1,6 +1,9 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
 import java.util.*;
+import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is used to store the information about a lobby.
