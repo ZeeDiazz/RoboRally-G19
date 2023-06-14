@@ -65,75 +65,25 @@ public class JSONTransformer {
     }
 
     public static void saveBoard(File file, Game game) {
-
+        JsonObject gameSerialization = game.serialize().getAsJsonObject();
+        // change all the types from remote to local
+        gameSerialization.addProperty("gameType", "LocalGame");
+        JsonArray gamePlayers = gameSerialization.get("players").getAsJsonArray();
+        int playerCount = gamePlayers.size();
+        for (int i = 0; i < playerCount; i++) {
+            JsonObject gamePlayer = gamePlayers.get(0).getAsJsonObject();
+            gamePlayers.remove(0);
+            gamePlayer.addProperty("playerType", "LocalPlayer");
+            gamePlayers.add(gamePlayer);
+        }
+        gameSerialization.add("players", gamePlayers);
 
         JsonObject gameJsonObject = new JsonObject();
-
-        gameJsonObject.add("priorityAntennaSpace", game.priorityAntennaSpace.serialize());
-
-        if (game.currentInteractiveCard != null) {
-            gameJsonObject.addProperty("currentInteractiveCard", game.currentInteractiveCard.toString());
-        }
         gameJsonObject.addProperty("gameType", "LocalGame");
-        gameJsonObject.addProperty("gameId", game.getGameId());
-        gameJsonObject.addProperty("moveCounter", game.getMoveCounter());
-        gameJsonObject.addProperty("playerCount", game.getPlayerCount());
-        gameJsonObject.addProperty("step", game.getStep());
-        gameJsonObject.addProperty("stepMode", game.isStepMode());
-        gameJsonObject.addProperty("phase", game.getPhase().toString());
-        gameJsonObject.addProperty("currentPlayer", game.getCurrentPlayer().getName());
-        gameJsonObject.add("board", game.board.serialize());
-        JsonArray jsonArrayPlayers = new JsonArray();
+        gameJsonObject.add("game", gameSerialization);
 
-
-        List<Player> onlinePlayers = new ArrayList<>();
-
-        for (Player player : game.getPlayers()) {
-            onlinePlayers.add(player);
-        }
-
-
-        List<LocalPlayer> rememberedLocalPlayers = new ArrayList<>();
-
-        LocalPlayer localPlayer;
-
-        for (int i = 0; i < game.getPlayerCount(); i++) {
-            Player onlinePlayer = onlinePlayers.remove(0);
-            localPlayer = new LocalPlayer(null, onlinePlayer.getRobot().getColor(), onlinePlayer.getName());
-            localPlayer.setPlayerID(onlinePlayer.getPlayerID());
-
-            if (onlinePlayer.getPrevProgramming() != null) {
-                localPlayer.setPrevProgramming(onlinePlayer.getPrevProgramming());
-            }
-            localPlayer.setProgramField(onlinePlayer.getProgram());
-            localPlayer.setCards(onlinePlayer.getCards());
-            localPlayer.setRobot(onlinePlayer.getRobot());
-            jsonArrayPlayers.add(localPlayer.serialize());
-            rememberedLocalPlayers.add(localPlayer);
-        }
-
-        gameJsonObject.add("players", jsonArrayPlayers);
-
-        JsonArray jsonArrayPrioritisedPlayers = new JsonArray();
-
-        for (Player onlinePlayer : game.prioritisedPlayers) {
-            jsonArrayPrioritisedPlayers.add(onlinePlayer.getPlayerID());
-        }
-        gameJsonObject.add("prioritisedPlayers", jsonArrayPrioritisedPlayers);
-
-
-        JsonObject jsonGameController = new JsonObject();
-
-        jsonGameController.add("game", gameJsonObject);
-
-        jsonGameController.addProperty("gameType", "LocalGame");
-       
-        
         JsonObject outerJson = new JsonObject();
-        
-        outerJson.add("gameController",jsonGameController);
-        
-        
+        outerJson.add("gameController", gameJsonObject);
 
         FileWriter fileWriter = null;
         JsonWriter writer = null;
@@ -144,7 +94,7 @@ public class JSONTransformer {
             fileWriter = new FileWriter(file);
             writer = gson.newJsonWriter(fileWriter);
 
-            gson.toJson(gameJsonObject, writer);
+            gson.toJson(outerJson, writer);
 
             writer.close();
         } catch (IOException e1) {
@@ -171,9 +121,11 @@ public class JSONTransformer {
      */
 
     public static GameController loadBoard(File file) {
+        System.out.println("Loading");
         JsonParser parser = new JsonParser();
 
         try {
+            System.out.println("Reading file");
             JsonObject json = (JsonObject) parser.parse(new FileReader(file));
 
             String gameType = json.get("gameController").getAsJsonObject().get("gameType").getAsString().equals("OnlineGame") ? "Online" : "Offline";
@@ -189,9 +141,11 @@ public class JSONTransformer {
 
             GameController gameController = new GameController(game);
 
+            System.out.println("Deserializing");
             return (GameController) gameController.deserialize(json.get("gameController").getAsJsonObject());
 
         } catch (IOException e) {
+            System.out.println("Error: " + e);
             e.printStackTrace();
         }
         return null;

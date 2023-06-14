@@ -483,7 +483,7 @@ public class AppController implements Observer, GameFinishedListener {
             GameController gameController1 = null;
 
             try {
-                gameController1 = JSONTransformer.loadBoard(file,null);
+                gameController1 = JSONTransformer.loadBoard(file);
             } catch (Exception e) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("File could not be loaded");

@@ -434,7 +434,7 @@ public class GameController implements Serializable {
             initialGame = new LocalGame(new Board(10, 10));
             initialGame = (LocalGame) initialGame.deserialize(jsonObject.get("game"));
         } else {
-            initialGame = new OnlineGame(new Board(0, 0), jsonObject.getAsJsonPrimitive("numberOfPlayersToStart").getAsInt());
+            initialGame = new OnlineGame(new Board(10, 10), jsonObject.getAsJsonPrimitive("numberOfPlayersToStart").getAsInt());
             initialGame = (OnlineGame) initialGame.deserialize(jsonObject.get("game"));
         }
 
