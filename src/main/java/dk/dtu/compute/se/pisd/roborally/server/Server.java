@@ -235,6 +235,11 @@ public class Server {
             response.addProperty("hasStarted", lobby.isActive());
             response.addProperty("canLaunch", lobby.canLaunch());
             response.addProperty("isReady", lobby.isReady());
+            JsonArray interactions = new JsonArray();
+            for (String interaction : lobby.getInteractions()) {
+                interactions.add(interaction);
+            }
+            response.add("interactions", interactions);
 
             if (lobby.isReady()) {
                 JsonArray moves = new JsonArray();
@@ -248,6 +253,7 @@ public class Server {
                     if (lobby.allHaveInfo()) {
                         lobby.resetReadyStatus();
                         lobby.resetMoves();
+                        lobby.resetInteractions();
                     }
                 }
             }
@@ -290,6 +296,9 @@ public class Server {
             lobby.setReadyStatus(playerId, playerIsReady);
             System.out.println("Player is ready: " + playerIsReady);
             System.out.println("Lobby is ready: " + lobby.isReady() + " (" + lobby.getReadyCount() + "/" + lobby.getPlayerCount() + ")");
+        }
+        if (info.has("interaction")) {
+            lobby.addInteraction(info.get("interaction").getAsString());
         }
         return emptyResponseMaker.ok();
     }

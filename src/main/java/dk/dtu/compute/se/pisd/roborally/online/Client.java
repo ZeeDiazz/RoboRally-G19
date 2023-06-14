@@ -234,11 +234,7 @@ public class Client {
 
     // todo - ask if the server needs gameId
     public boolean canStartActivationPhase() throws URISyntaxException, IOException, InterruptedException {
-        Map<String, String> info = new HashMap<>();
-        info.put("gameId", gameId+"");
-        info.put("playerId", playerId+"");
-
-        URI canStartActivationPhaseURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), info);
+        URI canStartActivationPhaseURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), getIdentification());
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(canStartActivationPhaseURI);
 
@@ -523,5 +519,40 @@ public class Client {
                 player.getProgramField(j).setCard(card);
             }
         }
+    }
+
+    public void saveInteraction(Command latestOption) throws IOException, InterruptedException, URISyntaxException {
+        URI finishedProgrammingPhaseURI = new URI(makeFullUri(ResourceLocation.gameStatus));
+
+        JsonObject request = new JsonObject();
+        request.addProperty("gameId", gameId);
+        request.addProperty("playerId", playerId);
+        request.addProperty("interaction", latestOption.toString());
+
+        Response<String> jsonProgrammingPhase = RequestMaker.postRequest(finishedProgrammingPhaseURI, request);
+
+        if (jsonProgrammingPhase.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Successfully sent the interaction");
+        } else {
+            System.out.println("Failed to connect");
+        }
+    }
+
+    public Command getInteraction(int interactionsMade) throws IOException, InterruptedException, URISyntaxException {
+        URI interactionUri = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), getIdentification());
+
+        JsonArray interactionsJson = null;
+        boolean hasInteraction = false;
+        while (!hasInteraction) {
+            Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(interactionUri);
+
+            if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+                JsonObject gameFromServer = jsonGameFromServer.getItem();
+
+                interactionsJson = gameFromServer.get("interactions").getAsJsonArray();
+                hasInteraction = interactionsJson.size() > interactionsMade;
+            }
+        }
+        return Command.valueOf(interactionsJson.get(interactionsMade).getAsString());
     }
 }

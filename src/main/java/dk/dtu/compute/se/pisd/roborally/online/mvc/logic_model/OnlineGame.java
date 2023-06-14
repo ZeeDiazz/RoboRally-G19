@@ -3,6 +3,7 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.Client;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -10,6 +11,7 @@ import java.net.URISyntaxException;
 public class OnlineGame extends Game {
     private Client client;
     private int numberOfPlayersToStart;
+    private int interactionsMade = 0;
 
     /**
      * Constructor used in serializations
@@ -41,8 +43,6 @@ public class OnlineGame extends Game {
 
     @Override
     public void setPhase(Phase phase) {
-        super.setPhase(phase);
-
         System.out.println("Set the phase to '" + phase + "'");
         if (phase == Phase.ACTIVATION) {
             for (Player player : players) {
@@ -80,6 +80,19 @@ public class OnlineGame extends Game {
 
             client.loadMoves();
         }
+        else if (phase == Phase.PLAYER_INTERACTION) {
+            Player current = getCurrentPlayer();
+            GameController controller = GameController.getInstance();
+            if (current instanceof LocalPlayer) {
+                super.setPhase(phase);
+            }
+            else {
+                controller.executeCommandOptionAndContinue(Command.MOVE_1/*client.getInteraction(interactionsMade)*/);
+            }
+            interactionsMade++;
+            return;
+        }
+        super.setPhase(phase);
     }
 
     @Override

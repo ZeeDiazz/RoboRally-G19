@@ -12,6 +12,7 @@ public class Lobby {
     private final List<Boolean> readyStatus;
     private final List<Boolean> hasRetrievedInfo;
     private final List<String> latestMoves;
+    private final List<String> interactions;
     private boolean active;
     private String boardName;
 
@@ -27,6 +28,7 @@ public class Lobby {
         this.readyStatus = new ArrayList<>();
         this.hasRetrievedInfo = new ArrayList<>();
         this.latestMoves = new ArrayList<>();
+        this.interactions = new ArrayList<>();
         this.boardName = boardName;
     }
 
@@ -191,9 +193,19 @@ public class Lobby {
             latestMoves.set(i, "");
         }
     }
+    public void resetInteractions() {
+        interactions.clear();
+    }
     public List<String> getLatestMoves() {
         // streaming to a list, to make a copy, instead of giving the internal copy away
         return latestMoves.stream().toList();
+    }
+    public List<String> getInteractions() {
+        // streaming to a list, to make a copy, instead of giving the internal copy away
+        return interactions.stream().toList();
+    }
+    public void addInteraction(String interaction) {
+        this.interactions.add(interaction);
     }
 
     public int getStepsTaken() {
