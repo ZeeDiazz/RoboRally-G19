@@ -831,14 +831,6 @@ public class AppController implements Observer, GameFinishedListener {
         }
     }
 
-    private void getGameInfo(int gameId) {
-        // todo - add implementation of getGameInfo
-    }
-
-    private void listAllGames() {
-        // todo - add implementation of listAllGames
-    }
-
     private boolean isValidInteger(String text) {
         try {
 
