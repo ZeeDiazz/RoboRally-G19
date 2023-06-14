@@ -140,7 +140,7 @@ public class PlayerView extends Tab implements ViewObserver {
         if (player.game != null) {
             player.game.attach(this);
             update(player.game);
-        }
+        }   
     }
 
     /**
@@ -221,7 +221,7 @@ public class PlayerView extends Tab implements ViewObserver {
                 if (player.game.getCurrentPlayer() == player && this.player.game.getPhase() == Phase.PLAYER_INTERACTION) {
                     // Makes buttons for all the different options relating to the interactive card
 
-                    for (Command option : this.gameController.currentInteractiveCard.getOptions()) {
+                    for (Command option : this.gameController.game.currentInteractiveCard.getOptions()) {
                         Button optionButton = new Button(option.displayName);
                         optionButton.setOnAction(e -> gameController.executeCommandOptionAndContinue(option)); // The option which is chosen gets handled by this
                         optionButton.setDisable(false);

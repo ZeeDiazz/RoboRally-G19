@@ -60,7 +60,7 @@ public class Robot extends Subject implements Serializable {
     }
 
     /**
-     * Sets the absalute direction of the player.
+     * Sets the absolute direction of the player.
      *
      * @param headingDirection the new direction (headingDirection) to be set.
      */
@@ -77,7 +77,7 @@ public class Robot extends Subject implements Serializable {
     public void setRebootPosition(Position position) {
         this.rebootPosition = position;
     }
-
+    
     public Position getRebootPosition() {
         return rebootPosition;
     }
@@ -97,6 +97,7 @@ public class Robot extends Subject implements Serializable {
         return color;
     }
 
+
     public void setColor(String color) {
         this.color = color;
         notifyChange();
@@ -105,6 +106,10 @@ public class Robot extends Subject implements Serializable {
         }
     }
 
+    /**
+     * @return Player who owns the robot
+     * @author Zigalow
+     */
     public Player getOwner() {
         return owner;
     }

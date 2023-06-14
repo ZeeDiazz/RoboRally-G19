@@ -15,19 +15,28 @@ import java.util.List;
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase.INITIALISATION;
 
 /**
- * @author ZeeDiazz (Zaid)
+ * An abstract game class
+ *
+ * @author Zigalow & ZeeDiazz (Zaid)
  */
 public abstract class Game extends Subject implements Serializable {
-
-
+    public List<Player> prioritisedPlayers = new ArrayList<>();
+    public Space priorityAntennaSpace;
     public /*final*/ Board board;
     protected Integer gameId;
 
-    protected final List<Player> players = new ArrayList<>();
+    protected List<Player> players = new ArrayList<>();
     protected Player current;
 
     //Represents the total amount of steps in the current game
     protected int moveCounter;
+    /**
+     * This attribute is relating to the interactive cards. The property of this attribute will be set to the latest interactive card from a register.
+     * This is also so that the PlayerView class is able to access the interactive card in question
+     *
+     * @author Zigalow
+     */
+    public Command currentInteractiveCard;
 
     //Represents the amount of steps in the current programming phase
     protected int step = 0;
@@ -35,7 +44,19 @@ public abstract class Game extends Subject implements Serializable {
 
     protected Phase phase = INITIALISATION;
 
-    // For serializations 
+    /**
+     * Constructor for Game with the specified parameters that are need in the game.
+     * Used for serializations
+     *
+     * @param board
+     * @param gameId
+     * @param current
+     * @param phase
+     * @param step
+     * @param stepMode
+     * @param moveCounter
+     * @author ZeeDiazz (Zaid)
+     */
     public Game(Board board, Integer gameId, Player current, Phase phase, int step, boolean stepMode, int moveCounter) {
         this.board = board;
         this.gameId = gameId;
@@ -44,20 +65,26 @@ public abstract class Game extends Subject implements Serializable {
         this.step = step;
         this.stepMode = stepMode;
         this.moveCounter = moveCounter;
+        this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
+    /**
+     * Constructor for Game with a given board.
+     *
+     * @param board
+     * @author ZeeDiazz (Zaid)
+     */
     public Game(Board board) {
         this.board = board;
+        this.priorityAntennaSpace = this.board.getPriorityAntennaSpace();
     }
 
-    public Game() {
-
-    }
-
-    public void addBoard(Board board) {
-        this.board = board;
-    }
-
+    /**
+     * Gets the playing board in the game
+     *
+     * @return
+     * @author Zigalow
+     */
     public Board getBoard() {
         return this.board;
     }
@@ -66,6 +93,7 @@ public abstract class Game extends Subject implements Serializable {
      * Gets the games ID related to the board.
      *
      * @return The game ID
+     * @author Zaid
      */
     public Integer getGameId() {
         return gameId;
@@ -135,6 +163,7 @@ public abstract class Game extends Subject implements Serializable {
         return current;
     }
 
+
     /**
      * Sets the current player on the board
      *
@@ -170,6 +199,16 @@ public abstract class Game extends Subject implements Serializable {
             this.phase = phase;
             notifyChange();
         }
+    }
+
+    /**
+     * Set the phase of the game to the next phase
+     * @author Daniel
+     */
+    public void nextPhase() {
+        Phase current = getPhase();
+        Phase next = Phase.values()[(current.ordinal() + 1) % Phase.values().length];
+        setPhase(next);
     }
 
     /**
@@ -254,13 +293,22 @@ public abstract class Game extends Subject implements Serializable {
         return "Phase: " + getPhase().name() + ", Player = " + getCurrentPlayer().getName() + ", Total Steps: " + getMoveCounter();
     }
 
+    /**
+     * A method to calculate all the moves coming from a single move.
+     * This is used when performing a move, to make sure all the players who will get pushed also move.
+     * It will also include the given move, but it has potentially been shortened (e.g. if there is a wall in the way).
+     *
+     * @param move the base move.
+     * @return all the moves to be performed to execute the given move to the rules' satisfaction.
+     * @author Daniel Jensen
+     */
     public ArrayList<Move> resultingMoves(Move move) {
         int moveAmount = 0;
         ArrayList<Move> moves = new ArrayList<>();
 
         Space space = board.getSpace(move.start);
         for (int i = 0; i < move.amount; i++) {
-            if (space.hasWall(move.direction)) {
+            if (!space.canExitBy(move.direction)) {
                 break;
             }
 
@@ -268,7 +316,7 @@ public abstract class Game extends Subject implements Serializable {
             if (space == null) {
                 moveAmount++;
                 break;
-            } else if (space.hasWall(HeadingDirection.oppositeHeadingDirection(move.direction))) {
+            } else if (!space.canEnterBy(move.direction)) {
                 break;
             } else if (space.getRobot() != null) {
                 // Can maximally move the full amount, minus the part already moved
@@ -291,14 +339,16 @@ public abstract class Game extends Subject implements Serializable {
         return moves;
     }
 
-    public abstract boolean canStartGame();
-
-
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
 
 
+        jsonObject.add("priorityAntennaSpace", this.priorityAntennaSpace.serialize());
+
+        if (currentInteractiveCard != null) {
+            jsonObject.addProperty("currentInteractiveCard", currentInteractiveCard.toString());
+        }
         jsonObject.addProperty("gameType", this.getClass().getSimpleName());
         jsonObject.addProperty("gameId", this.gameId);
         jsonObject.addProperty("moveCounter", this.moveCounter);
@@ -317,16 +367,30 @@ public abstract class Game extends Subject implements Serializable {
         }
         jsonObject.add("players", jsonArrayPlayers);
 
+        JsonArray jsonArrayPrioritisedPlayers = new JsonArray();
+
+        for (Player player : this.prioritisedPlayers) {
+            jsonArrayPrioritisedPlayers.add(player.getPlayerID());
+        }
+        jsonObject.add("prioritisedPlayers", jsonArrayPrioritisedPlayers);
+
 
         return jsonObject;
     }
+
 
     @Override
     public Serializable deserialize(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
 
+
         JsonElement gameIdJson = jsonObject.get("gameId");
         Integer gameId = (gameIdJson == null) ? null : gameIdJson.getAsInt();
+
+
+        JsonElement commandCard = jsonObject.get("currentInteractiveCard");
+        currentInteractiveCard = commandCard == null ? null : Command.valueOf(commandCard.getAsJsonPrimitive().getAsString());
+
 
         int moveCounter = jsonObject.get("moveCounter").getAsInt();
         int step = jsonObject.get("step").getAsInt();
@@ -380,6 +444,30 @@ public abstract class Game extends Subject implements Serializable {
             player.robot.setSpace(spaceOnBoard);
             game1.board.getSpace(spaceOnBoard.getPosition()).setRobotOnSpace(player.robot);
         }
+        game1.currentInteractiveCard = currentInteractiveCard;
+        JsonArray prioritisedPlayersJson = jsonObject.get("prioritisedPlayers").getAsJsonArray();
+
+        List<Player> prioritisedPlayers = new ArrayList<>();
+
+        int id;
+        for (int i = 0; i < prioritisedPlayersJson.size(); i++) {
+            id = prioritisedPlayersJson.get(i).getAsInt();
+            for (Player player : players) {
+                if (player.getPlayerID() == id) {
+                    prioritisedPlayers.add(player);
+                    break;
+                }
+            }
+        }
+
+        game1.prioritisedPlayers = prioritisedPlayers;
+        Space initialPriorityAntennaSpace = new Space(new Position(1, 1), HeadingDirection.WEST);
+
+        initialPriorityAntennaSpace = (Space) initialPriorityAntennaSpace.deserialize(jsonObject.get("priorityAntennaSpace"));
+
+        Position position = initialPriorityAntennaSpace.getPosition();
+
+        game1.priorityAntennaSpace = board.getSpace(position);
 
         return game1;
     }

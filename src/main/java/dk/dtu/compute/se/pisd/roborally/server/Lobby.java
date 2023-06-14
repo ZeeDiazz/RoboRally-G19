@@ -1,107 +1,209 @@
 package dk.dtu.compute.se.pisd.roborally.server;
 
+import java.util.*;
 import com.google.gson.JsonObject;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used to store the information about a lobby.
+ * @auther Felix Schmidt (Felix723)
+ * @auther Daniel Jensen
+ */
 public class Lobby {
-    int Id;
-    int readyCount = 0;
-    List<Integer> players;
-    Boolean[] isReady;
+    private static final Random rng = new Random();
+
+    private final int id;
+    private int stepsTaken = 0;
+    private int minimumPlayers;
+    private final List<Integer> playerIds;
+    private final List<Boolean> readyStatus;
+    private final List<Boolean> hasRetrievedInfo;
+    private final List<String> latestMoves;
+    private final List<String> interactions;
+    private boolean active;
+    private String boardName;
 
     /**
      * Constructor for Lobby
-     * @param Id, an integer value to identify the lobby
-     * @auther Felix Schmidt (Felix732)
+     * @param id, an integer value to identify the lobby
+     * @author Felix Schmidt (Felix732)
      */
-    public Lobby (int Id){
-        this.Id = Id;
-        this.players = new ArrayList<>();
-        isReady = new Boolean[6];
-        for (int i = 0; i < isReady.length; i++) {
-            isReady[i] = false;
+    public Lobby(int id, int minimumPlayers, String boardName) {
+        this.id = id;
+        this.minimumPlayers = minimumPlayers;
+        this.playerIds = new ArrayList<>();
+        this.readyStatus = new ArrayList<>();
+        this.hasRetrievedInfo = new ArrayList<>();
+        this.latestMoves = new ArrayList<>();
+        this.interactions = new ArrayList<>();
+        this.boardName = boardName;
+    }
+
+
+    public int getId(){
+        return this.id;
+    }
+
+    private int getPlayerIndex(int playerId) {
+        for (int i = 0; i < playerIds.size(); i++) {
+            if (playerIds.get(i) == playerId) {
+                return i;
+            }
         }
+        return -1;
     }
 
     /**
-     * Method to get the number of players ready in a lobby
-     * @return
-     * @auther Felix Schmidt (Felix732)
+     * Method to add a player to a lobby utilizing the List interface method add
+     * @param playerId
+     * @author Felix Schmidt (Felix723)
      */
-    public int getPlayersReadyCount() {
-        for (int i = 0; i < isReady.length; i++) {
-            if (isReady[i]) {
+    public void addPlayer(int playerId) {
+        playerIds.add(playerId);
+        readyStatus.add(false);
+        hasRetrievedInfo.add(false);
+        latestMoves.add("");
+    }
+
+    /**
+     * Method to remove a player from a lobby
+     * @param playerId
+     * @author Felix Schmidt (Felix723)
+     */
+    public void removePlayer(int playerId) {
+        int playerIndex = getPlayerIndex(playerId);
+        if (playerIndex == -1) {
+            return;
+        }
+        playerIds.remove(playerIndex);
+        readyStatus.remove(playerIndex);
+        hasRetrievedInfo.remove(playerIndex);
+        latestMoves.remove(playerIndex);
+    }
+
+    public boolean hasPlayer(int playerId) {
+        return getPlayerIndex(playerId) != -1;
+    }
+
+    public boolean isHost(int playerId) { return getPlayerIds().get(0) == playerId; }
+
+
+    public int getReadyCount() {
+        int readyCount = 0;
+        for (int i = 0; i < getPlayerCount(); i++) {
+            if (readyStatus.get(i)) {
                 readyCount++;
             }
         }
         return readyCount;
     }
 
-    /**
-     * Method to add a player to a lobby utilizing the List interface method add
-     * @param playerId
-     * @auther Felix Schmidt (Felix732)
-     */
-    public void addPlayer(int playerId){
-        players.add(playerId);
-    }
-    /**
-     * Method to get the lobby id
-     * @return id, integer value lobby id
-     * @auther Felix Schmidt (Felix732)
-     */
-    public int getLobbyId(){
-        return this.Id;
+    public List<Integer> getPlayerIds() {
+        // streaming to a list, to make a copy, instead of giving the internal copy away
+        return playerIds.stream().toList();
     }
 
-    /**
-     * Method to get the list of players in a lobby
-     * @return players, a list of players
-     * @auther Felix Schmidt (Felix732)
-     */
-    public List<Integer> getPlayers(){
-        return players;
+    private boolean playerIsReady(int playerId) {
+        int playerIndex = getPlayerIndex(playerId);
+        if (playerIndex == -1) {
+            return false;
+        }
+        return readyStatus.get(playerIndex);
     }
 
-    /**
-     * Method to remove a player from a lobby
-     * @param playerId
-     * @auther Felix Schmidt (Felix732)
-     */
-    public void removePlayer(int playerId){
-        players.remove(playerId);
+    public void setReadyStatus(int playerId, boolean newStatus) {
+        if (!hasPlayer(playerId)) {
+            return;
+        }
+        readyStatus.set(getPlayerIndex(playerId), newStatus);
+        System.out.println("Ready status: " + Arrays.toString(readyStatus.toArray()));
     }
 
-    /**
-     * Method to set a player ready
-     * @param playerId
-     * @auther Felix Schmidt (Felix732)
-     */
-    public void setIsReady(int playerId){
-        for (int i = 0; i < this.players.size(); i++) {
-            if (playerId == this.players.get(i)) {
-                this.isReady[i] = true; //hey
+    public boolean hasRetrievedInfo(int playerId) {
+        int playerIndex = getPlayerIndex(playerId);
+        if (playerIndex == -1) {
+            return false;
+        }
+        return hasRetrievedInfo.set(playerIndex, true);
+    }
+
+    public boolean isReady() {
+        return getReadyCount() == playerIds.size();
+    }
+    public boolean allHaveInfo() {
+        for (boolean hasRetrieved : hasRetrievedInfo) {
+            if (hasRetrieved) {
+                continue;
             }
+            return false;
+        }
+        return true;
+    }
+    public boolean canLaunch(){
+        return getPlayerCount() >= minimumPlayers;
+    }
+
+    public void resetReadyStatus() {
+        for (int playerId : getPlayerIds()) {
+            setReadyStatus(playerId, false);
+            hasRetrievedInfo.set(getPlayerIndex(playerId), false);
+        }
+        stepsTaken++;
+    }
+    public int getMinimumPlayers() {
+        return minimumPlayers;
+    }
+    public int getPlayerCount() {
+        return playerIds.size();
+    }
+    public void setActive() {
+        this.active = true;
+    }
+    public boolean isActive() {
+        return this.active;
+    }
+    public String getBoardName() {
+        return this.boardName;
+    }
+    public int makePlayerId() {
+        int id = -1;
+        boolean takenId = true;
+        while (takenId) {
+            id = rng.nextInt(0, Integer.MAX_VALUE);
+            takenId = hasPlayer(id);
+        }
+        return id;
+    }
+
+    public void updateMoves(int playerId, String moves) {
+        int index = getPlayerIndex(playerId);
+        if (index == -1) {
+            return;
+        }
+        latestMoves.set(index, moves);
+    }
+    public void resetMoves() {
+        for (int i = 0; i < getPlayerCount(); i++) {
+            latestMoves.set(i, "");
         }
     }
-
-    /**
-     * Method to set a player not ready
-     * @param playerId
-     * @auther Felix Schmidt (Felix732)
-     */
-    public void setNotReady (int playerId){
-        for (int i = 0; i < players.size(); i++){
-            if (playerId == players.get(i)){
-                isReady[i] = false;
-            }
-        }
+    public void resetInteractions() {
+        interactions.clear();
     }
-    public Boolean[] getIsReady(){
-        return isReady;
+    public List<String> getLatestMoves() {
+        // streaming to a list, to make a copy, instead of giving the internal copy away
+        return latestMoves.stream().toList();
+    }
+    public List<String> getInteractions() {
+        // streaming to a list, to make a copy, instead of giving the internal copy away
+        return interactions.stream().toList();
+    }
+    public void addInteraction(String interaction) {
+        this.interactions.add(interaction);
     }
 
+    public int getStepsTaken() {
+        return stepsTaken;
+    }
 }

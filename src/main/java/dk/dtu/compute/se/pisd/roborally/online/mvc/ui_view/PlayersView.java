@@ -23,8 +23,8 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.ui_view;
 
 import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Board;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Game;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.LocalPlayer;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
 import javafx.scene.control.TabPane;
 
@@ -37,7 +37,7 @@ import javafx.scene.control.TabPane;
  */
 public class PlayersView extends TabPane implements ViewObserver {
 
-    private Board board;
+
     //ZeeDiazz (Zaid)
     private Game game;
 
@@ -49,15 +49,28 @@ public class PlayersView extends TabPane implements ViewObserver {
      */
     public PlayersView(GameController gameController) {
         game = gameController.game;
-        board = game.board;
+        gameController.setProgrammingObserver(new ProgrammingObserver() {
+            @Override
+            public void started() {
+                lockNonLocalPlayers();
+            }
+
+            @Override
+            public void finished() {
+                unlockAllPlayers();
+            }
+        });
 
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
         playerViews = new PlayerView[game.getPlayerCount()];
         for (int i = 0; i < game.getPlayerCount(); i++) {
-            playerViews[i] = new PlayerView(gameController, game.getPlayer(i));
+            Player player = game.getPlayer(i);
+            playerViews[i] = new PlayerView(gameController, player);
+
             this.getTabs().add(playerViews[i]);
         }
+        lockNonLocalPlayers();
         game.attach(this);
         update(game);
     }
@@ -75,4 +88,17 @@ public class PlayersView extends TabPane implements ViewObserver {
         }
     }
 
+    public void lockNonLocalPlayers() {
+        for (int i = 0; i < game.getPlayerCount(); i++) {
+            Player player = game.getPlayer(i);
+            playerViews[i].setDisable(!(player instanceof LocalPlayer));
+            getSelectionModel().select(i); // should work, but doesn't
+        }
+    }
+
+    public void unlockAllPlayers() {
+        for (PlayerView playerView : playerViews) {
+            playerView.setDisable(false);
+        }
+    }
 }

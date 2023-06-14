@@ -102,7 +102,7 @@ public class CommandCardField extends Subject implements Serializable {
             notifyChange();
         }
     }
-
+    
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
@@ -117,15 +117,14 @@ public class CommandCardField extends Subject implements Serializable {
 
     @Override
     public Serializable deserialize(JsonElement element) {
-       JsonObject json = element.getAsJsonObject();
+        JsonObject json = element.getAsJsonObject();
         CommandCard card = new CommandCard(Command.LEFT);
 
         JsonElement cardJson = json.get("commandCardField");
         if (cardJson != null) {
-            this.card = (CommandCard)card.deserialize(json.get("commandCardField"));
+            this.card = (CommandCard) card.deserialize(json.get("commandCardField"));
             this.visible = json.get("isVisible").getAsBoolean();
-        }
-        else {
+        } else {
             this.card = null;
             this.visible = true;
         }

@@ -8,4 +8,13 @@ public class OnlinePlayer extends Player {
         super(game, color, name);
     }
 
+
+    /**
+     * Default constructor of OnlinePlayer, so that a Client/OnlinePlayer can be made without any parameters
+     *
+     * @author Zigalow
+     */
+    public OnlinePlayer() {
+
+    }
 }

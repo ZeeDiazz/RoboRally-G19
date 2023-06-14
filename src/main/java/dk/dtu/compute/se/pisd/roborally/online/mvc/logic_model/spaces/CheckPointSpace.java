@@ -6,6 +6,11 @@ import com.google.gson.JsonObject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
 
+/**
+ * This class represents a checkpointspace. It inherits from Space.Has a unique id.
+ * @auther Daniel Jensen
+ * @author Felix Schmidt
+ */
 public class CheckPointSpace extends Space implements Serializable {
     public final int id;
 

@@ -7,5 +7,11 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
  */
 public interface GameFinishedListener {
 
+    /**
+     * Implementation of what needs to happen when the game finishes      
+     *
+     * @author Zigalow
+     */
+
     void onGameFinished();
 }

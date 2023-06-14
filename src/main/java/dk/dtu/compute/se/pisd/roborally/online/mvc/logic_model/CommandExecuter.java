@@ -6,25 +6,23 @@ import org.jetbrains.annotations.NotNull;
 import static dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController.performMove;
 
 
+/**
+ * Class used for executing commands
+ *
+ * @author Zigalow
+ */
 public class CommandExecuter {
-    private static Board board;
 
-    public CommandExecuter(Board board) {
-        this.board = board;
-    }
 
     /**
+     * Executes the action of a command card to the given player.
+     *
      * @param player
      * @param command
-     * @author Daniel, ZeeDiazz (Zaid)
+     * @author Daniel, ZeeDiazz (Zaid), Zigalow
      */
-
     public void executeCardCommand(@NotNull Player player, Command command) {
         if (player.robot != null && command != null) {
-            // XXX This is a very simplistic way of dealing with some basic cards and
-            //     their execution. This should eventually be done in a more elegant way
-            //     (this concerns the way cards are modelled as well as the way they are executed).
-
             switch (command) {
                 case MOVE_1, MOVE_2, MOVE_3, BACK_UP -> {
                     this.moveCommand(player.robot, command);
@@ -34,16 +32,12 @@ public class CommandExecuter {
                     this.turnRobotCommand(player.robot, command);
                     player.setPrevProgramming(command);
                 }
-                case POWER_UP -> {
+                /*case POWER_UP -> {
                     player.addEnergyCube(1);
                     player.setPrevProgramming(command);
-                }
-                case AGAIN ->
-                    //TODO: update AGAIN after the implementation of damage card and upgrade
-                        this.repeatPrevProgramming(player);
+                }*/
+                case AGAIN -> this.repeatPrevProgramming(player);
 
-                //player.setPrevProgramming(command);
-                //}ZeeDiazz (Zaid)
                 default -> {
                 }
                 // DO NOTHING (for now)
@@ -51,7 +45,13 @@ public class CommandExecuter {
         }
     }
 
-
+    /**
+     * Execute a move command in the given robot
+     *
+     * @param robot
+     * @param moveCommand
+     * @author Zigalow
+     */
     public void moveCommand(@NotNull Robot robot, Command moveCommand) {
         switch (moveCommand) {
             case MOVE_1 -> performMove(Move.fromRobot(robot, 1));
@@ -61,6 +61,13 @@ public class CommandExecuter {
         }
     }
 
+    /**
+     * Execute the turning of the given robot
+     *
+     * @param robot
+     * @param turnCommand
+     * @author Zigalow
+     */
     public void turnRobotCommand(@NotNull Robot robot, Command turnCommand) {
         switch (turnCommand) {
             case LEFT -> turnLeft(robot);
@@ -69,7 +76,12 @@ public class CommandExecuter {
         }
     }
 
-
+    /**
+     * This method moves the robot one space back, without changing the robot's direction.
+     *
+     * @param robot
+     * @author ZeeDiazz (Zaid)
+     */
     public void backUp(@NotNull Robot robot) {
         HeadingDirection playerDirection = robot.getHeadingDirection();
 
@@ -80,6 +92,12 @@ public class CommandExecuter {
         performMove(new Move(robot.getSpace().position, oppositeDirection, 1, robot));
     }
 
+    /**
+     * Turns the robots direction to the right
+     *
+     * @param robot
+     * @author Daniel Weper Jensen
+     */
     public void turnRight(@NotNull Robot robot) {
         HeadingDirection robotHeadingDirection = robot.getHeadingDirection();
         HeadingDirection newDirection = HeadingDirection.rightHeadingDirection(robotHeadingDirection);
@@ -87,6 +105,12 @@ public class CommandExecuter {
         robot.setHeadingDirection(newDirection);
     }
 
+    /**
+     * Turns the robots direction to the left
+     *
+     * @param robot
+     * @author Daniel Weper Jensen
+     */
     public void turnLeft(@NotNull Robot robot) {
         HeadingDirection robotHeadingDirection = robot.getHeadingDirection();
         HeadingDirection newDirection = HeadingDirection.leftHeadingDirection(robotHeadingDirection);
@@ -94,6 +118,12 @@ public class CommandExecuter {
         robot.setHeadingDirection(newDirection);
     }
 
+    /**
+     * This method turns players to the opposite direction, and the robot still remains in the current space - U-Turn
+     *
+     * @param robot
+     * @autor ZeeDiazz (Zaid)
+     */
     public void turnAround(@NotNull Robot robot) {
         HeadingDirection playerDirection = robot.getHeadingDirection();
         HeadingDirection newDirection = HeadingDirection.oppositeHeadingDirection(playerDirection);
@@ -102,15 +132,14 @@ public class CommandExecuter {
     }
 
     /**
+     * This method is for the command Again which repeats the command from the previous register
+     *
      * @param player
      * @author ZeeDiazz (Zaid)
-     * This method is for the command Again, and repeat the programming from previous register
      */
     public void repeatPrevProgramming(@NotNull Player player) {
         Command previousCommand = player.getPrevProgramming();
-        //if(previousCommand != Command.AGAIN) {
         executeCardCommand(player, previousCommand);
-        //}
     }
 
 }

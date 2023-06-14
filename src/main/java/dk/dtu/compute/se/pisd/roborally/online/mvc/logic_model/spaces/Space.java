@@ -80,8 +80,8 @@ public class Space extends Subject implements Serializable {
      * @return true if a robot can enter this space from the given direction.
      * @author Daniel Jensen
      */
-    public boolean canEnterFrom(HeadingDirection from) {
-        return !hasWall(from);
+    public boolean canEnterBy(HeadingDirection from) {
+        return !hasWall(HeadingDirection.oppositeHeadingDirection(from));
     }
 
     /**
@@ -208,11 +208,11 @@ public class Space extends Subject implements Serializable {
             case "EnergySpace":
                 return new EnergySpace(position, walls);
             case "GreenGearSpace":
-                return new GreenGearSpace(position, walls);
+                direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
+                return new GreenGearSpace(position,direction, walls);
             case "RedGearSpace":
-                return new RedGearSpace(position, walls);
-            case "PitSpace":
-                return new PitSpace(position, walls);
+                direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
+                return new RedGearSpace(position,direction, walls);
             case "CheckPointSpace":
                 int id = jsonObject.get("checkpointId").getAsInt();
                 return new CheckPointSpace(position, id, walls);
@@ -222,6 +222,8 @@ public class Space extends Subject implements Serializable {
             case "BlueConveyorSpace":
                 direction = HeadingDirection.valueOf(jsonObject.get("headingDirection").getAsString());
                 return new BlueConveyorSpace(position, direction, walls);
+            case "PriorityAntennaSpace":
+                return new PriorityAntennaSpace(position, HeadingDirection.NORTH, walls);
         }
 
         // Shouldn't reach this

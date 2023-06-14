@@ -2,21 +2,22 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.saveload;
 
 import com.google.gson.JsonElement;
 
-
 /**
- * Interface for all the classes, that needs to be serialized into a json file, as well as being loaded from a json file
+ * Interface for all the classes that needs to be serialized
  *
  * @author Zigalow
  */
 public interface Serializable {
     /**
      * @return A serialized json-element
+     * @author Zigalow
      */
     JsonElement serialize();
 
     /**
      * @param element The json element that needs to be deserialized
-     * @return An ISerializable object from given json element
+     * @return A Serializable object from given json element
+     * @author Zigalow
      */
 
     Serializable deserialize(JsonElement element);

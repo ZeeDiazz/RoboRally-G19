@@ -25,19 +25,40 @@ public abstract class Player extends Subject implements Serializable {
 
     // In Robot class or this class?
     //private int checkpointReached = 0;
-    private int energyCubes;
+    //private int energyCubes;
 
     private Command prevProgramming;
 
     private CommandCardField[] programField;
     private CommandCardField[] cards;
 
+    protected Player() {
+        //this.energyCubes = 5;
+        programField = new CommandCardField[NUMBER_OF_REGISTERS];
+        for (int i = 0; i < programField.length; i++) {
+            programField[i] = new CommandCardField(this);
+        }
+
+        cards = new CommandCardField[NUMBER_OF_CARDS];
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = new CommandCardField(this);
+        }
+    }
+
+    /**
+     * Constructor to create a Player object with the given board, color, and name.
+     *
+     * @param game  The game that the player belongs to.
+     * @param color The color of the player.
+     * @param name  The name of the player.
+     * @author Zaid
+     */
     public Player(Game game, String color, @NotNull String name) {
         this.game = game;
         this.name = name;
         this.robot = new Robot(color, this);
         // Player starts with 5 energy cube
-        this.energyCubes = 5;
+        //this.energyCubes = 5;
         programField = new CommandCardField[NUMBER_OF_REGISTERS];
         for (int i = 0; i < programField.length; i++) {
             programField[i] = new CommandCardField(this);
@@ -68,14 +89,15 @@ public abstract class Player extends Subject implements Serializable {
         if (name != null && !name.equals(this.name)) {
             this.name = name;
             notifyChange();
-            /*if (space != null) {
-                space.changed();
-            }*/
         }
     }
 
-    //get/set robot
-
+    /**
+     * gets the amount of energy cubes a player has
+     *
+     * @return the amount of energy cubes
+     * @author ZeeDiazz (Zaid)
+     */
     public Command getPrevProgramming() {
         return prevProgramming;
     }
@@ -97,12 +119,12 @@ public abstract class Player extends Subject implements Serializable {
      * @param amount of energy cube
      * @author Zeediazz (Zaid)
      */
-    public void addEnergyCube(int amount) {
+    /*public void addEnergyCube(int amount) {
         if (amount > 0) {
             energyCubes += amount;
             notifyChange();
         }
-    }
+    }*/
 
     /**
      * Takes an amount of energy cube and removes X amount of Players energy cubes
@@ -111,29 +133,62 @@ public abstract class Player extends Subject implements Serializable {
      * @param amount
      * @author ZeeDiazz (Zaid)
      */
-    public void removeEnergyCube(int amount) {
+    /*public void removeEnergyCube(int amount) {
         if (amount > 0) {
             energyCubes -= amount;
             notifyChange();
         }
-    }
+    }*/
 
+    /**
+     * Gets the program field at the specific index
+     *
+     * @param index index of the program field
+     * @return the command card field at the specific index
+     * @author Daniel
+     */
     public CommandCardField getProgramField(int index) {
         return programField[index];
     }
 
+    /**
+     * Gets the program field at the specific index
+     *
+     * @param index index of the program field
+     * @return the command card field at the specific index
+     * @author Daniel
+     */
     public CommandCardField getCardField(int index) {
         return cards[index];
     }
 
+    /**
+     * @return the commandCardFields in the "command cards" section, in the game
+     * @author Zaid
+     */
     public CommandCardField[] getCards() {
         return cards;
     }
 
+    /**
+     * @return the commandCardFields in the "program" section, in the game
+     * @author Zaid
+     */
     public CommandCardField[] getProgram() {
         return programField;
     }
 
+    public void setRobot(Robot robot) {
+        this.robot = robot;
+    }
+
+    public void setProgramField(CommandCardField[] programField) {
+        this.programField = programField;
+    }
+
+    public void setCards(CommandCardField[] cards) {
+        this.cards = cards;
+    }
 
     public static void setGame(Game game) {
         Player.game = game;
@@ -147,6 +202,10 @@ public abstract class Player extends Subject implements Serializable {
         this.playerID = playerID;
     }
 
+    public Robot getRobot() {
+        return this.robot;
+    }
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
@@ -157,7 +216,7 @@ public abstract class Player extends Subject implements Serializable {
         if (this.prevProgramming != null) {
             jsonObject.addProperty("previousCommand", this.prevProgramming.toString());
         }
-        jsonObject.addProperty("energyCubes", this.energyCubes);
+        //jsonObject.addProperty("energyCubes", this.energyCubes);
         JsonArray jsonArrayProgram = new JsonArray();
         for (CommandCardField cardField : programField) {
             jsonArrayProgram.add(cardField.serialize());
@@ -193,7 +252,7 @@ public abstract class Player extends Subject implements Serializable {
         String commandAsString = jsonCommand == null ? null : jsonCommand.getAsString();
 
         Command command = commandAsString == null ? null : Command.valueOf(commandAsString);
-        initialPlayer.energyCubes = jsonObject.getAsJsonPrimitive("energyCubes").getAsInt();
+        //initialPlayer.energyCubes = jsonObject.getAsJsonPrimitive("energyCubes").getAsInt();
 
         initialPlayer.prevProgramming = command;
 

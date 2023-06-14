@@ -25,6 +25,7 @@ import dk.dtu.compute.se.pisd.roborally.online.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.CommandCard;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.CommandCardField;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Phase;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.Player;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -91,12 +92,13 @@ public class CardFieldView extends GridPane implements ViewObserver {
         this.setMinHeight(CARDFIELD_HEIGHT);
         this.setMaxHeight(CARDFIELD_HEIGHT);
 
+        // ZeeDiazz (Zaid) {
         label = new Label();
         label.setWrapText(true);
         label.setMouseTransparent(true);
         this.add(label, 0, 0);
 
-        // ZeeDiazz (Zaid) {
+
         imageView = new ImageView();
         //Set the size of image
         imageView.setFitWidth(CARDFIELD_WIDTH);
@@ -155,9 +157,10 @@ public class CardFieldView extends GridPane implements ViewObserver {
     }
 
     /**
-     * @author ZeeDiazz (Zaid)
      * This method updates the view with the cards image.
      * @param subject Subject is the field
+     *
+     * @author ZeeDiazz (Zaid)
      */
     @Override
     public void updateView(Subject subject) {
@@ -170,7 +173,6 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 label.setGraphic(imageView);
             } else {
                 imageView.setImage(null);
-                //label.setGraphic(imageView);
                 label.setText("");
             }
         }
@@ -186,9 +188,7 @@ public class CardFieldView extends GridPane implements ViewObserver {
                 CommandCardField cardField = source.field;
                 if (cardField != null &&
                         cardField.getCard() != null &&
-                        cardField.player != null /*&&
-                        cardField.player.board != null &&
-                        cardField.player.board.getPhase().equals(Phase.PROGRAMMING)*/) {
+                        cardField.player != null && cardField.player.game.getPhase().equals(Phase.PROGRAMMING)) {
                     Dragboard db = source.startDragAndDrop(TransferMode.MOVE);
                     Image image = source.snapshot(null, null);
                     db.setDragView(image);
