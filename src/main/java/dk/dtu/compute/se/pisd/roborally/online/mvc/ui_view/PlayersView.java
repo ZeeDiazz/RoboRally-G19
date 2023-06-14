@@ -91,13 +91,8 @@ public class PlayersView extends TabPane implements ViewObserver {
     public void lockNonLocalPlayers() {
         for (int i = 0; i < game.getPlayerCount(); i++) {
             Player player = game.getPlayer(i);
-            playerViews[i].setDisable(player instanceof LocalPlayer);
-            System.out.println("Current: " + i);
-            System.out.println("0 is selected: " + playerViews[0].isSelected());
-            System.out.println("1 is selected: " + playerViews[1].isSelected());
-            getSelectionModel().select(i);
-            System.out.println("0 is selected: " + playerViews[0].isSelected());
-            System.out.println("1 is selected: " + playerViews[1].isSelected());
+            playerViews[i].setDisable(!(player instanceof LocalPlayer));
+            getSelectionModel().select(i); // should work, but doesn't
         }
     }
 
