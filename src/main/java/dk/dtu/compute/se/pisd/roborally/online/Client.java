@@ -103,11 +103,7 @@ public class Client {
         createGame(-1, minimumNumberOfPlayersToStart, boardName);
     }
 
-    // TODO - Update JoinGame with new logic
 
-    // Returns a game where there is the newly made player
-
-    // Unsure what type it should return
     public int joinGame(int gameId) throws IOException, InterruptedException, URISyntaxException {
         URI joinGameURI = new URI(makeFullUri(ResourceLocation.joinGame));
 
@@ -119,8 +115,6 @@ public class Client {
         if (joinInfo.getStatusCode().is2xxSuccessful()) {
             JsonObject gameFromServer = joinInfo.getItem();
 
-         /*   Game joinedGame = new OnlineGame(new Board(10, 10), gameFromServer.getAsJsonObject("game").get("numberOfPlayersToStart").getAsInt());
-            joinedGame.deserialize(gameFromServer);*/
 
             this.playerId = gameFromServer.get("playerId").getAsInt(); //??
             this.playerIndex = gameFromServer.get("playerIndex").getAsInt();
@@ -231,7 +225,7 @@ public class Client {
         }
     }
 
-    // todo - ask if the server needs gameId
+
     public boolean canStartActivationPhase() throws URISyntaxException, IOException, InterruptedException {
         URI canStartActivationPhaseURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), getIdentification());
 
@@ -405,6 +399,15 @@ public class Client {
         return null;
     }
 
+    /**
+     * Deletes a saved remote game
+     * @param gameId
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     * @author ZeeDiazz & Daniel
+     */
     public boolean deleteSavedGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
         URI deleteGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.saveGame), "gameId", gameId+"");
 
