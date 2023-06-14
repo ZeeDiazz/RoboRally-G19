@@ -33,8 +33,8 @@ class GameControllerTest {
 
         player.robot.setSpace(new Space(new Position(1,2)));
 
-        game.setPhase(Phase.PLAYER_INTERACTION);
-        assertEquals(Phase.PLAYER_INTERACTION, game.getPhase());
+        game.setPhase(Phase.INITIALISATION);
+        assertEquals(Phase.INITIALISATION, game.getPhase());
 
         gameController.startProgrammingPhase();
 
@@ -50,7 +50,7 @@ class GameControllerTest {
 
         player.robot.setSpace(new Space(new Position(1,2)));
 
-        game.setPhase(Phase.PLAYER_INTERACTION);
+        game.setPhase(Phase.INITIALISATION);
         gameController.finishProgrammingPhase();
 
         assertEquals(Phase.ACTIVATION, game.getPhase());
