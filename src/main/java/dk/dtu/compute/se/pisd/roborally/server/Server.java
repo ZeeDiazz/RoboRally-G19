@@ -116,15 +116,27 @@ public class Server {
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        if(!info.has("gameId") || !info.has("minimumPlayers") || !info.has("boardName")) {
+        if(!info.has("minimumPlayers") || !info.has("boardName")) {
             return responseMaker.forbidden();
         }
-        int lobbyId = info.get("gameId").getAsInt();
         int minimumPlayers = info.get("minimumPlayers").getAsInt();
 
-        System.out.println("Requested lobby id: " + lobbyId);
-        // Make a random id that we don't already use
-        while (lobbyExists(lobbyId)) {
+        int lobbyId = -1;
+        boolean needNewId;
+        if (info.has("gameId")) {
+            lobbyId = info.get("gameId").getAsInt();
+            System.out.println("Requested lobby id: " + lobbyId);
+
+            needNewId = lobbyExists(lobbyId);
+        }
+        else {
+            System.out.println("Didn't specify a lobby id");
+
+            needNewId = true;
+        }
+
+        if (needNewId) {
+            // Get a lobby id that we don't already use
             lobbyId = makeNewLobbyId();
         }
 
@@ -137,6 +149,7 @@ public class Server {
         JsonObject response = new JsonObject();
         response.addProperty("gameId", lobbyId);
         response.addProperty("playerId", playerId);
+        response.addProperty("playerIndex", 0);
 
         return responseMaker.created(response.toString());
         /*
@@ -145,26 +158,18 @@ public class Server {
     }
 
     @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-
-        if(notEnoughInfo(info)) {
-            return emptyResponseMaker.forbidden();
-        }
-
-        int lobbyId = info.get("gameId").getAsInt();
-        Lobby lobby = getLobby(lobbyId);
+    public ResponseEntity<Void> deleteActiveGame(@RequestParam Integer gameId, @RequestParam Integer playerId) {
+        Lobby lobby = getLobby(gameId);
 
         if (lobby == null) {
             return emptyResponseMaker.notFound();
         }
 
-        int playerId = info.get("playerId").getAsInt();
-
         if (!lobby.hasPlayer(playerId) || !lobby.isHost(playerId)) {
             return emptyResponseMaker.forbidden();
         }
 
+        lobbies.remove(lobby);
         return emptyResponseMaker.ok();
     }
     @PostMapping(ResourceLocation.joinGame)
@@ -191,8 +196,9 @@ public class Server {
 
         JsonObject response = new JsonObject();
         response.addProperty("playerId", playerId);
+        response.addProperty("playerIndex", lobby.getPlayerCount() - 1);
 
-        return responseMaker.itemResponse(response.toString());
+        return responseMaker.itemResponse(response);
     }
 
     @PostMapping(ResourceLocation.leaveGame)
@@ -236,13 +242,13 @@ public class Server {
                     moves.add(move);
                 }
                 response.add("moves", moves);
-            }
 
-            if (playerId != null && lobby.hasPlayer(playerId)) {
-                lobby.hasRetrievedInfo(playerId);
-                if (lobby.allHaveInfo()) {
-                    lobby.resetReadyStatus();
-                    lobby.resetMoves();
+                if (playerId != null && lobby.hasPlayer(playerId)) {
+                    lobby.hasRetrievedInfo(playerId);
+                    if (lobby.allHaveInfo()) {
+                        lobby.resetReadyStatus();
+                        lobby.resetMoves();
+                    }
                 }
             }
             return responseMaker.itemResponse(response);
@@ -252,6 +258,7 @@ public class Server {
 
     @PostMapping(ResourceLocation.gameStatus)
     public ResponseEntity<Void> updateGameStatus(@RequestBody String stringInfo) {
+        System.out.println("Player sent update: " + stringInfo);
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
 
         if (!info.has("gameId")) {
@@ -275,11 +282,14 @@ public class Server {
             lobby.setActive();
         }
         if (info.has("moves")) {
-            lobby.updateMoves(playerId, info.get("moves").getAsString());
+            System.out.println("Player sent moves: " + info.get("moves").toString());
+            lobby.updateMoves(playerId, info.get("moves").toString());
         }
         if (info.has("isReady")) {
             boolean playerIsReady = info.get("isReady").getAsBoolean();
             lobby.setReadyStatus(playerId, playerIsReady);
+            System.out.println("Player is ready: " + playerIsReady);
+            System.out.println("Lobby is ready: " + lobby.isReady() + " (" + lobby.getReadyCount() + "/" + lobby.getPlayerCount() + ")");
         }
         return emptyResponseMaker.ok();
     }
@@ -292,7 +302,7 @@ public class Server {
         if (!file.exists()) {
             return responseMaker.notFound();
         }
-        if(gameId == null){
+        if (gameId == null) {
             return responseMaker.methodNotAllowed();
         }
 

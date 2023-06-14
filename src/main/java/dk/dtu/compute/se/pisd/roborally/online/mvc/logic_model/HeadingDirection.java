@@ -33,7 +33,7 @@ public enum HeadingDirection {
     EAST;
 
     /**
-     * Gives the left direction to the original direction
+     * Gives the right direction of the original direction
      *
      * @param heading
      * @return
@@ -52,10 +52,10 @@ public enum HeadingDirection {
     }
 
     /**
-     * Gives the left direction to the original direction
+     * Gives the left direction of the original direction
      *
      * @param heading
-     * @return
+     * @return The left direction of the original direction
      * @author Daniel
      */
     public static HeadingDirection leftHeadingDirection(HeadingDirection heading) {
@@ -71,10 +71,10 @@ public enum HeadingDirection {
     }
 
     /**
-     * To get the oppsite direction of the original direction
+     * Gives the opposite direction of the original direction
      *
      * @param heading
-     * @return
+     * @return The opposite direction of the original direction
      * @author ZeeDiazz (Zaid)
      */
     public static HeadingDirection oppositeHeadingDirection(HeadingDirection heading) {

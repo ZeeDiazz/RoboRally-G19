@@ -3,6 +3,8 @@ package dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Primary constructor of a LocalPlayer
+ * 
  * @author Zigalow & ZeeDiazz (Zaid)
  */
 

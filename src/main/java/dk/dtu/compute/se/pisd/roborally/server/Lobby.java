@@ -87,7 +87,7 @@ public class Lobby {
      * @return
      * @author Felix Schmidt (Felix732)
      */
-    public int getPlayersReadyCount() {
+    public int getReadyCount() {
         int readyCount = 0;
         for (int i = 0; i < getPlayerCount(); i++) {
             if (readyStatus.get(i)) {
@@ -120,6 +120,7 @@ public class Lobby {
             return;
         }
         readyStatus.set(getPlayerIndex(playerId), newStatus);
+        System.out.println("Ready status: " + Arrays.toString(readyStatus.toArray()));
     }
 
     public boolean hasRetrievedInfo(int playerId) {
@@ -131,7 +132,7 @@ public class Lobby {
     }
 
     public boolean isReady() {
-        return getPlayersReadyCount() == playerIds.size();
+        return getReadyCount() == playerIds.size();
     }
     public boolean allHaveInfo() {
         for (boolean hasRetrieved : hasRetrievedInfo) {

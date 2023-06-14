@@ -7,6 +7,7 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.*;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.CheckPointSpace;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.logic_model.spaces.Space;
 import dk.dtu.compute.se.pisd.roborally.online.mvc.saveload.Serializable;
+import dk.dtu.compute.se.pisd.roborally.online.mvc.ui_view.ProgrammingObserver;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,7 @@ import java.util.List;
 public class GameController implements Serializable {
 
     private GameFinishedListener gameFinishedListener;
+    private ProgrammingObserver programmingObserver;
 
     public static Board board = null;
     public static Game game = null;
@@ -129,6 +131,8 @@ public class GameController implements Serializable {
 
 
     public void startProgrammingPhase() {
+        startedProgramming();
+
         game.setPhase(Phase.PROGRAMMING);
         game.setCurrentPlayer(game.getPlayer(0));
         game.setStep(0);
@@ -161,6 +165,8 @@ public class GameController implements Serializable {
         game.setStep(0);
         updatePrioritisedRobotsForAllPlayers();
         game.setCurrentPlayer(game.prioritisedPlayers.remove(0));
+
+        finishedProgramming();
     }
 
     private void makeProgramFieldsVisible(int register) {
@@ -390,6 +396,10 @@ public class GameController implements Serializable {
         this.gameFinishedListener = gameFinishedListener;
     }
 
+    public void setProgrammingObserver(ProgrammingObserver observer) {
+        this.programmingObserver = observer;
+    }
+
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
@@ -547,5 +557,15 @@ public class GameController implements Serializable {
         return Math.atan2(yDifference, xDifference);
     }
 
+    public void finishedProgramming() {
+        if (programmingObserver != null) {
+            programmingObserver.finished();
+        }
+    }
 
+    public void startedProgramming() {
+        if (programmingObserver != null) {
+            programmingObserver.started();
+        }
+    }
 }

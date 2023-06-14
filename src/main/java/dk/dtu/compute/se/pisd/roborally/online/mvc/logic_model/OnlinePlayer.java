@@ -10,7 +10,7 @@ public class OnlinePlayer extends Player {
 
 
     /**
-     * Default constructor of OnlinePlayer, so that an OnlinePlayer can be made without any parameters
+     * Default constructor of OnlinePlayer, so that a Client/OnlinePlayer can be made without any parameters
      *
      * @author Zigalow
      */

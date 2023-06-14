@@ -64,8 +64,20 @@ public abstract class RequestMaker {
         return new Response<>(httpResponse);
     }
 
+    public static Response<String> postRequest(URI location, JsonElement json) throws IOException, InterruptedException {
+        return postRequest(location, json.toString());
+    }
+
     public static Response<JsonObject> postRequestJson(URI location, String string) throws IOException, InterruptedException {
-        return new JsonResponse(postRequest(location, string));
+        Response<String> response = postRequest(location, string);
+        try {
+            return new JsonResponse(response);
+        }
+        catch (IllegalStateException e) {
+            System.out.println("Posted to: '" + location + "' with payload: '" + string + "'");
+            System.out.println("Response: " + response.getItem());
+            throw e;
+        }
     }
 
     public static Response<JsonObject> postRequestJson(URI location, JsonElement json) throws IOException, InterruptedException {
@@ -78,5 +90,14 @@ public abstract class RequestMaker {
             json.addProperty(key, map.get(key));
         }
         return postRequestJson(location, json);
+    }
+
+    public static void deleteRequest(URI location) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(location)
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
+        client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 }

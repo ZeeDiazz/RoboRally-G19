@@ -80,15 +80,6 @@ public abstract class Game extends Subject implements Serializable {
     }
 
     /**
-     * Constructor for Game
-     *
-     * @author Zigalow
-     */
-    public Game() {
-
-    }
-
-    /**
      * Gets the playing board in the game
      *
      * @return
@@ -208,6 +199,16 @@ public abstract class Game extends Subject implements Serializable {
             this.phase = phase;
             notifyChange();
         }
+    }
+
+    /**
+     * Set the phase of the game to the next phase
+     * @author Daniel
+     */
+    public void nextPhase() {
+        Phase current = getPhase();
+        Phase next = Phase.values()[(current.ordinal() + 1) % Phase.values().length];
+        setPhase(next);
     }
 
     /**

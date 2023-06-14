@@ -32,10 +32,10 @@ public class CommandExecuter {
                     this.turnRobotCommand(player.robot, command);
                     player.setPrevProgramming(command);
                 }
-                case POWER_UP -> {
+                /*case POWER_UP -> {
                     player.addEnergyCube(1);
                     player.setPrevProgramming(command);
-                }
+                }*/
                 case AGAIN -> this.repeatPrevProgramming(player);
 
                 default -> {
