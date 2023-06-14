@@ -501,7 +501,7 @@ public class GameController implements Serializable {
      *
      * @param robots
      * @return prioritylist, a list of player sorted  by priority
-     * @author Felix723
+     * @author Felix Schmidt (Felix723)
      */
     private List<Robot> getPriority(List<Robot> robots) {
         List<Robot> tied = new ArrayList<>();

@@ -2,6 +2,11 @@ package dk.dtu.compute.se.pisd.roborally.server;
 
 import java.util.*;
 
+/**
+ * This class is used to store the information about a lobby.
+ * @auther Felix Schmidt (Felix723)
+ * @auther Daniel Jensen
+ */
 public class Lobby {
     private static final Random rng = new Random();
 
@@ -32,11 +37,7 @@ public class Lobby {
         this.boardName = boardName;
     }
 
-    /**
-     * Method to get the lobby id
-     * @return id, integer value lobby id
-     * @author Felix Schmidt (Felix732)
-     */
+
     public int getId(){
         return this.id;
     }
@@ -53,7 +54,7 @@ public class Lobby {
     /**
      * Method to add a player to a lobby utilizing the List interface method add
      * @param playerId
-     * @author Felix Schmidt (Felix732)
+     * @author Felix Schmidt (Felix723)
      */
     public void addPlayer(int playerId) {
         playerIds.add(playerId);
@@ -65,7 +66,7 @@ public class Lobby {
     /**
      * Method to remove a player from a lobby
      * @param playerId
-     * @author Felix Schmidt (Felix732)
+     * @author Felix Schmidt (Felix723)
      */
     public void removePlayer(int playerId) {
         int playerIndex = getPlayerIndex(playerId);
@@ -84,11 +85,7 @@ public class Lobby {
 
     public boolean isHost(int playerId) { return getPlayerIds().get(0) == playerId; }
 
-    /**
-     * Method to get the number of players ready in a lobby
-     * @return
-     * @author Felix Schmidt (Felix732)
-     */
+
     public int getReadyCount() {
         int readyCount = 0;
         for (int i = 0; i < getPlayerCount(); i++) {
@@ -99,11 +96,6 @@ public class Lobby {
         return readyCount;
     }
 
-    /**
-     * Method to get the list of players in a lobby
-     * @return players, a list of players
-     * @author Felix Schmidt (Felix732)
-     */
     public List<Integer> getPlayerIds() {
         // streaming to a list, to make a copy, instead of giving the internal copy away
         return playerIds.stream().toList();

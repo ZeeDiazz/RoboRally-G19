@@ -2,6 +2,10 @@ package dk.dtu.compute.se.pisd.roborally.restful;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * This class is used to store the location of the different resources.
+ * @auther Daniel Jensen
+ */
 @Component
 public abstract class ResourceLocation {
     public static final String baseLocation = "http://localhost:8080";
