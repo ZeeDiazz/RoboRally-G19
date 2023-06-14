@@ -37,6 +37,3 @@ Here you can choose whichever fits your needs (See activity diagram for more).
 
 When you are playing a game, you are represented with the options in figure below, where you can Save, Stop or Exit the game.  <br />
 ![image](https://github.com/ZeeDiazz/RoboRally-G19/assets/69626255/3b65b0e6-a213-43b9-857d-a03f5369e0b6)
-
-
-

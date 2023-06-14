@@ -1,0 +1,37 @@
+package dk.dtu.compute.se.pisd.roborally.restful;
+
+import org.springframework.http.HttpStatusCode;
+
+import java.net.http.HttpResponse;
+
+/**
+ * This class is the
+ * @param <T> generic type
+ * @auther Daniel Jensen
+ */
+public class Response<T> {
+    protected HttpStatusCode code;
+    protected T item;
+
+    public Response(HttpResponse<T> httpResponse) {
+        this.code = HttpStatusCode.valueOf(httpResponse.statusCode());
+        this.item = httpResponse.body();
+    }
+
+    public Response(HttpStatusCode code, T item) {
+        this.code = code;
+        this.item = item;
+    }
+
+    public HttpStatusCode getStatusCode() {
+        return code;
+    }
+
+    public T getItem() {
+        return item;
+    }
+
+    public boolean hasItem() {
+        return item != null;
+    }
+}

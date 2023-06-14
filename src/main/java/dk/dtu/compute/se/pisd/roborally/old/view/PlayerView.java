@@ -23,7 +23,6 @@ package dk.dtu.compute.se.pisd.roborally.old.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.old.controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.old.model.Command;
 import dk.dtu.compute.se.pisd.roborally.old.model.CommandCardField;
 import dk.dtu.compute.se.pisd.roborally.old.model.Phase;
