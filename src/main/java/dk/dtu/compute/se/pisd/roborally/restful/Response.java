@@ -4,6 +4,11 @@ import org.springframework.http.HttpStatusCode;
 
 import java.net.http.HttpResponse;
 
+/**
+ * This class is the
+ * @param <T> generic type
+ * @auther Daniel Jensen
+ */
 public class Response<T> {
     protected HttpStatusCode code;
     protected T item;

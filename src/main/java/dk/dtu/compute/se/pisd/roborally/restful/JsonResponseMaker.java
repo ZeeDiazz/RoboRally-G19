@@ -5,6 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * This class is used to make a response with a JsonElement and an HTTP status code
+ * @param <T> a generic type that extends JsonElement
+ * @auther Felix Schmidt
+ * @auther Daniel Jensen
+ */
+
 public class JsonResponseMaker<T extends JsonElement> extends ResponseMaker<String>  {
     public ResponseEntity<String> itemResponse(T item) {
         // If there is no item, make the response "Not Found" (404), otherwise the response is "OK" (200)
@@ -12,6 +19,11 @@ public class JsonResponseMaker<T extends JsonElement> extends ResponseMaker<Stri
         return new ResponseEntity<>(item.toString(), statusCode);
     }
 
+    /**
+     * This method is used to make a response with the HTTP status code "OK" (200)
+     * @return a response with the HTTP status code "OK" (200)
+     * @auther Felix Schmidt
+     */
     public ResponseEntity<String> ok() {
         return new ResponseEntity<>(HttpStatus.OK);
     }

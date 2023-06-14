@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * This class is the RestController for the server.
  * @auther Felix Schmidt (Felix723)
+ * @auther Daniel Jensen
  */
 
 @RestController
@@ -79,7 +81,12 @@ public class Server {
         return !jsonObject.has("gameId") || !jsonObject.has("playerId");
     }
 
-
+    /**
+     * This method handles a get request to the server at the location /games
+     * @return an item response with a list of all the games
+     * @auther Felix Schmidt (Felix723)
+     * @auther Daniel Jensen
+     */
     @GetMapping(ResourceLocation.allGames)
     public ResponseEntity<String> getAllGames() {
         JsonObject response = new JsonObject();
@@ -91,6 +98,13 @@ public class Server {
         return responseMaker.itemResponse(response);
     }
 
+    /***
+     * This method handles a get request to the server at the location /game
+     * @param gameId, an integer value representing the id of the game
+     * @return an item response with the game info
+     * @auther Felix Schmidt (Felix723)
+     * @auther Daniel Jensen
+     */
     @GetMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> getGameInfo(@RequestParam Integer gameId) {
         JsonObject response = new JsonObject();
@@ -112,6 +126,14 @@ public class Server {
 
     }
     /* -- resource /game -- */
+
+    /**
+     * This method handles a post request to the server at the location /game
+     * @param stringInfo a string containing the info about the game
+     * @return a response with the game info and http status code
+     * @auther Felix Schmidt (Felix723)
+     * @auther Daniel Jensen
+     */
 
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
@@ -157,6 +179,13 @@ public class Server {
          */
     }
 
+    /**
+     * This method handles a delete request to the server at the location /game
+     * @param gameId
+     * @param playerId
+     * @auther Felix Schmidt (Felix723)
+     * @auther Daniel Jensen
+     */
     @DeleteMapping(ResourceLocation.specificGame)
     public ResponseEntity<Void> deleteActiveGame(@RequestParam Integer gameId, @RequestParam Integer playerId) {
         Lobby lobby = getLobby(gameId);
@@ -172,6 +201,14 @@ public class Server {
         lobbies.remove(lobby);
         return emptyResponseMaker.ok();
     }
+
+    /**
+     * This method handles a post request to the server at the location /game/join
+     * @param stringInfo
+     * @return a response with the game info and http status code
+     * @auther Felix Schmidt (Felix723)
+     * @auther Daniel Jensen
+     */
     @PostMapping(ResourceLocation.joinGame)
     public ResponseEntity<String> playerJoinRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
@@ -201,6 +238,13 @@ public class Server {
         return responseMaker.itemResponse(response);
     }
 
+    /**
+     * This method handles a post request to the server at the location /game/leave
+     * @param stringInfo
+     * @return a response with the game info and http status code
+     * @auther Felix Schmidt (Felix723)
+     * @auther Daniel Jensen
+     */
     @PostMapping(ResourceLocation.leaveGame)
     public ResponseEntity<Void> playerLeaveRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
@@ -226,6 +270,14 @@ public class Server {
         return emptyResponseMaker.ok();
     }
 
+    /**
+     * This method handles a get reqeust to the server at the location /game/status
+     * @param gameId
+     * @param playerId
+     * @return a response with the game status and http status code
+     * @auther Felix Schmidt (Felix723)
+     * @auther Daniel Jensen
+     */
     @GetMapping(ResourceLocation.gameStatus)
     public ResponseEntity<String> getGameStatus(@RequestParam Integer gameId, @RequestParam(required = false) Integer playerId) {
         JsonObject response = new JsonObject();
@@ -256,6 +308,12 @@ public class Server {
         return responseMaker.notFound();
     }
 
+    /**
+     * This method handles a post request to the server at the location /game/status
+     * @param stringInfo
+     * @return a response with the game status and http status code
+     * @auther Felix Schmidt (Felix723)
+     */
     @PostMapping(ResourceLocation.gameStatus)
     public ResponseEntity<Void> updateGameStatus(@RequestBody String stringInfo) {
         System.out.println("Player sent update: " + stringInfo);
@@ -294,6 +352,12 @@ public class Server {
         return emptyResponseMaker.ok();
     }
 
+    /**
+     * this method handles a get request to the server at the location /game/lobby
+     * @param gameId
+     * @return a response with the game and http status code
+     * @auther Zahedullah Wafa
+     */
     @GetMapping(ResourceLocation.saveGame)
     public ResponseEntity<String> loadGame(@RequestParam Integer gameId) {
         String filename = databasePath + gameId + ".json";
@@ -316,6 +380,13 @@ public class Server {
         }
     }
 
+    /**
+     * this method handles a post request to the server at the location /game/lobby
+     * @param stringInfo
+     * @return an empty response json object with the http status code
+     * @throws IOException
+     * @auther Felix Schmidt (Felix723)
+     */
 
     @PostMapping(ResourceLocation.saveGame)
     public ResponseEntity<String> saveGame(@RequestBody String stringInfo) throws IOException {
@@ -343,6 +414,11 @@ public class Server {
         return responseMaker.itemResponse(response);
     }
 
+    /**
+     * this method handles a delete request to the server at the location /game/lobby
+     * @param stringInfo the game id
+     * @auther Felix Schmidt (Felix723)
+     */
     @DeleteMapping(ResourceLocation.saveGame)
     public ResponseEntity<Void> deleteSavedGame(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);

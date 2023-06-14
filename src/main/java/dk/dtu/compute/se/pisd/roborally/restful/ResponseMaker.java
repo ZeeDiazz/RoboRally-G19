@@ -5,9 +5,20 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class is used to make the responses for the RESTful API.
+ * @param <T> generic type
+ * @auther Daniel Jensen
+ */
 @Component
 
 public class ResponseMaker<T> {
+    /**
+     * This method is used to make the response for the RESTful API.
+     * @param item
+     * @return a response with the HTTP status code
+     * @auther Daniel Jensen
+     */
     public ResponseEntity<T> itemResponse(T item) {
         // If there is no item, make the response "Not Found" (404), otherwise the response is "OK" (200)
         HttpStatusCode statusCode = (item == null) ? HttpStatus.NOT_FOUND : HttpStatus.OK;
