@@ -218,13 +218,13 @@ public class AppController implements Observer, GameFinishedListener {
             gameOptions.setTitle("Choose game option");
             gameOptions.setHeaderText("How would you like to play?");
             gameOptions.setContentText("Select the option you would like to perform");
-            
+
             do {
                 option = gameOptions.showAndWait().get();
 
                 Alert errorAlert = new Alert(AlertType.INFORMATION);
                 int gameId;
-            
+
                 if (option == joinGame) {
                     try {
                         gameId = chooseGameIdWindow();
@@ -346,30 +346,65 @@ public class AppController implements Observer, GameFinishedListener {
 
             fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
         } else {
-            //TODO:
-            try {
-                Alert alert = new Alert(AlertType.INFORMATION);
+            ButtonType locally = new ButtonType("Local");
+            ButtonType onServer = new ButtonType("Remote");
 
-                if (client.saveGame()) {
-                    alert.setTitle("Saved succesfully");
-                    alert.setHeaderText("The game was succesfully saved");
-                    alert.showAndWait();
-                } else {
-                    alert.setTitle("Save failed");
-                    alert.setHeaderText("The game couldn't be saved");
-                    alert.setContentText("There was a problem with connecting to the server");
-                    alert.showAndWait();
+            Alert howToSave = new Alert(AlertType.CONFIRMATION, "Select whether you want to save it on your device, or on the server", locally, onServer);
+
+            howToSave.setTitle("Save location");
+            howToSave.setHeaderText("Where do you wish to save the game file");
+
+            Optional<ButtonType> saveLocation = howToSave.showAndWait();
+
+            if (saveLocation.get() == onServer) {
+                try {
+                    Alert alert = new Alert(AlertType.INFORMATION);
+
+                    if (client.saveGame()) {
+                        alert.setTitle("Saved succesfully");
+                        alert.setHeaderText("The game was succesfully saved");
+                        alert.showAndWait();
+                    } else {
+                        alert.setTitle("Save failed");
+                        alert.setHeaderText("The game couldn't be saved");
+                        alert.setContentText("There was a problem with connecting to the server");
+                        alert.showAndWait();
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-          /*  if()
-            
-            File file = new File();
+            } else {
+                
+                Game saveGame = client.getGame();     
+                
 
-*/
+                fileChooser.setInitialDirectory(new File(".")); // Sets directory to project folder
+
+                fileChooser.setTitle("Save Game"); // Description for action
+                fileChooser.setInitialFileName("RoboRally_SaveFile"); // Initial name of saveFile
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json")); // Can only be saved as a json file type
+                File file = fileChooser.showSaveDialog(null);
+
+
+                if (file != null) {
+                    try {
+                        file.createNewFile();
+                        // Saves to Json-file
+                        JSONTransformer.saveBoard(file,saveGame);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    // If the user opts out of saving
+                } else {
+                    return;
+                }
+
+            } 
+  
         }
     }
+
 
     /**
      * Loads a game from a json file. If the file can't be loading correctly,
@@ -448,7 +483,7 @@ public class AppController implements Observer, GameFinishedListener {
             GameController gameController1 = null;
 
             try {
-                gameController1 = JSONTransformer.loadBoard(file);
+                gameController1 = JSONTransformer.loadBoard(file,null);
             } catch (Exception e) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("File could not be loaded");
