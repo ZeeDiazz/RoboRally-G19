@@ -369,14 +369,29 @@ public class Client {
         Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(loadgameURI);
 
         if (jsonGameFromServer.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Game from server: " + jsonGameFromServer.getItem().toString());
             JsonObject gameControllerFromServer = jsonGameFromServer.getItem();
 
-
-            GameController gameController = new GameController(new Board(10, 10));
-            Game initialGame = (Game) gameController.deserialize(gameControllerFromServer.get("gameController").getAsJsonObject().get("game"));
+            Game gameDeserializer = new OnlineGame(new Board(1, 1), 0);
+            OnlineGame initialGame = (OnlineGame)gameDeserializer.deserialize(gameControllerFromServer.getAsJsonObject().get("game").getAsJsonObject());
 
             if (initialGame.getGameId() > 0) {
+                this.gameId = initialGame.getGameId();
+                this.playerId = gameControllerFromServer.get("playerId").getAsInt();
+                initialGame.setClient(this);
                 System.out.println("Succesfully loaded game");
+
+                URI statusUri;
+                try {
+                    statusUri = RequestMaker.makeUri(makeFullUri(ResourceLocation.specificGame), getIdentification());
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println("Status uri: " + statusUri);
+
+                Response<JsonObject> currentStatus = RequestMaker.getRequestJson(statusUri);
+
+                initialGame.setLocalPlayer(currentStatus.getItem().get("playerCount").getAsInt() - 1);
                 this.game = initialGame;
                 return game;
             }

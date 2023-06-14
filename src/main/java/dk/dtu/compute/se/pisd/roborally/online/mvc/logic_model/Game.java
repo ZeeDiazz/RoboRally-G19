@@ -25,7 +25,7 @@ public abstract class Game extends Subject implements Serializable {
     public /*final*/ Board board;
     protected Integer gameId;
 
-    protected final List<Player> players = new ArrayList<>();
+    protected List<Player> players = new ArrayList<>();
     protected Player current;
 
     //Represents the total amount of steps in the current game

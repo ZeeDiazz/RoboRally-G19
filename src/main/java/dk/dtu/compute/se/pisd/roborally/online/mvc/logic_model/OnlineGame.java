@@ -7,6 +7,8 @@ import dk.dtu.compute.se.pisd.roborally.online.mvc.client_controller.GameControl
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OnlineGame extends Game {
     private Client client;
@@ -105,5 +107,36 @@ public class OnlineGame extends Game {
 
     public void closeConnection() throws URISyntaxException, IOException, InterruptedException {
         client.deleteActiveGame();
+    }
+
+    public void setLocalPlayer(int index) {
+        List<Player> newPlayers = new ArrayList<>();
+        for (int i = 0; i < getPlayerCount(); i++) {
+            Player oldPlayer = players.get(i);
+            Player newPlayer;
+            if (i == index) {
+                newPlayer = new LocalPlayer(this, oldPlayer.getRobot().getColor(), oldPlayer.getName());
+            }
+            else {
+                newPlayer = new OnlinePlayer(this, oldPlayer.getRobot().getColor(), oldPlayer.getName());
+            }
+
+            newPlayer.setPlayerID(oldPlayer.getPlayerID());
+            newPlayer.setPrevProgramming(oldPlayer.getPrevProgramming());
+            newPlayer.robot = oldPlayer.robot;
+
+            int currentIndex = 0;
+            for (CommandCardField field : oldPlayer.getProgram()) {
+                newPlayer.getProgramField(currentIndex++).setCard(field.getCard());
+            }
+            currentIndex = 0;
+            for (CommandCardField field : oldPlayer.getCards()) {
+                newPlayer.getCardField(currentIndex++).setCard(field.getCard());
+            }
+
+            newPlayers.add(newPlayer);
+        }
+
+        this.players = newPlayers;
     }
 }

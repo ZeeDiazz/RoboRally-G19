@@ -318,7 +318,22 @@ public class Server {
         try (FileReader fileReader = new FileReader(file)) {
             JsonObject loadedInfo = jsonParser.parse(fileReader).getAsJsonObject();
 
-            return responseMaker.itemResponse(loadedInfo.toString());
+            Lobby lobby;
+            if (!lobbyExists(gameId)) {
+                lobby = new Lobby(gameId, loadedInfo.get("playerCount").getAsInt(), loadedInfo.get("board").getAsJsonObject().get("boardName").getAsString());
+                lobby.setActive();
+                lobbies.add(lobby);
+            }
+            else {
+                lobby = getLobby(gameId);
+            }
+            int playerId = lobby.makePlayerId();
+            lobby.addPlayer(playerId);
+
+            JsonObject loadedGame = new JsonObject();
+            loadedGame.addProperty("playerId", playerId);
+            loadedGame.add("game", loadedInfo);
+            return responseMaker.itemResponse(loadedGame);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

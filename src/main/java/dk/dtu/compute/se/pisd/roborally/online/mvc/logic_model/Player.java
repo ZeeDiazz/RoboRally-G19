@@ -195,7 +195,6 @@ public abstract class Player extends Subject implements Serializable {
         return this.robot;
     }
 
-
     @Override
     public JsonElement serialize() {
         JsonObject jsonObject = new JsonObject();
