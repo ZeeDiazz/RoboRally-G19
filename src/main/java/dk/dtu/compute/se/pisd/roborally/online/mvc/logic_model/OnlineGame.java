@@ -89,4 +89,8 @@ public class OnlineGame extends Game {
         jsonObject.addProperty("numberOfPlayersToStart", getNumberOfPlayersToStart());
         return jsonObject;
     }
+
+    public void closeConnection() throws URISyntaxException, IOException, InterruptedException {
+        client.deleteActiveGame();
+    }
 }

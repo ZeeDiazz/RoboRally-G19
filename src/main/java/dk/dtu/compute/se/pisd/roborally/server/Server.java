@@ -116,15 +116,27 @@ public class Server {
     @PostMapping(ResourceLocation.specificGame)
     public ResponseEntity<String> lobbyCreateRequest(@RequestBody String stringInfo) {
         JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-        if(!info.has("gameId") || !info.has("minimumPlayers") || !info.has("boardName")) {
+        if(!info.has("minimumPlayers") || !info.has("boardName")) {
             return responseMaker.forbidden();
         }
-        int lobbyId = info.get("gameId").getAsInt();
         int minimumPlayers = info.get("minimumPlayers").getAsInt();
 
-        System.out.println("Requested lobby id: " + lobbyId);
-        // Make a random id that we don't already use
-        while (lobbyExists(lobbyId)) {
+        int lobbyId = -1;
+        boolean needNewId;
+        if (info.has("gameId")) {
+            lobbyId = info.get("gameId").getAsInt();
+            System.out.println("Requested lobby id: " + lobbyId);
+
+            needNewId = lobbyExists(lobbyId);
+        }
+        else {
+            System.out.println("Didn't specify a lobby id");
+
+            needNewId = true;
+        }
+
+        if (needNewId) {
+            // Get a lobby id that we don't already use
             lobbyId = makeNewLobbyId();
         }
 
@@ -146,26 +158,18 @@ public class Server {
     }
 
     @DeleteMapping(ResourceLocation.specificGame)
-    public ResponseEntity<Void> deleteActiveGame(@RequestBody String stringInfo) {
-        JsonObject info = (JsonObject)jsonParser.parse(stringInfo);
-
-        if(notEnoughInfo(info)) {
-            return emptyResponseMaker.forbidden();
-        }
-
-        int lobbyId = info.get("gameId").getAsInt();
-        Lobby lobby = getLobby(lobbyId);
+    public ResponseEntity<Void> deleteActiveGame(@RequestParam Integer gameId, @RequestParam Integer playerId) {
+        Lobby lobby = getLobby(gameId);
 
         if (lobby == null) {
             return emptyResponseMaker.notFound();
         }
 
-        int playerId = info.get("playerId").getAsInt();
-
         if (!lobby.hasPlayer(playerId) || !lobby.isHost(playerId)) {
             return emptyResponseMaker.forbidden();
         }
 
+        lobbies.remove(lobby);
         return emptyResponseMaker.ok();
     }
     @PostMapping(ResourceLocation.joinGame)
@@ -298,7 +302,7 @@ public class Server {
         if (!file.exists()) {
             return responseMaker.notFound();
         }
-        if(gameId == null){
+        if (gameId == null) {
             return responseMaker.methodNotAllowed();
         }
 

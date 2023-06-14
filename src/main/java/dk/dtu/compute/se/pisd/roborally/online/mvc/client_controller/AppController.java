@@ -525,6 +525,14 @@ public class AppController implements Observer, GameFinishedListener {
             // here we save the game (without asking the user).
             // saveGame();
 
+            if (game instanceof OnlineGame onlineGame) {
+                try {
+                    onlineGame.closeConnection();
+                } catch (URISyntaxException | IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             gameController = null;
             roboRally.createBoardView(null);
             return true;

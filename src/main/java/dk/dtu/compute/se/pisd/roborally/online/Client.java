@@ -411,6 +411,14 @@ public class Client {
         }
     }
 
+    public void deleteActiveGame() throws URISyntaxException, IOException, InterruptedException {
+        RequestMaker.deleteRequest(RequestMaker.makeUri(makeFullUri(ResourceLocation.specificGame), getIdentification()));
+
+        this.gameId = -1;
+        this.game = null;
+        this.playerId = -1;
+        this.playerIndex = -1;
+    }
 
     private String makeFullUri(String relativeDestination) {
         return baseLocation + relativeDestination;

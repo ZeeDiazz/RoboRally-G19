@@ -91,4 +91,13 @@ public abstract class RequestMaker {
         }
         return postRequestJson(location, json);
     }
+
+    public static void deleteRequest(URI location) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(location)
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
+        client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 }
