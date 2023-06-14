@@ -63,7 +63,7 @@ public class RoboRallyMenuBar extends MenuBar {
         loadGame.setOnAction( e -> this.appController.loadGame());
         controlMenu.getItems().add(loadGame);
 
-        deleteSavedGame = new MenuItem("Delete Saved Game");
+        deleteSavedGame = new MenuItem("Delete Remote Saved Game");
         deleteSavedGame.setOnAction( e -> this.appController.deleteSavedGame());
         controlMenu.getItems().add(deleteSavedGame);
 
