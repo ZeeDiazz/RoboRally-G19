@@ -316,7 +316,7 @@ public abstract class Game extends Subject implements Serializable {
             if (space == null) {
                 moveAmount++;
                 break;
-            } else if (!space.canEnterFrom(HeadingDirection.oppositeHeadingDirection(move.direction))) {
+            } else if (!space.canEnterBy(move.direction)) {
                 break;
             } else if (space.getRobot() != null) {
                 // Can maximally move the full amount, minus the part already moved

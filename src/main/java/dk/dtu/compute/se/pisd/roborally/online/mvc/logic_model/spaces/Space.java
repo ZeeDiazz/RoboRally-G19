@@ -80,8 +80,8 @@ public class Space extends Subject implements Serializable {
      * @return true if a robot can enter this space from the given direction.
      * @author Daniel Jensen
      */
-    public boolean canEnterFrom(HeadingDirection from) {
-        return !hasWall(from);
+    public boolean canEnterBy(HeadingDirection from) {
+        return !hasWall(HeadingDirection.oppositeHeadingDirection(from));
     }
 
     /**
