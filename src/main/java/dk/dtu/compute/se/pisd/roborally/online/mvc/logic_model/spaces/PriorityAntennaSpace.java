@@ -22,5 +22,9 @@ public class PriorityAntennaSpace extends Space {
     public boolean canEnterFrom(HeadingDirection from) {
         return false;
     }
-    
+
+    @Override
+    public boolean canExitBy(HeadingDirection going) {
+        return false;
+    }
 }

@@ -308,7 +308,7 @@ public abstract class Game extends Subject implements Serializable {
 
         Space space = board.getSpace(move.start);
         for (int i = 0; i < move.amount; i++) {
-            if (space.hasWall(move.direction)) {
+            if (!space.canExitBy(move.direction)) {
                 break;
             }
 
@@ -316,7 +316,7 @@ public abstract class Game extends Subject implements Serializable {
             if (space == null) {
                 moveAmount++;
                 break;
-            } else if (space.hasWall(HeadingDirection.oppositeHeadingDirection(move.direction))) {
+            } else if (!space.canEnterFrom(HeadingDirection.oppositeHeadingDirection(move.direction))) {
                 break;
             } else if (space.getRobot() != null) {
                 // Can maximally move the full amount, minus the part already moved
