@@ -127,14 +127,6 @@ public class Board extends Subject implements Serializable {
         return getSpace(Position.move(space.position, headingDirection));
     }
 
-    public void addCheckpoint(Position position) {
-        this.spaces[position.X][position.Y] = new CheckPointSpace(position, checkpointAmount++);
-    }
-    public void addPriorityAntenna(Position position){
-        this.spaces[position.X][position.Y] = new PriorityAntennaSpace(position,HeadingDirection.NORTH);
-    }
-
-
     /**
      * Rotate a whole board to the left.
      *
