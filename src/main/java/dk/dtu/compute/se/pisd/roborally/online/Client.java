@@ -181,7 +181,7 @@ public class Client {
 
     public boolean canStartGame() throws URISyntaxException, IOException, InterruptedException {
 
-        URI canStartGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus),"gameId", String.valueOf(gameId));
+        URI canStartGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.gameStatus), "gameId", String.valueOf(gameId));
 
         Response<JsonObject> jsonGameFromServer = RequestMaker.getRequestJson(canStartGameURI);
 
@@ -215,8 +215,7 @@ public class Client {
         for (Command command : commands) {
             if (command == null) {
                 cards.add("");
-            }
-            else {
+            } else {
                 cards.add(command.toString());
             }
         }
@@ -246,8 +245,7 @@ public class Client {
             if (gameFromServer.has("moves")) {
                 jsonMovesArray = gameFromServer.get("moves").getAsJsonArray();
                 System.out.println("Moves gotten: " + jsonMovesArray);
-            }
-            else {
+            } else {
                 jsonMovesArray = null;
             }
         } else {
@@ -444,8 +442,7 @@ public class Client {
             Player player;
             if (i == playerIndex) {
                 player = new LocalPlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1));
-            }
-            else {
+            } else {
                 player = new OnlinePlayer(deserializedGame, PLAYER_COLORS.get(i), "Player " + (i + 1));
             }
             deserializedGame.addPlayer(player);
@@ -492,8 +489,8 @@ public class Client {
     private Map<String, String> getIdentification() {
         Map<String, String> identification = new HashMap<>();
 
-        identification.put("gameId", gameId+"");
-        identification.put("playerId", playerId+"");
+        identification.put("gameId", gameId + "");
+        identification.put("playerId", playerId + "");
 
         return identification;
     }
@@ -511,8 +508,7 @@ public class Client {
                 if (commandString.equals("")) {
                     card = null;
                     System.out.println("No command");
-                }
-                else {
+                } else {
                     card = new CommandCard(Command.valueOf(commandString));
                     System.out.println("Command: " + card.command);
                 }
@@ -555,4 +551,9 @@ public class Client {
         }
         return Command.valueOf(interactionsJson.get(interactionsMade).getAsString());
     }
+
+    public int getGameId() {
+        return this.gameId;
+    }
+
 }
