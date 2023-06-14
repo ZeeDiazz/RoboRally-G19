@@ -144,17 +144,14 @@ public class AppController implements Observer, GameFinishedListener {
             // Zaid & Zigalow {
             int gameId;
             try {
-                gameId = chooseGameIdCreateGame();
+                gameId = chooseGameId("Please enter your preferred game ID", "I don't prefer a Game ID");
                 client.createGame(gameId, playerCount, board.boardName);
             } catch (URISyntaxException | IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
             while (true) {
-                Alert waiter = new Alert(AlertType.CONFIRMATION, "Do you want to start the game?", ButtonType.OK);
-                waiter.setHeaderText("Start game of game Id " + client.getGameId() + "?");
-                waiter.showAndWait();
-
+                makeConfirmationAlert("Do you want to start the game?", "Start game of game Id " + client.getGameId() + "?");
                 try {
                     if (client.canStartGame()) {
                         break;
@@ -162,11 +159,7 @@ public class AppController implements Observer, GameFinishedListener {
                 } catch (URISyntaxException | IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                Alert cannotStartGame = new Alert(AlertType.ERROR, "The game is still missing players", ButtonType.OK);
-                cannotStartGame.setHeaderText("Missing players");
-                cannotStartGame.showAndWait();
-
-
+                makeErrorAlert("Missing players", "The game is still missing players");
             }
 
             System.out.println("Starting the game");
@@ -227,7 +220,7 @@ public class AppController implements Observer, GameFinishedListener {
 
                 if (option == joinGame) {
                     try {
-                        gameId = chooseGameIdWindow();
+                        gameId = chooseGameId("Please enter your preferred game ID", null);
 
                         // If player closes window
                         if (gameId == -2) {
@@ -358,17 +351,10 @@ public class AppController implements Observer, GameFinishedListener {
 
             if (saveLocation.get() == onServer) {
                 try {
-                    Alert alert = new Alert(AlertType.INFORMATION);
-
                     if (client.saveGame()) {
-                        alert.setTitle("Saved succesfully");
-                        alert.setHeaderText("The game was succesfully saved");
-                        alert.showAndWait();
+                        makeInfoAlert("Saved succesfully", "The game was succesfully saved");
                     } else {
-                        alert.setTitle("Save failed");
-                        alert.setHeaderText("The game couldn't be saved");
-                        alert.setContentText("There was a problem with connecting to the server");
-                        alert.showAndWait();
+                        makeInfoAlert("Saved failed", "The game couldn't be saved");
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -405,6 +391,13 @@ public class AppController implements Observer, GameFinishedListener {
         }
     }
 
+    private void makeInfoAlert(String title, String text) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(text);
+        alert.showAndWait();
+    }
+
 
     /**
      * Loads a game from a json file. If the file can't be loading correctly,
@@ -431,7 +424,7 @@ public class AppController implements Observer, GameFinishedListener {
         if (gameMode.get() == onlineButton) {
             do {
                 Alert errorAlert = new Alert(AlertType.ERROR);
-                int gameId = chooseGameIdWindow();
+                int gameId = chooseGameId("Please enter the game id", null);
                 // Closes the window
                 if (gameId == -2) {
                     return;
@@ -474,27 +467,20 @@ public class AppController implements Observer, GameFinishedListener {
 
 
             if (file == null || !file.isFile()) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("File could not be loaded");
-                alert.setHeaderText("Invalid or no file chosen");
-                alert.showAndWait();
+                makeErrorAlert("File could not be loaded", "Invalid or no file chosen");
                 return;
             }
-            GameController gameController1 = null;
+            GameController gameController;
 
             try {
-                gameController1 = JSONTransformer.loadBoard(file);
+                gameController = JSONTransformer.loadBoard(file);
             } catch (Exception e) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("File could not be loaded");
-                alert.setHeaderText("There was a problem with loading the given file");
-                alert.setContentText("Is the json file you're trying to load made from this game?");
-                alert.showAndWait();
+                makeErrorAlert("File could not be loaded", "There was a problem with loading the given file");
                 return;
             }
 
 
-            makeLoadedGame(gameController1);
+            makeLoadedGame(gameController);
 
 
             fileChooser.setInitialDirectory(file.getParentFile()); // Remembers the directory of the last chosen directory
@@ -507,29 +493,19 @@ public class AppController implements Observer, GameFinishedListener {
 
         boolean deleted;
         try {
-            gameId = chooseGameIdDeleteSavedGame();
+            gameId = chooseGameId("Please enter the id of the game to delete", null);
             deleted = client.deleteSavedGame(gameId);
 
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.OK);
-        alert.setTitle("Delete Game");
         if (deleted) {
-            alert.setHeaderText("Game deleted");
-            alert.setContentText("Successfully deleted game with gameId: " + gameId);
+            makeConfirmationAlert("Game deleted", "Successfully deleted game with gameId: " + gameId);
         }
         else {
-            alert.setHeaderText("Error encountered");
-            alert.setContentText("Encountered error when deleting game with gameId: " + gameId);
+            makeConfirmationAlert("Error encountered", "Encountered error when deleting game with gameId: " + gameId);
         }
-
-        alert.showAndWait();
     }
 
 
@@ -613,18 +589,21 @@ public class AppController implements Observer, GameFinishedListener {
         stopGame();
     }
 
-    private int chooseGameIdDeleteSavedGame() {
-
+    private int chooseGameId(String headerText, String skipText) {
         // Create the dialog for choosing a gameId
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Choose game ID");
-        dialog.setHeaderText("Please enter your preferred game ID");
+        dialog.setHeaderText(headerText);
 
 
         // add the Buttons Submit & skip
         ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(submitButtonType);
 
-        dialog.getDialogPane().getButtonTypes().addAll(submitButtonType);
+        if (skipText != null) {
+            ButtonType skipButtonType = new ButtonType(skipText, ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().add(skipButtonType);
+        }
 
         //
         GridPane grid = new GridPane();
@@ -665,179 +644,29 @@ public class AppController implements Observer, GameFinishedListener {
         });
 
         return result.get();
-    }
-
-    private int chooseGameIdCreateGame() {
-
-        // Create the dialog for choosing a gameId
-        Dialog<Integer> dialog = new Dialog<>();
-        dialog.setTitle("Choose game ID");
-        dialog.setHeaderText("Please enter your preferred game ID");
-
-
-        // add the Buttons Submit & skip
-        ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
-        // Call it; "Make it random" instead
-        ButtonType skipButtonType = new ButtonType("I don't prefer a Game ID", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(submitButtonType, skipButtonType);
-
-        //
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 150, 10, 10)); //10 height & 150 width
-
-
-        TextField integerField = new TextField();
-        integerField.setPromptText("Enter a positive integer"); //a text prompt telling the player to write an int
-
-        grid.add(new Label("Game ID:"), 0, 0);
-        grid.add(integerField, 1, 0);
-
-        // Enable/Disable submit button depending on whether an integer was entered.
-        Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
-        submitButton.setDisable(true);
-
-        // Do some validation.
-        integerField.textProperty().addListener((observable, oldValue, newValue) -> {
-            submitButton.setDisable(!isValidInteger(newValue));
-        });
-
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Convert the result to an integer when the submit button is clicked.
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == submitButtonType) {
-                return Integer.parseInt(integerField.getText());
-            } else {
-                return -1;
-            }
-        });
-
-        Optional<Integer> result = dialog.showAndWait();
-
-        result.ifPresent(integer -> {
-            System.out.println("Entered Integer: " + integer);
-        });
-
-        return result.get();
-    }
-
-    private int chooseGameIdWindow() {
-
-        // Create the dialog for choosing a gameId
-        Dialog<Integer> dialog = new Dialog<>();
-        dialog.setTitle("Choose game ID");
-        dialog.setHeaderText("Please enter your preferred game ID");
-
-
-        // add the Buttons Submit & skip
-        ButtonType submitButtonType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
-
-        dialog.getDialogPane().getButtonTypes().addAll(submitButtonType);
-
-        //
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 150, 10, 10)); //10 height & 150 width
-
-
-        TextField integerField = new TextField();
-        integerField.setPromptText("Enter a positive integer"); //a text prompt telling the player to write an int
-
-        grid.add(new Label("Game ID:"), 0, 0);
-        grid.add(integerField, 1, 0);
-
-        // Enable/Disable submit button depending on whether an integer was entered.
-        Node submitButton = dialog.getDialogPane().lookupButton(submitButtonType);
-        submitButton.setDisable(true);
-
-        // Do some validation.
-        integerField.textProperty().addListener((observable, oldValue, newValue) -> {
-            submitButton.setDisable(!isValidInteger(newValue));
-        });
-
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Convert the result to an integer when the submit button is clicked.
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == submitButtonType) {
-                return Integer.parseInt(integerField.getText());
-            } else {
-                return -2;
-            }
-        });
-        Optional<Integer> result = dialog.showAndWait();
-
-        result.ifPresent(integer -> {
-            System.out.println("Entered Integer: " + integer);
-        });
-
-        return result.get();
-    }
-
-    private void waitingForPlayers(int gameID) {
-        // todo - implement waiting for players
-
-        // Host
-        if (game != null) {
-            Thread hostIsGameReady = new Thread(new Runnable() {
-                int number = 0;
-
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            if (client.canStartGame()) {
-                                break;
-                            }
-                            Thread.sleep(1000);
-                            System.out.println(number++);
-                        } catch (URISyntaxException | IOException | InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    // todo - set client game to game, that is ready to start, from server. (gets new copy of game from server)
-
-                    Alert alert = new Alert(AlertType.INFORMATION, "", new ButtonType("Start game"));
-                    alert.setTitle("Start game");
-                    alert.setHeaderText("The game is ready to be started");
-                    alert.setContentText("Press start game, to start the game");
-                }
-            });
-        }
-        // Not host-client
-        else {
-            Thread nonHostIsGameReady = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            if (client.canStartGame()) {
-                                break;
-                            }
-                        } catch (URISyntaxException | IOException | InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    // todo - set client game to game, that is ready to start, from server. (gets new copy of game from server)
-                    Alert alert = new Alert(AlertType.INFORMATION, "", new ButtonType("Start game"));
-                    alert.setTitle("Start game");
-                    alert.setHeaderText("The game is ready to be started");
-                    alert.setContentText("Press start game, to start the game");
-                }
-            });
-
-
-        }
     }
 
     private boolean isValidInteger(String text) {
         try {
-
             return Integer.parseInt(text) > 0;
 
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    private Alert makeConfirmationAlert(String title, String text) {
+        Alert alert = new Alert(AlertType.CONFIRMATION, text, ButtonType.OK);
+        alert.setHeaderText(title);
+        alert.showAndWait();
+
+        return alert;
+    }
+
+    private Alert makeErrorAlert(String title, String text) {
+        Alert alert = new Alert(AlertType.ERROR, text, ButtonType.OK);
+        alert.setHeaderText(title);
+        alert.showAndWait();
+        return alert;
     }
 }
