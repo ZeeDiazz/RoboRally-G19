@@ -405,7 +405,7 @@ public class Client {
         return null;
     }
 
-    public void deleteSavedGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
+    public boolean deleteSavedGame(int gameId) throws URISyntaxException, IOException, InterruptedException {
         URI deleteGameURI = RequestMaker.makeUri(makeFullUri(ResourceLocation.saveGame), "gameId", gameId+"");
 
         Response<String> response = RequestMaker.deleteRequest(deleteGameURI);
@@ -415,6 +415,7 @@ public class Client {
         else {
             System.out.println("Did not delete game (id: " + gameId + ")");
         }
+        return response.getStatusCode().is2xxSuccessful();
     }
 
     public void deleteActiveGame() throws URISyntaxException, IOException, InterruptedException {

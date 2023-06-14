@@ -505,9 +505,10 @@ public class AppController implements Observer, GameFinishedListener {
     public void deleteSavedGame() {
         int gameId;
 
+        boolean deleted;
         try {
             gameId = chooseGameIdDeleteSavedGame();
-            client.deleteSavedGame(gameId);
+            deleted = client.deleteSavedGame(gameId);
 
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -519,8 +520,14 @@ public class AppController implements Observer, GameFinishedListener {
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.OK);
         alert.setTitle("Delete Game");
-        alert.setHeaderText("Game deleted");
-        alert.setContentText("Successfully deleted game with gameId: " + gameId);
+        if (deleted) {
+            alert.setHeaderText("Game deleted");
+            alert.setContentText("Successfully deleted game with gameId: " + gameId);
+        }
+        else {
+            alert.setHeaderText("Error encountered");
+            alert.setContentText("Encountered error when deleting game with gameId: " + gameId);
+        }
 
         alert.showAndWait();
     }
