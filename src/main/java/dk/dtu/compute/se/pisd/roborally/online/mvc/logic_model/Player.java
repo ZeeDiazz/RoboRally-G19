@@ -178,6 +178,17 @@ public abstract class Player extends Subject implements Serializable {
         return programField;
     }
 
+    public void setRobot(Robot robot) {
+        this.robot = robot;
+    }
+
+    public void setProgramField(CommandCardField[] programField) {
+        this.programField = programField;
+    }
+
+    public void setCards(CommandCardField[] cards) {
+        this.cards = cards;
+    }
 
     public static void setGame(Game game) {
         Player.game = game;
