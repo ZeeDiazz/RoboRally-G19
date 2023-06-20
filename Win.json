@@ -11,12 +11,12 @@
         "walls": []
       },
       "gameType": "LocalGame",
-      "moveCounter": 20,
-      "playerCount": 4,
-      "step": 0,
-      "stepMode": true,
+      "moveCounter": 5,
+      "playerCount": 5,
+      "step": 1,
+      "stepMode": false,
       "phase": "PROGRAMMING",
-      "currentPlayer": "Player 2",
+      "currentPlayer": "Player 1",
       "board": {
         "width": 13,
         "height": 10,
@@ -1153,7 +1153,6 @@
           "playerType": "LocalPlayer",
           "name": "Player 1",
           "playerID": 1,
-          "previousCommand": "BACK_UP",
           "program": [
             {},
             {},
@@ -1164,13 +1163,7 @@
           "cards": [
             {
               "commandCardField": {
-                "command": "AGAIN"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "LEFT"
+                "command": "RIGHT"
               },
               "isVisible": true
             },
@@ -1182,7 +1175,7 @@
             },
             {
               "commandCardField": {
-                "command": "OPTION_LEFT_RIGHT"
+                "command": "U_TURN"
               },
               "isVisible": true
             },
@@ -1194,7 +1187,7 @@
             },
             {
               "commandCardField": {
-                "command": "AGAIN"
+                "command": "MOVE_3"
               },
               "isVisible": true
             },
@@ -1206,7 +1199,13 @@
             },
             {
               "commandCardField": {
-                "command": "MOVE_1"
+                "command": "OPTION_LEFT_RIGHT"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "RIGHT"
               },
               "isVisible": true
             }
@@ -1215,8 +1214,8 @@
             "checkpointsReached": 0,
             "color": "red",
             "spacePosition": {
-              "x": 1,
-              "y": 0
+              "x": 12,
+              "y": 4
             },
             "rebootSpace": {
               "x": 1,
@@ -1229,7 +1228,6 @@
           "playerType": "LocalPlayer",
           "name": "Player 2",
           "playerID": 2,
-          "previousCommand": "MOVE_1",
           "program": [
             {},
             {},
@@ -1240,7 +1238,82 @@
           "cards": [
             {
               "commandCardField": {
-                "command": "BACK_UP"
+                "command": "LEFT"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "RIGHT"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "AGAIN"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "MOVE_3"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "MOVE_3"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "RIGHT"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "MOVE_2"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "MOVE_3"
+              },
+              "isVisible": true
+            }
+          ],
+          "robot": {
+            "checkpointsReached": 0,
+            "color": "green",
+            "spacePosition": {
+              "x": 7,
+              "y": 2
+            },
+            "rebootSpace": {
+              "x": 0,
+              "y": 3
+            },
+            "headingDirection": "SOUTH"
+          }
+        },
+        {
+          "playerType": "LocalPlayer",
+          "name": "Player 3",
+          "playerID": 3,
+          "program": [
+            {},
+            {},
+            {},
+            {},
+            {}
+          ],
+          "cards": [
+            {
+              "commandCardField": {
+                "command": "AGAIN"
               },
               "isVisible": true
             },
@@ -1252,13 +1325,7 @@
             },
             {
               "commandCardField": {
-                "command": "U_TURN"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "BACK_UP"
+                "command": "AGAIN"
               },
               "isVisible": true
             },
@@ -1276,7 +1343,13 @@
             },
             {
               "commandCardField": {
-                "command": "BACK_UP"
+                "command": "OPTION_LEFT_RIGHT"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "AGAIN"
               },
               "isVisible": true
             },
@@ -1289,23 +1362,22 @@
           ],
           "robot": {
             "checkpointsReached": 0,
-            "color": "green",
+            "color": "blue",
             "spacePosition": {
-              "x": 0,
-              "y": 3
+              "x": 8,
+              "y": 5
             },
             "rebootSpace": {
-              "x": 0,
-              "y": 3
+              "x": 1,
+              "y": 4
             },
             "headingDirection": "SOUTH"
           }
         },
         {
           "playerType": "LocalPlayer",
-          "name": "Player 3",
-          "playerID": 3,
-          "previousCommand": "MOVE_2",
+          "name": "Player 4",
+          "playerID": 4,
           "program": [
             {},
             {},
@@ -1314,6 +1386,99 @@
             {}
           ],
           "cards": [
+            {
+              "commandCardField": {
+                "command": "MOVE_3"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "AGAIN"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "OPTION_LEFT_RIGHT"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "OPTION_LEFT_RIGHT"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "BACK_UP"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "MOVE_3"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "MOVE_2"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "OPTION_LEFT_RIGHT"
+              },
+              "isVisible": true
+            }
+          ],
+          "robot": {
+            "checkpointsReached": 0,
+            "color": "orange",
+            "spacePosition": {
+              "x": 5,
+              "y": 4
+            },
+            "rebootSpace": {
+              "x": 1,
+              "y": 5
+            },
+            "headingDirection": "SOUTH"
+          }
+        },
+        {
+          "playerType": "LocalPlayer",
+          "name": "Player 5",
+          "playerID": 5,
+          "program": [
+            {},
+            {},
+            {},
+            {},
+            {}
+          ],
+          "cards": [
+            {
+              "commandCardField": {
+                "command": "BACK_UP"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "MOVE_1"
+              },
+              "isVisible": true
+            },
+            {
+              "commandCardField": {
+                "command": "LEFT"
+              },
+              "isVisible": true
+            },
             {
               "commandCardField": {
                 "command": "OPTION_LEFT_RIGHT"
@@ -1328,31 +1493,13 @@
             },
             {
               "commandCardField": {
-                "command": "AGAIN"
+                "command": "BACK_UP"
               },
               "isVisible": true
             },
             {
               "commandCardField": {
-                "command": "AGAIN"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "LEFT"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "AGAIN"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "MOVE_1"
+                "command": "OPTION_LEFT_RIGHT"
               },
               "isVisible": true
             },
@@ -1365,100 +1512,20 @@
           ],
           "robot": {
             "checkpointsReached": 0,
-            "color": "blue",
-            "spacePosition": {
-              "x": 1,
-              "y": 6
-            },
-            "rebootSpace": {
-              "x": 1,
-              "y": 4
-            },
-            "headingDirection": "SOUTH"
-          }
-        },
-        {
-          "playerType": "LocalPlayer",
-          "name": "Player 4",
-          "playerID": 4,
-          "previousCommand": "MOVE_3",
-          "program": [
-            {},
-            {},
-            {},
-            {},
-            {}
-          ],
-          "cards": [
-            {
-              "commandCardField": {
-                "command": "MOVE_3"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "MOVE_2"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "RIGHT"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "LEFT"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "BACK_UP"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "MOVE_3"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "MOVE_2"
-              },
-              "isVisible": true
-            },
-            {
-              "commandCardField": {
-                "command": "MOVE_3"
-              },
-              "isVisible": true
-            }
-          ],
-          "robot": {
-            "checkpointsReached": 0,
-            "color": "orange",
+            "color": "grey",
             "spacePosition": {
               "x": 7,
               "y": 9
             },
             "rebootSpace": {
-              "x": 1,
-              "y": 5
+              "x": 0,
+              "y": 6
             },
-            "headingDirection": "EAST"
+            "headingDirection": "SOUTH"
           }
         }
       ],
-      "prioritisedPlayers": [
-        3,
-        1,
-        4
-      ]
+      "prioritisedPlayers": []
     }
   }
 }
