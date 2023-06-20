@@ -476,7 +476,8 @@
       "walls": []
     },
     {
-      "spaceType": "Space",
+      "spaceType": "RedGearSpace",
+      "headingDirection" : "NORTH",
       "boardPosition": {
         "x": 5,
         "y": 6
@@ -484,7 +485,8 @@
       "walls": []
     },
     {
-      "spaceType": "Space",
+      "spaceType": "GreenGearSpace",
+      "headingDirection" : "NORTH",
       "boardPosition": {
         "x": 5,
         "y": 7

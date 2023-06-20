@@ -301,10 +301,10 @@ public class GameController implements Serializable {
         if (game.prioritisedPlayers.isEmpty()) {
             // Zigalow }
             currentStep++;
+            obstacleAction();
             if (currentStep < Player.NUMBER_OF_REGISTERS) {
                 makeProgramFieldsVisible(currentStep);
                 //ZeeDiazz (Zaid){
-                obstacleAction();
                 //ZeeDiazz (Zaid)}
 
                 game.setStep(currentStep);
